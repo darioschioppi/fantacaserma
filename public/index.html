@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Fantacaserma ⚽</title>
+<script src="/socket.io/socket.io.js"></script>
+<style>
+/* ═══════════════════════════════════════════════════════════
+   BASE RESET & VARIABLES
+═══════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0d2b1a;
+  --table: #1a4a2e;
+  --felt: #2d7a4a;
+  --card-bg: #ffffff;
+  --gold: #ffd700;
+  --gold-dark: #c9a800;
+  --danger: #ff4444;
+  --danger-dark: #cc0000;
+  --green-glow: #00ff88;
+  --text: #e8f5e9;
+  --text-dim: #a5c9b0;
+  --border: rgba(255,215,0,0.3);
+  --shadow: rgba(0,0,0,0.5);
+  --radius: 12px;
+  --seat-size: 80px;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+html, body { height: 100%; background: var(--bg); color: var(--text); overflow: hidden; }
+body { display: flex; flex-direction: column; }
+
+.screen { display: none; flex-direction: column; height: 100%; overflow: hidden; }
+.screen.active { display: flex; }
+
+/* LOGIN */
+#screen-login {
+  justify-content: center; align-items: center;
+  background: radial-gradient(ellipse at center, #1a4a2e 0%, #0d2b1a 100%);
+  padding: 20px;
+}
+.login-box {
+  background: rgba(0,0,0,0.6); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 32px 28px;
+  width: 100%; max-width: 400px; box-shadow: 0 8px 32px var(--shadow);
+}
+.login-title {
+  text-align: center; font-size: 2em; font-weight: 800;
+  color: var(--gold); margin-bottom: 4px;
+  text-shadow: 0 0 20px rgba(255,215,0,0.5);
+}
+.login-sub { text-align: center; color: var(--text-dim); margin-bottom: 28px; font-size: 0.9em; }
+.tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+.tab-btn {
+  flex: 1; padding: 10px; border: 1px solid var(--border);
+  background: transparent; color: var(--text-dim);
+  border-radius: 8px; cursor: pointer; font-size: 0.9em; transition: all 0.2s;
+}
+.tab-btn.active { background: var(--gold); color: #000; border-color: var(--gold); font-weight: 700; }
+.form-group { margin-bottom: 16px; }
+label { display: block; font-size: 0.8em; color: var(--text-dim); margin-bottom: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
+select, input[type=text], input[type=password], input[type=number] {
+  width: 100%; padding: 12px 14px;
+  background: rgba(255,255,255,0.08); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); font-size: 1em; outline: none;
+  transition: border-color 0.2s;
+}
+select:focus, input:focus { border-color: var(--gold); }
+select option { background: #1a1a1a; }
+.btn-primary {
+  width: 100%; padding: 14px; background: var(--gold); color: #000;
+  border: none; border-radius: 8px; font-size: 1.1em; font-weight: 800;
+  cursor: pointer; transition: all 0.2s; letter-spacing: 0.05em;
+}
+.btn-primary:hover { background: var(--gold-dark); transform: translateY(-1px); }
+.error-msg {
+  background: rgba(255,68,68,0.2); border: 1px solid var(--danger);
+  border-radius: 8px; padding: 10px 14px; color: var(--danger);
+  font-size: 0.9em; margin-top: 12px; display: none;
+}
+.error-msg.show { display: block; }
+
+/* HEADER */
+.header {
+  background: rgba(0,0,0,0.5); border-bottom: 1px solid var(--border);
+  padding: 10px 16px; display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0; z-index: 10;
+}
+.header-logo { font-size: 1.1em; font-weight: 800; color: var(--gold); }
+.header-budget {
+  font-size: 1em; font-weight: 700; color: var(--gold);
+  background: rgba(255,215,0,0.15); border: 1px solid var(--border);
+  padding: 4px 12px; border-radius: 20px;
+}
+
+/* ADMIN SCREEN */
+#screen-admin { background: var(--bg); }
+.admin-body { flex: 1; overflow-y: auto; padding: 16px; display: grid; gap: 16px; }
+@media (min-width: 768px) {
+  .admin-body { grid-template-columns: 1fr 1fr; }
+  .admin-section.full { grid-column: 1 / -1; }
+}
+.admin-section {
+  background: rgba(0,0,0,0.4); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px;
+}
+.section-title {
+  font-size: 0.75em; text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--gold); margin-bottom: 12px; font-weight: 700;
+}
+.team-row {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  border-radius: 8px; background: rgba(255,255,255,0.04);
+  margin-bottom: 6px; font-size: 0.9em;
+}
+.team-row .dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #555; flex-shrink: 0; transition: background 0.3s;
+}
+.team-row.online .dot { background: var(--green-glow); box-shadow: 0 0 6px var(--green-glow); }
+.team-emoji { font-size: 1.3em; }
+.team-name-cell { flex: 1; font-weight: 600; }
+.team-budget-cell { color: var(--gold); font-weight: 700; min-width: 60px; text-align: right; }
+.team-players-cell { color: var(--text-dim); font-size: 0.8em; min-width: 50px; text-align: right; }
+
+.search-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.search-row input, .search-row select { flex: 1; min-width: 80px; padding: 8px 10px; font-size: 0.85em; }
+.player-list { max-height: 300px; overflow-y: auto; }
+.player-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+  border-radius: 8px; cursor: pointer; transition: background 0.15s; font-size: 0.85em;
+}
+.player-item:hover { background: rgba(255,255,255,0.08); }
+.player-item.assigned { opacity: 0.4; pointer-events: none; }
+.role-badge { padding: 2px 7px; border-radius: 4px; font-size: 0.75em; font-weight: 700; flex-shrink: 0; }
+.role-P { background: #ff9800; color: #000; }
+.role-D { background: #2196f3; color: #fff; }
+.role-C { background: #4caf50; color: #000; }
+.role-A { background: #f44336; color: #fff; }
+.player-name { flex: 1; font-weight: 600; }
+.player-squad { color: var(--text-dim); font-size: 0.8em; }
+.player-qi { color: var(--gold); font-weight: 700; }
+.btn-start-auction {
+  padding: 6px 14px; background: var(--gold); color: #000;
+  border: none; border-radius: 6px; font-size: 0.8em; font-weight: 700;
+  cursor: pointer; flex-shrink: 0; transition: all 0.15s;
+}
+.btn-start-auction:hover { background: var(--gold-dark); }
+.btn-start-auction:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.admin-auction-box {
+  background: rgba(255,215,0,0.05); border: 2px solid var(--gold);
+  border-radius: var(--radius); padding: 16px;
+}
+.auction-player-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.aph-role { font-size: 2em; }
+.aph-info h2 { font-size: 1.2em; font-weight: 800; }
+.aph-info p { color: var(--text-dim); font-size: 0.85em; }
+.admin-timer {
+  font-size: 2.5em; font-weight: 900; text-align: center;
+  color: var(--gold); font-variant-numeric: tabular-nums; transition: color 0.3s;
+}
+.admin-timer.danger { color: var(--danger); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+.admin-bids-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin: 12px 0; }
+.admin-bid-card {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; padding: 8px 12px; font-size: 0.85em; transition: all 0.3s;
+}
+.admin-bid-card.submitted { border-color: var(--green-glow); background: rgba(0,255,136,0.08); }
+.admin-bid-card.winner { border-color: var(--gold); background: rgba(255,215,0,0.15); }
+.admin-bid-team { font-weight: 600; }
+.admin-bid-amount { color: var(--gold); font-weight: 700; font-size: 1.1em; }
+.admin-bid-pending { color: var(--text-dim); font-style: italic; }
+.admin-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.btn-action {
+  flex: 1; min-width: 100px; padding: 10px 14px;
+  border: none; border-radius: 8px; font-size: 0.9em; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+}
+.btn-reveal { background: #2196f3; color: #fff; }
+.btn-reveal:hover { background: #1976d2; }
+.btn-assign { background: var(--green-glow); color: #000; }
+.btn-assign:hover { background: #00cc70; }
+.btn-skip { background: #ff9800; color: #000; }
+.btn-skip:hover { background: #e68900; }
+.btn-reset { background: var(--danger); color: #fff; font-size:0.75em; padding:6px 12px; }
+
+.history-item {
+  display: flex; align-items: center; gap: 8px; padding: 6px 8px;
+  border-radius: 6px; font-size: 0.8em; margin-bottom: 4px;
+  background: rgba(255,255,255,0.04);
+}
+.history-item.skipped { opacity: 0.5; }
+.history-winner-emoji { font-size: 1.2em; }
+.history-details { flex: 1; }
+.history-player { font-weight: 600; }
+.history-cost { color: var(--gold); font-weight: 700; }
+
+/* POKER TABLE */
+#screen-table { background: radial-gradient(ellipse at center, #1a4a2e 0%, var(--bg) 100%); }
+.table-layout { flex: 1; position: relative; display: flex; flex-direction: column; overflow: hidden; }
+.poker-table {
+  position: relative; flex: 1;
+  display: flex; align-items: center; justify-content: center; overflow: visible;
+}
+.table-felt {
+  position: absolute; width: 70%; height: 55%;
+  background: radial-gradient(ellipse, #2d7a4a 60%, #1f5c35 100%);
+  border-radius: 50%; border: 6px solid #8b5e1a;
+  box-shadow: 0 0 40px rgba(0,0,0,0.6), inset 0 0 30px rgba(0,0,0,0.3); z-index: 0;
+}
+.seats-container { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 2; }
+.seat {
+  position: absolute; width: var(--seat-size); height: var(--seat-size);
+  transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  transition: all 0.3s;
+}
+.seat-avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5em; transition: all 0.4s; position: relative;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.seat.submitted .seat-avatar {
+  border-color: var(--green-glow);
+  box-shadow: 0 0 16px var(--green-glow), 0 0 30px rgba(0,255,136,0.3);
+  background: rgba(0,255,136,0.15);
+}
+.seat.is-me .seat-avatar { border-color: var(--gold); box-shadow: 0 0 12px rgba(255,215,0,0.5); }
+.seat.winner .seat-avatar {
+  border-color: var(--gold);
+  box-shadow: 0 0 24px var(--gold), 0 0 40px rgba(255,215,0,0.5);
+  background: rgba(255,215,0,0.2);
+  animation: winner-glow 1s ease-in-out infinite alternate;
+}
+@keyframes winner-glow {
+  from { box-shadow: 0 0 16px var(--gold), 0 0 30px rgba(255,215,0,0.4); }
+  to   { box-shadow: 0 0 28px var(--gold), 0 0 50px rgba(255,215,0,0.7); }
+}
+.seat.offline .seat-avatar { opacity: 0.4; filter: grayscale(0.8); }
+.seat.tiebreaker-inactive .seat-avatar { opacity: 0.3; filter: grayscale(1); }
+.seat-name {
+  font-size: 0.6em; font-weight: 700; color: var(--text); text-align: center;
+  max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  margin-top: 3px; text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+}
+.seat-badge-me {
+  position: absolute; top: -6px; right: -6px;
+  background: var(--gold); color: #000; font-size: 0.55em; font-weight: 900;
+  padding: 1px 5px; border-radius: 4px; letter-spacing: 0.05em;
+}
+.seat-bid-reveal {
+  position: absolute; bottom: -20px;
+  background: var(--gold); color: #000; font-size: 0.65em; font-weight: 800;
+  padding: 2px 8px; border-radius: 10px; white-space: nowrap;
+  opacity: 0; transition: opacity 0.4s;
+}
+.seat.revealed .seat-bid-reveal { opacity: 1; }
+
+.center-area {
+  position: relative; z-index: 3;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 8px; max-width: 180px; text-align: center;
+}
+.player-card {
+  background: white; border-radius: 10px; border: 2px solid var(--gold);
+  padding: 10px 14px; color: #111; box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+  min-width: 140px;
+}
+.pc-role { font-size: 0.65em; font-weight: 700; margin-bottom: 4px; }
+.pc-name { font-size: 1em; font-weight: 800; line-height: 1.1; margin-bottom: 3px; }
+.pc-squad { font-size: 0.75em; color: #555; }
+.pc-qi { font-size: 1.2em; font-weight: 900; color: #222; margin-top: 4px; }
+.pc-qi span { font-size: 0.65em; color: #777; font-weight: 400; }
+.idle-msg { color: var(--text-dim); font-size: 0.85em; text-align: center; padding: 0 10px; }
+
+.countdown-ring { position: relative; width: 80px; height: 80px; }
+.countdown-ring svg { position: absolute; top:0; left:0; transform: rotate(-90deg); }
+.countdown-ring circle { fill: none; stroke-width: 5; stroke-dasharray: 220; transition: stroke-dashoffset 1s linear, stroke 0.3s; }
+.countdown-ring .bg-circle { stroke: rgba(255,255,255,0.1); }
+.countdown-ring .prog-circle { stroke: var(--gold); }
+.countdown-ring.danger .prog-circle { stroke: var(--danger); }
+.countdown-text {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 1.6em; font-weight: 900; color: var(--gold); transition: color 0.3s;
+}
+.countdown-ring.danger .countdown-text { color: var(--danger); animation: pulse 1s infinite; }
+
+.phase-banner {
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  z-index: 10; white-space: nowrap; padding: 6px 16px; border-radius: 20px;
+  font-size: 0.85em; font-weight: 700; letter-spacing: 0.05em; transition: all 0.3s;
+}
+.phase-banner.bidding { background: rgba(0,150,100,0.9); border: 1px solid var(--green-glow); color: #fff; }
+.phase-banner.tiebreaker { background: rgba(200,100,0,0.9); border: 1px solid #ff9800; color: #fff; }
+.phase-banner.reveal { background: rgba(200,160,0,0.9); border: 1px solid var(--gold); color: #000; }
+.phase-banner.idle { display: none; }
+
+.bottom-panel {
+  background: rgba(0,0,0,0.7); border-top: 1px solid var(--border);
+  padding: 12px 16px; flex-shrink: 0; z-index: 10;
+}
+.bid-form { display: flex; gap: 10px; align-items: center; }
+.bid-input {
+  flex: 1; padding: 12px 14px; background: rgba(255,255,255,0.1);
+  border: 2px solid var(--border); border-radius: 8px; color: var(--text);
+  font-size: 1.1em; font-weight: 700; outline: none; transition: border-color 0.2s;
+}
+.bid-input:focus { border-color: var(--gold); }
+.bid-input:disabled { opacity: 0.4; }
+.btn-bid {
+  padding: 12px 22px; background: var(--gold); color: #000;
+  border: none; border-radius: 8px; font-size: 1em; font-weight: 800;
+  cursor: pointer; white-space: nowrap; transition: all 0.15s;
+}
+.btn-bid:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-bid:not(:disabled):hover { background: var(--gold-dark); }
+.bid-submitted-msg { text-align: center; color: var(--green-glow); font-weight: 700; padding: 10px; font-size: 0.95em; }
+.bid-min-hint { font-size: 0.75em; color: var(--text-dim); text-align: center; margin-top: 4px; }
+
+.sidebar {
+  position: fixed; right: 0; top: 0; bottom: 0; width: 260px;
+  background: rgba(0,0,0,0.92); border-left: 1px solid var(--border);
+  transform: translateX(100%); transition: transform 0.3s;
+  z-index: 50; overflow-y: auto; padding: 16px;
+}
+.sidebar.open { transform: translateX(0); }
+.sidebar-title { font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); margin-bottom: 12px; font-weight: 700; }
+.sidebar-close { position: absolute; top: 12px; right: 12px; background: transparent; border: none; color: var(--text-dim); font-size: 1.3em; cursor: pointer; }
+.sidebar-section { margin-bottom: 20px; }
+.my-roster { list-style: none; }
+.my-roster li { padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 0.82em; display: flex; justify-content: space-between; }
+
+.reveal-overlay {
+  position: absolute; inset: 0; background: rgba(0,0,0,0.85); z-index: 20;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.4s;
+}
+.reveal-overlay.show { opacity: 1; pointer-events: all; }
+.reveal-title { font-size: 1.4em; font-weight: 900; color: var(--gold); margin-bottom: 16px; text-align: center; }
+.reveal-bids-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px; width: 100%; max-width: 600px; max-height: 50vh; overflow-y: auto;
+}
+.reveal-bid-card {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px; padding: 10px 12px; text-align: center; transition: all 0.3s;
+}
+.reveal-bid-card.winner-card { border-color: var(--gold); background: rgba(255,215,0,0.15); transform: scale(1.05); }
+.reveal-bid-team-emoji { font-size: 1.6em; }
+.reveal-bid-team-name { font-size: 0.75em; color: var(--text-dim); margin-bottom: 4px; }
+.reveal-bid-amount { font-size: 1.3em; font-weight: 900; color: var(--gold); }
+.reveal-bid-no-bid { font-size: 0.8em; color: var(--text-dim); font-style: italic; }
+.winner-announcement { margin-top: 16px; text-align: center; font-size: 1.1em; font-weight: 700; color: var(--green-glow); text-shadow: 0 0 10px var(--green-glow); }
+.tiebreaker-banner {
+  background: rgba(255,120,0,0.2); border: 2px solid #ff9800; border-radius: 10px;
+  padding: 10px 18px; color: #ff9800; font-weight: 800; text-align: center;
+  margin-bottom: 12px; font-size: 1em;
+}
+
+.toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.9); border: 1px solid var(--border);
+  border-radius: 20px; padding: 10px 20px; color: var(--text); font-size: 0.9em;
+  z-index: 100; opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  white-space: nowrap; max-width: 90vw; text-align: center;
+}
+.toast.show { opacity: 1; }
+
+.bottom-nav {
+  display: flex; background: rgba(0,0,0,0.8);
+  border-top: 1px solid var(--border); padding: 6px 0; flex-shrink: 0;
+}
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: transparent; border: none; color: var(--text-dim); font-size: 0.65em;
+  padding: 6px; cursor: pointer; transition: color 0.2s; gap: 3px;
+}
+.nav-btn .nav-icon { font-size: 1.6em; }
+.nav-btn.active { color: var(--gold); }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+@keyframes flip-in {
+  from { transform: rotateY(90deg) scale(0.8); opacity: 0; }
+  to   { transform: rotateY(0deg) scale(1); opacity: 1; }
+}
+.reveal-bid-card { animation: flip-in 0.4s ease backwards; }
+.reveal-bid-card:nth-child(1){animation-delay:0.05s}
+.reveal-bid-card:nth-child(2){animation-delay:0.1s}
+.reveal-bid-card:nth-child(3){animation-delay:0.15s}
+.reveal-bid-card:nth-child(4){animation-delay:0.2s}
+.reveal-bid-card:nth-child(5){animation-delay:0.25s}
+.reveal-bid-card:nth-child(6){animation-delay:0.3s}
+.reveal-bid-card:nth-child(7){animation-delay:0.35s}
+.reveal-bid-card:nth-child(8){animation-delay:0.4s}
+.reveal-bid-card:nth-child(9){animation-delay:0.45s}
+.reveal-bid-card:nth-child(10){animation-delay:0.5s}
+
+@media (max-width: 500px) {
+  :root { --seat-size: 64px; }
+  .seat-avatar { width: 40px; height: 40px; font-size: 1.2em; }
+  .seat-name { font-size: 0.55em; max-width: 62px; }
+  .table-felt { width: 75%; height: 50%; }
+  .player-card { min-width: 110px; padding: 8px 10px; }
+  .pc-name { font-size: 0.85em; }
+  .countdown-ring { width: 60px; height: 60px; }
+  .countdown-text { font-size: 1.2em; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="screen-login" class="screen active">
+  <div class="login-box">
+    <div class="login-title">⚽ Fantacaserma</div>
+    <div class="login-sub">Asta a Busta Chiusa</div>
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-btn-team" onclick="switchTab('team')">🏟️ Squadra</button>
+      <button class="tab-btn" id="tab-btn-admin" onclick="switchTab('admin')">⚙️ Admin</button>
+    </div>
+    <div id="tab-team">
+      <div class="form-group">
+        <label>Seleziona Squadra</label>
+        <select id="team-select">
+          <option value="">-- Scegli la tua squadra --</option>
+          <option value="t1">🦁 La Caserma FC</option>
+          <option value="t2">⚡ Fulmine FC</option>
+          <option value="t3">🔥 Drago Rosso</option>
+          <option value="t4">⭐ Stella Alpina</option>
+          <option value="t5">🐺 Lupo Grigio</option>
+          <option value="t6">🦅 Aquila FC</option>
+          <option value="t7">🏆 Golden Boys</option>
+          <option value="t8">🌊 Onda FC</option>
+          <option value="t9">🎯 Freccia Rossa</option>
+          <option value="t10">🌟 Supernova</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Password Squadra</label>
+        <input type="password" id="team-password" placeholder="••••••••">
+      </div>
+      <button class="btn-primary" onclick="doTeamLogin()">Entra nel Tavolo</button>
+    </div>
+    <div id="tab-admin" style="display:none">
+      <div class="form-group">
+        <label>Password Admin</label>
+        <input type="password" id="admin-password" placeholder="••••••••">
+      </div>
+      <button class="btn-primary" onclick="doAdminLogin()">Accedi come Admin</button>
+    </div>
+    <div id="login-error" class="error-msg"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="screen-admin" class="screen">
+  <div class="header">
+    <div class="header-logo">⚙️ Admin Fantacaserma</div>
+    <button class="btn-reset btn-action" onclick="confirmReset()">🔄 Reset</button>
+  </div>
+  <div class="admin-body" id="admin-body">
+    <div id="admin-auction-section" class="admin-section full" style="display:none">
+      <div class="section-title">🎯 Asta in Corso</div>
+      <div class="admin-auction-box">
+        <div class="auction-player-header">
+          <div class="aph-role" id="admin-aph-role"></div>
+          <div class="aph-info">
+            <h2 id="admin-aph-name"></h2>
+            <p id="admin-aph-sub"></p>
+          </div>
+          <div style="margin-left:auto">
+            <div class="admin-timer" id="admin-timer">30</div>
+          </div>
+        </div>
+        <div id="admin-tiebreaker-banner" style="display:none" class="tiebreaker-banner"></div>
+        <div class="admin-bids-grid" id="admin-bids-grid"></div>
+        <div class="admin-actions">
+          <button class="btn-action btn-reveal" onclick="socket.emit('force_reveal')">⚡ Rivela Ora</button>
+          <button class="btn-action btn-assign" id="btn-assign-winner" onclick="assignWinner()" style="display:none">🏆 Assegna Vincitore</button>
+          <button class="btn-action btn-skip" onclick="socket.emit('skip_player')">⏭️ Salta</button>
+        </div>
+      </div>
+    </div>
+    <div class="admin-section">
+      <div class="section-title">🏟️ Squadre</div>
+      <div id="admin-teams-list"></div>
+    </div>
+    <div class="admin-section">
+      <div class="section-title">🔍 Giocatori — Avvia Asta</div>
+      <div class="search-row">
+        <input type="text" id="search-q" placeholder="Nome..." oninput="filterPlayers()">
+        <select id="search-role" onchange="filterPlayers()">
+          <option value="">Tutti</option>
+          <option value="P">P</option>
+          <option value="D">D</option>
+          <option value="C">C</option>
+          <option value="A">A</option>
+        </select>
+        <input type="text" id="search-squad" placeholder="Squadra..." oninput="filterPlayers()" style="max-width:90px">
+      </div>
+      <div class="player-list" id="admin-player-list"></div>
+    </div>
+    <div class="admin-section">
+      <div class="section-title">📋 Storico Acquisti</div>
+      <div id="admin-history-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- POKER TABLE -->
+<div id="screen-table" class="screen">
+  <div class="header">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span id="my-team-emoji" style="font-size:1.4em"></span>
+      <span id="my-team-name" style="font-weight:800;color:var(--gold)"></span>
+    </div>
+    <div class="header-budget" id="my-budget-display">💰 500 cr</div>
+  </div>
+  <div class="table-layout">
+    <div class="phase-banner idle" id="phase-banner">Attesa...</div>
+    <div class="poker-table" id="poker-table">
+      <div class="table-felt"></div>
+      <div class="seats-container" id="seats-container"></div>
+      <div class="center-area" id="center-area">
+        <div class="idle-msg" id="idle-msg">In attesa che<br>l'admin avvii un'asta...</div>
+        <div style="display:none" id="auction-center">
+          <div class="countdown-ring" id="countdown-ring">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+              <circle class="bg-circle" cx="40" cy="40" r="35"/>
+              <circle class="prog-circle" id="prog-circle" cx="40" cy="40" r="35"/>
+            </svg>
+            <div class="countdown-text" id="countdown-text">30</div>
+          </div>
+          <div class="player-card" id="player-card">
+            <div class="pc-role" id="pc-role"></div>
+            <div class="pc-name" id="pc-name"></div>
+            <div class="pc-squad" id="pc-squad"></div>
+            <div class="pc-qi" id="pc-qi"></div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal-overlay" id="reveal-overlay">
+        <div id="tiebreaker-reveal-banner" style="display:none" class="tiebreaker-banner"></div>
+        <div class="reveal-title" id="reveal-title">🃏 Le buste si aprono...</div>
+        <div class="reveal-bids-grid" id="reveal-bids-grid"></div>
+        <div class="winner-announcement" id="winner-announcement"></div>
+      </div>
+    </div>
+    <div class="bottom-panel" id="bottom-panel">
+      <div id="bid-area">
+        <div class="bid-form">
+          <input type="number" class="bid-input" id="bid-input" placeholder="La tua offerta..." min="1" disabled>
+          <button class="btn-bid" id="btn-bid" disabled onclick="submitBid()">INVIA</button>
+        </div>
+        <div class="bid-min-hint" id="bid-min-hint"></div>
+      </div>
+      <div class="bid-submitted-msg" id="bid-submitted-msg" style="display:none">✅ Offerta inviata! In attesa degli altri...</div>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-btn active" id="nav-table" onclick="showTableTab('table',this)">
+      <span class="nav-icon">🎮</span><span>Tavolo</span>
+    </button>
+    <button class="nav-btn" id="nav-roster" onclick="showTableTab('sidebar',this)">
+      <span class="nav-icon">📋</span><span>Rosa</span>
+    </button>
+  </div>
+</div>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  <div class="sidebar-title">📋 La tua rosa</div>
+  <div class="sidebar-section">
+    <div style="font-size:0.8em;color:var(--text-dim);margin-bottom:8px">Budget rimasto: <strong id="sidebar-budget" style="color:var(--gold)">500 cr</strong></div>
+    <ul class="my-roster" id="my-roster"></ul>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-title">🕐 Ultimi acquisti</div>
+    <div id="sidebar-history"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ───────────────────────────────────────────────
+   Socket & Global State
+─────────────────────────────────────────────── */
+const socket = io();
+
+let myTeamId   = null;
+let myTeamName = '';
+let myTeamEmoji= '';
+let isAdmin    = false;
+let gameState  = null;
+let allPlayers = [];
+let assignedSet= new Set();
+
+const AUCTION_MAX = 30;
+
+/* ───────────────────────────────────────────────
+   Screen helpers
+─────────────────────────────────────────────── */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
+
+function switchTab(tab) {
+  document.getElementById('tab-btn-team').classList.toggle('active', tab==='team');
+  document.getElementById('tab-btn-admin').classList.toggle('active', tab==='admin');
+  document.getElementById('tab-team').style.display  = tab==='team'  ? '' : 'none';
+  document.getElementById('tab-admin').style.display = tab==='admin' ? '' : 'none';
+}
+
+function showTableTab(tab, btn) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (tab === 'sidebar') {
+    document.getElementById('sidebar').classList.add('open');
+  } else {
+    document.getElementById('sidebar').classList.remove('open');
+  }
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('nav-table').classList.add('active');
+  document.getElementById('nav-roster').classList.remove('active');
+}
+
+/* ───────────────────────────────────────────────
+   Login
+─────────────────────────────────────────────── */
+function doTeamLogin() {
+  const teamId  = document.getElementById('team-select').value;
+  const password= document.getElementById('team-password').value;
+  if (!teamId) { showLoginError('Seleziona una squadra.'); return; }
+  socket.emit('team_login', { teamId, password });
+}
+function doAdminLogin() {
+  const password = document.getElementById('admin-password').value;
+  socket.emit('admin_login', { password });
+}
+function showLoginError(msg) {
+  const el = document.getElementById('login-error');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+document.getElementById('team-password').addEventListener('keydown', e => { if(e.key==='Enter') doTeamLogin(); });
+document.getElementById('admin-password').addEventListener('keydown', e => { if(e.key==='Enter') doAdminLogin(); });
+
+function confirmReset() {
+  if (confirm('Reset completo del gioco? Tutti i dati verranno persi.')) socket.emit('reset_game');
+}
+
+/* ───────────────────────────────────────────────
+   Socket events
+─────────────────────────────────────────────── */
+socket.on('login_success', data => {
+  myTeamId   = data.teamId;
+  myTeamName = data.teamName;
+  myTeamEmoji= data.emoji;
+  isAdmin    = false;
+  document.getElementById('my-team-name').textContent  = data.teamName;
+  document.getElementById('my-team-emoji').textContent = data.emoji;
+  updateBudgetDisplay(data.budget);
+  updateMyRoster(data.players || []);
+  showScreen('table');
+  buildSeats();
+});
+
+socket.on('admin_login_success', data => {
+  isAdmin    = true;
+  allPlayers = data.players || [];
+  assignedSet= new Set((data.auctionHistory||[]).filter(h=>h.result==='assigned').map(h=>h.player.Nome));
+  showScreen('admin');
+  renderAdminTeams(data.teams);
+  renderAdminHistory(data.auctionHistory||[]);
+  filterPlayers();
+  if (data.auction) renderAdminAuction(data.auction);
+});
+
+socket.on('login_error', data => showLoginError(data.message));
+
+socket.on('state_sync', data => {
+  gameState = data;
+  if (data.reset) { location.reload(); return; }
+  if (isAdmin) {
+    renderAdminTeams(data.teams);
+    renderAdminHistory(data.auctionHistory||[]);
+    if (data.auction) renderAdminAuction(data.auction);
+    else document.getElementById('admin-auction-section').style.display = 'none';
+  } else if (myTeamId) {
+    syncTableState(data);
+  }
+});
+
+socket.on('auction_started', data => {
+  if (isAdmin) return;
+  showAuctionCenter(data.player);
+  setPhaseBanner('bidding','🎯 ASTA IN CORSO');
+  enableBidForm(1);
+  hideRevealOverlay();
+  resetSeatSubmitted();
+  updateCountdown(data.timerLeft || AUCTION_MAX);
+});
+
+socket.on('team_bid_submitted', data => {
+  if (!isAdmin) setSeatSubmitted(data.teamId);
+});
+
+socket.on('timer_update', data => {
+  if (!isAdmin) {
+    updateCountdown(data.timerLeft);
+  } else {
+    const el = document.getElementById('admin-timer');
+    if (el) { el.textContent = data.timerLeft; el.classList.toggle('danger', data.timerLeft<=10); }
+  }
+});
+
+socket.on('bid_reveal', data => {
+  if (!isAdmin) {
+    showRevealOverlay(data);
+    if (data.tiebreaker) setPhaseBanner('tiebreaker','⚖️ SPAREGGIO R.'+(data.tiebreakerRound||''));
+    else setPhaseBanner('reveal','🏆 RISULTATO');
+    disableBidForm();
+  } else {
+    if (gameState && gameState.auction) renderAdminAuction({...gameState.auction, bids: data.bids, winner: data.winner});
+  }
+});
+
+socket.on('tiebreaker_start', data => {
+  if (isAdmin) return;
+  hideTiebreakerOverlay();
+  setPhaseBanner('tiebreaker','⚖️ SPAREGGIO R.'+data.round);
+  resetSeatSubmitted();
+  updateTiebreakerSeats(data.tiebreakerTeams||[]);
+  updateCountdown(data.timerLeft||AUCTION_MAX);
+  const eligible = (data.tiebreakerTeams||[]).includes(myTeamId);
+  if (eligible) {
+    enableBidForm(data.tiebreakerMin||1);
+  } else {
+    disableBidForm();
+    document.getElementById('bid-submitted-msg').style.display = 'none';
+    document.getElementById('bid-area').style.display = '';
+    document.getElementById('bid-min-hint').textContent = '⚖️ Non sei in spareggio';
+  }
+});
+
+socket.on('player_assigned', data => {
+  showToast('🏆 '+data.winnerEmoji+' '+data.winnerName+' vince '+data.player.Nome+' per '+data.cost+' cr!');
+  if (isAdmin) { assignedSet.add(data.player.Nome); filterPlayers(); }
+  if (!isAdmin) { hideRevealOverlay(); showIdleCenter(); setPhaseBanner('idle',''); disableBidForm(); resetSeatSubmitted(); clearTiebreakerSeats(); }
+});
+
+socket.on('your_player', data => {
+  updateBudgetDisplay(data.budget);
+  updateMyRoster(data.players);
+  updateSidebarBudget(data.budget);
+});
+
+socket.on('budget_update', data => {
+  if (data.teamId === myTeamId) { updateBudgetDisplay(data.budget); updateSidebarBudget(data.budget); }
+});
+
+socket.on('player_skipped', data => {
+  showToast('⏭️ '+data.player.Nome+' saltato.');
+  if (!isAdmin) { hideRevealOverlay(); showIdleCenter(); setPhaseBanner('idle',''); disableBidForm(); resetSeatSubmitted(); }
+  if (isAdmin) document.getElementById('admin-auction-section').style.display = 'none';
+});
+
+socket.on('team_connected',    data => updateSeatOnlineState(data.teamId, true));
+socket.on('team_disconnected', data => updateSeatOnlineState(data.teamId, false));
+
+/* ───────────────────────────────────────────────
+   Admin rendering
+─────────────────────────────────────────────── */
+function renderAdminTeams(teams) {
+  const container = document.getElementById('admin-teams-list');
+  if (!container) return;
+  const arr = Array.isArray(teams) ? teams : Object.values(teams);
+  let html = '';
+  arr.forEach(t => {
+    const online = t.connected ? 'online' : '';
+    const pc = t.playerCount !== undefined ? t.playerCount : (t.players ? t.players.length : 0);
+    html += '<div class="team-row '+online+'">'
+      +'<div class="dot"></div>'
+      +'<div class="team-emoji">'+t.emoji+'</div>'
+      +'<div class="team-name-cell">'+escHtml(t.name)+'</div>'
+      +'<div class="team-budget-cell">'+t.budget+' cr</div>'
+      +'<div class="team-players-cell">'+pc+' <small>gioc.</small></div>'
+      +'</div>';
+  });
+  container.innerHTML = html;
+}
+
+function renderAdminHistory(history) {
+  const container = document.getElementById('admin-history-list');
+  if (!container) return;
+  if (!history.length) { container.innerHTML = '<div style="color:var(--text-dim);font-size:0.8em">Nessun acquisto ancora.</div>'; return; }
+  let html = '';
+  history.forEach(h => {
+    html += '<div class="history-item '+(h.result==='skipped'?'skipped':'')+'">'
+      +'<div class="history-winner-emoji">'+(h.result==='skipped'?'⏭️':(h.winnerEmoji||''))+'</div>'
+      +'<div class="history-details">'
+        +'<div class="history-player">'+escHtml(h.player.Nome)+' <span class="role-badge role-'+h.player.Ruolo_Classic+'">'+h.player.Ruolo_Classic+'</span></div>'
+        +(h.result==='assigned'
+          ?'<div style="font-size:0.75em;color:var(--text-dim)">'+escHtml(h.winnerName||'')+' — <span class="history-cost">'+h.cost+' cr</span></div>'
+          :'<div style="font-size:0.75em;color:var(--text-dim)">Saltato</div>')
+      +'</div></div>';
+  });
+  container.innerHTML = html;
+}
+
+function renderAdminAuction(auction) {
+  const section = document.getElementById('admin-auction-section');
+  section.style.display = '';
+  const p = auction.player || {};
+  document.getElementById('admin-aph-role').textContent = roleEmoji(p.Ruolo_Classic);
+  document.getElementById('admin-aph-name').textContent = p.Nome || '';
+  document.getElementById('admin-aph-sub').textContent  = (p.Squadra||'')+' · QI '+(p.QI||'');
+  const tl = auction.timerLeft != null ? auction.timerLeft : 30;
+  const timerEl = document.getElementById('admin-timer');
+  timerEl.textContent = tl;
+  timerEl.classList.toggle('danger', tl<=10);
+  const tbBanner = document.getElementById('admin-tiebreaker-banner');
+  if (auction.tiebreakerRound > 0 && auction.tiebreakerTeams && auction.tiebreakerTeams.length > 1) {
+    tbBanner.style.display = '';
+    tbBanner.textContent = '⚖️ SPAREGGIO R.'+auction.tiebreakerRound+' — Offerta minima: '+auction.tiebreakerMin+' cr';
+  } else {
+    tbBanner.style.display = 'none';
+  }
+  const teamsArr = gameState ? (Array.isArray(gameState.teams)?gameState.teams:Object.values(gameState.teams)) : [];
+  let gridHtml = '';
+  teamsArr.forEach(t => {
+    const bid = auction.bids ? auction.bids[t.id] : null;
+    const isWinner = auction.winner === t.id;
+    const submitted = bid && bid.submitted;
+    gridHtml += '<div class="admin-bid-card '+(submitted?'submitted':'')+' '+(isWinner?'winner':'')+'">'
+      +'<div class="admin-bid-team">'+t.emoji+' '+escHtml(t.name)+'</div>'
+      +(submitted
+        ?'<div class="admin-bid-amount">'+(bid.amount!=null?bid.amount+' cr':'✓')+'</div>'
+        :'<div class="admin-bid-pending">In attesa...</div>')
+      +(isWinner?'<div style="color:var(--gold);font-size:0.75em;margin-top:2px">🏆 VINCITORE</div>':'')
+      +'</div>';
+  });
+  document.getElementById('admin-bids-grid').innerHTML = gridHtml;
+  const btnAssign = document.getElementById('btn-assign-winner');
+  btnAssign.style.display = auction.winner ? '' : 'none';
+}
+
+function assignWinner() {
+  if (!gameState || !gameState.auction) return;
+  const winner = gameState.auction.winner;
+  if (!winner) return;
+  socket.emit('assign_player', { teamId: winner });
+}
+
+/* ───────────────────────────────────────────────
+   Player list (admin)
+─────────────────────────────────────────────── */
+function filterPlayers() {
+  const q     = (document.getElementById('search-q').value||'').toLowerCase();
+  const role  = document.getElementById('search-role').value;
+  const squad = (document.getElementById('search-squad').value||'').toLowerCase();
+  const isAuctionActive = gameState && gameState.phase !== 'idle';
+
+  const filtered = allPlayers.map((p,i)=>({...p,_idx:i})).filter(p => {
+    if (q    && !p.Nome.toLowerCase().includes(q)) return false;
+    if (role && p.Ruolo_Classic !== role)           return false;
+    if (squad&& !p.Squadra.toLowerCase().includes(squad)) return false;
+    return true;
+  }).slice(0, 80);
+
+  let html = '';
+  filtered.forEach(p => {
+    const assigned = assignedSet.has(p.Nome);
+    html += '<div class="player-item '+(assigned?'assigned':'')+'">'
+      +'<span class="role-badge role-'+p.Ruolo_Classic+'">'+p.Ruolo_Classic+'</span>'
+      +'<span class="player-name">'+escHtml(p.Nome)+'</span>'
+      +'<span class="player-squad">'+escHtml(p.Squadra)+'</span>'
+      +'<span class="player-qi">QI'+p.QI+'</span>'
+      +(assigned
+        ?'<span style="font-size:0.7em;color:var(--text-dim)">✓ assegnato</span>'
+        :'<button class="btn-start-auction" '+(isAuctionActive?'disabled title="Asta in corso"':'')+' onclick="adminStartAuction('+p._idx+')">▶ Asta</button>')
+      +'</div>';
+  });
+  document.getElementById('admin-player-list').innerHTML = html;
+}
+
+function adminStartAuction(idx) {
+  if (gameState && gameState.phase !== 'idle') { showToast('⚠️ Asta già in corso!'); return; }
+  socket.emit('start_auction', { playerIndex: idx });
+}
+
+/* ───────────────────────────────────────────────
+   Poker Table — seats
+─────────────────────────────────────────────── */
+const TEAMS_META = [
+  {id:'t1', name:'La Caserma FC', emoji:'🦁'},
+  {id:'t2', name:'Fulmine FC',    emoji:'⚡'},
+  {id:'t3', name:'Drago Rosso',   emoji:'🔥'},
+  {id:'t4', name:'Stella Alpina', emoji:'⭐'},
+  {id:'t5', name:'Lupo Grigio',   emoji:'🐺'},
+  {id:'t6', name:'Aquila FC',     emoji:'🦅'},
+  {id:'t7', name:'Golden Boys',   emoji:'🏆'},
+  {id:'t8', name:'Onda FC',       emoji:'🌊'},
+  {id:'t9', name:'Freccia Rossa', emoji:'🎯'},
+  {id:'t10',name:'Supernova',     emoji:'🌟'}
+];
+
+function buildSeats() {
+  const container = document.getElementById('seats-container');
+  container.innerHTML = '';
+  TEAMS_META.forEach((t) => {
+    const el = document.createElement('div');
+    el.className = 'seat' + (t.id===myTeamId ? ' is-me' : '');
+    el.id = 'seat-'+t.id;
+    el.dataset.teamId = t.id;
+
+    const avatar = document.createElement('div');
+    avatar.className = 'seat-avatar';
+    avatar.textContent = t.emoji;
+    if (t.id === myTeamId) {
+      const badge = document.createElement('div');
+      badge.className = 'seat-badge-me';
+      badge.textContent = 'TU';
+      avatar.appendChild(badge);
+    }
+
+    const nameEl = document.createElement('div');
+    nameEl.className = 'seat-name';
+    nameEl.textContent = t.name.split(' ')[0];
+
+    const revEl = document.createElement('div');
+    revEl.className = 'seat-bid-reveal';
+    revEl.id = 'seat-reveal-'+t.id;
+
+    el.appendChild(avatar);
+    el.appendChild(nameEl);
+    el.appendChild(revEl);
+    container.appendChild(el);
+  });
+  positionSeats();
+  window.addEventListener('resize', positionSeats);
+}
+
+function positionSeats() {
+  const table = document.getElementById('poker-table');
+  if (!table) return;
+  const W  = table.clientWidth;
+  const H  = table.clientHeight;
+  const rx = W * 0.38;
+  const ry = H * 0.38;
+  const cx = W / 2;
+  const cy = H / 2;
+  TEAMS_META.forEach((t, i) => {
+    const el    = document.getElementById('seat-'+t.id);
+    if (!el) return;
+    const angle = (2*Math.PI*i/10) - Math.PI/2;
+    el.style.left = (cx + rx*Math.cos(angle)) + 'px';
+    el.style.top  = (cy + ry*Math.sin(angle)) + 'px';
+  });
+}
+
+function setSeatSubmitted(teamId) {
+  const el = document.getElementById('seat-'+teamId);
+  if (el) el.classList.add('submitted');
+}
+function resetSeatSubmitted() {
+  TEAMS_META.forEach(t => {
+    const el = document.getElementById('seat-'+t.id);
+    if (el) {
+      el.classList.remove('submitted','winner','revealed','tiebreaker-inactive');
+      const rev = document.getElementById('seat-reveal-'+t.id);
+      if (rev) rev.textContent = '';
+    }
+  });
+}
+function updateSeatOnlineState(teamId, online) {
+  const el = document.getElementById('seat-'+teamId);
+  if (el) el.classList.toggle('offline', !online);
+}
+function updateTiebreakerSeats(eligibleIds) {
+  TEAMS_META.forEach(t => {
+    const el = document.getElementById('seat-'+t.id);
+    if (el) el.classList.toggle('tiebreaker-inactive', !eligibleIds.includes(t.id));
+  });
+}
+function clearTiebreakerSeats() {
+  TEAMS_META.forEach(t => {
+    const el = document.getElementById('seat-'+t.id);
+    if (el) el.classList.remove('tiebreaker-inactive');
+  });
+}
+
+/* ───────────────────────────────────────────────
+   Auction center card
+─────────────────────────────────────────────── */
+function showAuctionCenter(player) {
+  document.getElementById('idle-msg').style.display = 'none';
+  document.getElementById('auction-center').style.display = '';
+  document.getElementById('pc-role').innerHTML = '<span class="role-badge role-'+player.Ruolo_Classic+'">'+player.Ruolo_Classic+'</span>';
+  document.getElementById('pc-name').textContent  = player.Nome;
+  document.getElementById('pc-squad').textContent = player.Squadra;
+  document.getElementById('pc-qi').innerHTML = player.QI+' <span>QI</span>';
+  updateCountdown(AUCTION_MAX);
+}
+function showIdleCenter() {
+  document.getElementById('idle-msg').style.display = '';
+  document.getElementById('auction-center').style.display = 'none';
+}
+
+function updateCountdown(val) {
+  const ring = document.getElementById('countdown-ring');
+  const text = document.getElementById('countdown-text');
+  const prog = document.getElementById('prog-circle');
+  if (!ring) return;
+  text.textContent = val;
+  const circumference = 2*Math.PI*35;
+  prog.style.strokeDashoffset = circumference - (val/AUCTION_MAX)*circumference;
+  prog.style.strokeDasharray  = circumference;
+  ring.classList.toggle('danger', val<=10);
+}
+
+/* ───────────────────────────────────────────────
+   Phase banner
+─────────────────────────────────────────────── */
+function setPhaseBanner(phase, text) {
+  const el = document.getElementById('phase-banner');
+  el.className = 'phase-banner '+phase;
+  el.textContent = text;
+}
+
+/* ───────────────────────────────────────────────
+   Bid form
+─────────────────────────────────────────────── */
+function enableBidForm(minBid) {
+  document.getElementById('bid-area').style.display = '';
+  document.getElementById('bid-submitted-msg').style.display = 'none';
+  const input = document.getElementById('bid-input');
+  const btn   = document.getElementById('btn-bid');
+  input.disabled   = false;
+  input.min        = minBid;
+  input.value      = '';
+  input.placeholder= 'Min '+minBid+' cr...';
+  btn.disabled     = false;
+  document.getElementById('bid-min-hint').textContent = 'Offerta minima: '+minBid+' credito';
+  input.focus();
+}
+function disableBidForm() {
+  document.getElementById('bid-input').disabled = true;
+  document.getElementById('btn-bid').disabled   = true;
+}
+function showBidSubmittedMsg() {
+  document.getElementById('bid-area').style.display = 'none';
+  document.getElementById('bid-submitted-msg').style.display = '';
+}
+
+function submitBid() {
+  const input  = document.getElementById('bid-input');
+  const amount = parseInt(input.value, 10);
+  if (isNaN(amount) || amount < 1) { showToast('Inserisci un importo valido.'); return; }
+  socket.emit('submit_bid', { amount });
+  disableBidForm();
+  showBidSubmittedMsg();
+  setSeatSubmitted(myTeamId);
+}
+document.getElementById('bid-input').addEventListener('keydown', e => { if(e.key==='Enter') submitBid(); });
+
+/* ───────────────────────────────────────────────
+   Reveal overlay
+─────────────────────────────────────────────── */
+function showRevealOverlay(data) {
+  const overlay      = document.getElementById('reveal-overlay');
+  const grid         = document.getElementById('reveal-bids-grid');
+  const title        = document.getElementById('reveal-title');
+  const announcement = document.getElementById('winner-announcement');
+  const tbBanner     = document.getElementById('tiebreaker-reveal-banner');
+
+  if (data.tiebreaker) {
+    tbBanner.style.display = '';
+    tbBanner.textContent   = '⚖️ PAREGGIO! Spareggio R.'+(data.tiebreakerRound||'')+' — min '+data.tiebreakerMin+' cr';
+    title.textContent      = '⚖️ Risultato — Spareggio!';
+    announcement.textContent = '';
+  } else {
+    tbBanner.style.display = 'none';
+    title.textContent      = '🃏 Risultato finale';
+    if (data.winner) {
+      const wt  = TEAMS_META.find(t=>t.id===data.winner);
+      const wb  = data.bids[data.winner];
+      announcement.textContent = '🏆 '+(wt?wt.emoji+' '+wt.name:data.winner)+' vince con '+(wb?wb.amount:'?')+' crediti!';
+    } else {
+      announcement.textContent = 'Nessuna offerta ricevuta.';
+    }
+  }
+
+  let gridHtml = '';
+  TEAMS_META.forEach(t => {
+    const bid      = data.bids[t.id];
+    const submitted= bid && bid.submitted;
+    const isWinner = data.winner===t.id;
+    gridHtml += '<div class="reveal-bid-card '+(isWinner?'winner-card':'')+'">'
+      +'<div class="reveal-bid-team-emoji">'+t.emoji+'</div>'
+      +'<div class="reveal-bid-team-name">'+escHtml(t.name)+'</div>'
+      +(submitted
+        ?'<div class="reveal-bid-amount">'+bid.amount+' cr</div>'
+        :'<div class="reveal-bid-no-bid">— —</div>')
+      +(isWinner?'<div style="font-size:0.75em;color:var(--gold);margin-top:3px">🏆</div>':'')
+      +'</div>';
+  });
+  grid.innerHTML = gridHtml;
+
+  // Seats: winner glow + bid labels
+  if (data.winner) {
+    const winEl = document.getElementById('seat-'+data.winner);
+    if (winEl) winEl.classList.add('winner');
+  }
+  TEAMS_META.forEach(t => {
+    const bid   = data.bids[t.id];
+    const revEl = document.getElementById('seat-reveal-'+t.id);
+    const seatEl= document.getElementById('seat-'+t.id);
+    if (bid && bid.submitted) {
+      if (revEl)  revEl.textContent = bid.amount+' cr';
+      if (seatEl) seatEl.classList.add('revealed');
+    }
+  });
+
+  overlay.classList.add('show');
+}
+function hideRevealOverlay()    { document.getElementById('reveal-overlay').classList.remove('show'); }
+function hideTiebreakerOverlay(){ document.getElementById('reveal-overlay').classList.remove('show'); }
+
+/* ───────────────────────────────────────────────
+   Sync state on reconnect
+─────────────────────────────────────────────── */
+function syncTableState(data) {
+  if (!myTeamId) return;
+  const teamsArr = Array.isArray(data.teams) ? data.teams : Object.values(data.teams);
+  teamsArr.forEach(t => updateSeatOnlineState(t.id, t.connected));
+  const myTeam = teamsArr.find(t => t.id === myTeamId);
+  if (myTeam) { updateBudgetDisplay(myTeam.budget); updateSidebarBudget(myTeam.budget); }
+  renderSidebarHistory(data.auctionHistory||[]);
+
+  if (data.auction && data.phase !== 'idle') {
+    const a = data.auction;
+    showAuctionCenter(a.player);
+    updateCountdown(a.timerLeft != null ? a.timerLeft : 0);
+
+    if (data.phase === 'bidding' || data.phase === 'tiebreaker') {
+      setPhaseBanner(data.phase, data.phase==='tiebreaker'?'⚖️ SPAREGGIO R.'+(a.tiebreakerRound||''):'🎯 ASTA IN CORSO');
+      const bids = a.bids || {};
+      Object.keys(bids).forEach(tid => { if (bids[tid].submitted) setSeatSubmitted(tid); });
+      if (data.phase === 'tiebreaker') updateTiebreakerSeats(a.tiebreakerTeams||[]);
+      const myBid = bids[myTeamId];
+      if (myBid && myBid.submitted) {
+        disableBidForm(); showBidSubmittedMsg();
+      } else {
+        const minBid = data.phase==='tiebreaker' ? (a.tiebreakerMin||1) : 1;
+        if (data.phase==='tiebreaker' && !(a.tiebreakerTeams||[]).includes(myTeamId)) {
+          disableBidForm();
+          document.getElementById('bid-submitted-msg').style.display = 'none';
+          document.getElementById('bid-area').style.display = '';
+          document.getElementById('bid-min-hint').textContent = '⚖️ Non sei in spareggio';
+        } else {
+          enableBidForm(minBid);
+        }
+      }
+    } else if (data.phase === 'reveal') {
+      setPhaseBanner('reveal','🏆 RISULTATO');
+      showRevealOverlay({bids:a.bids||{},winner:a.winner,tiebreaker:false});
+      disableBidForm();
+    }
+  } else {
+    showIdleCenter(); setPhaseBanner('idle',''); disableBidForm();
+  }
+}
+
+/* ───────────────────────────────────────────────
+   Budget + Roster
+─────────────────────────────────────────────── */
+function updateBudgetDisplay(budget) {
+  document.getElementById('my-budget-display').textContent = '💰 '+budget+' cr';
+}
+function updateSidebarBudget(budget) {
+  const el = document.getElementById('sidebar-budget');
+  if (el) el.textContent = budget+' cr';
+}
+function updateMyRoster(players) {
+  const ul = document.getElementById('my-roster');
+  if (!ul) return;
+  if (!players.length) {
+    ul.innerHTML = '<li style="color:var(--text-dim);font-style:italic">Nessun giocatore ancora.</li>';
+    return;
+  }
+  let html = '';
+  players.forEach(p => {
+    html += '<li>'
+      +'<span><span class="role-badge role-'+p.Ruolo_Classic+'">'+p.Ruolo_Classic+'</span> '+escHtml(p.Nome)+'</span>'
+      +'<span style="color:var(--gold);font-weight:700">'+p.cost+' cr</span>'
+      +'</li>';
+  });
+  ul.innerHTML = html;
+}
+function renderSidebarHistory(history) {
+  const container = document.getElementById('sidebar-history');
+  if (!container) return;
+  const slice = (history||[]).slice(0,5);
+  if (!slice.length) { container.innerHTML = '<div style="color:var(--text-dim);font-size:0.8em">Nessun acquisto.</div>'; return; }
+  let html = '';
+  slice.forEach(h => {
+    html += '<div class="history-item '+(h.result==='skipped'?'skipped':'')+'">'
+      +'<div>'+(h.result==='skipped'?'⏭️':(h.winnerEmoji||''))+'</div>'
+      +'<div class="history-details">'
+        +'<div class="history-player">'+escHtml(h.player.Nome)+'</div>'
+        +(h.result==='assigned'
+          ?'<div style="font-size:0.7em;color:var(--text-dim)">'+escHtml(h.winnerName||'')+' — <span class="history-cost">'+h.cost+' cr</span></div>'
+          :'<div style="font-size:0.7em;color:var(--text-dim)">Saltato</div>')
+      +'</div>'
+      +'</div>';
+  });
+  container.innerHTML = html;
+}
+
+/* ───────────────────────────────────────────────
+   Utilities
+─────────────────────────────────────────────── */
+function roleEmoji(r) { return {P:'🧤',D:'🛡️',C:'⚙️',A:'⚽'}[r]||r; }
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let toastTimeout = null;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  if (toastTimeout) clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => el.classList.remove('show'), 4000);
+}
+</script>
+</body>
+</html>
