@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Fantacaserma — Demo</title>
+<style>
+:root {
+  --bg:#0d1117; --bg2:#161b22; --bg3:#21262d; --border:#30363d;
+  --green:#238636; --green-l:#3fb950; --gold:#d29922; --gold-l:#e3b341;
+  --red:#da3633; --red-h:#f85149; --blue:#1f6feb;
+  --text:#e6edf3; --text-m:#8b949e; --text-s:#6e7681;
+  --P:#f0ad4e; --D:#5cb85c; --C:#5bc0de; --A:#d9534f;
+  --r:10px; --nb:56px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;display:flex;flex-direction:column;}
+
+/* ─── DEMO STRIP ─── */
+.demo-strip{background:#0a1a0a;border-bottom:1px solid var(--green);padding:6px 10px;display:flex;gap:5px;overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.demo-strip::-webkit-scrollbar{display:none;}
+.demo-strip strong{color:var(--green-l);font-size:.72rem;white-space:nowrap;margin-right:2px;align-self:center;}
+.db{background:var(--bg3);border:1px solid var(--border);color:var(--text-m);padding:4px 10px;border-radius:20px;cursor:pointer;font-size:.72rem;white-space:nowrap;flex-shrink:0;border:1px solid transparent;}
+.db:hover,.db.active{background:var(--green);color:#fff;}
+
+/* ─── NAVBAR ─── */
+.navbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;height:var(--nb);display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.nb-brand{font-weight:800;font-size:1rem;display:flex;align-items:center;gap:7px;letter-spacing:-.3px;}
+.nb-spacer{flex:1;}
+.nb-right{display:flex;align-items:center;gap:8px;font-size:.82rem;color:var(--text-m);}
+.ws-dot{width:8px;height:8px;border-radius:50%;background:var(--green-l);flex-shrink:0;}
+.nb-team{font-weight:600;color:var(--text);}
+.btn-xs{padding:4px 10px;font-size:.75rem;background:var(--bg3);border:1px solid var(--border);color:var(--text-m);border-radius:6px;cursor:pointer;}
+
+/* ─── LAYOUT ─── */
+.app-body{flex:1;display:flex;overflow:hidden;}
+.sidebar{width:200px;background:var(--bg2);border-right:1px solid var(--border);padding:12px 0;overflow-y:auto;flex-shrink:0;}
+.page{flex:1;overflow-y:auto;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom));}
+
+/* Sidebar nav */
+.snav{list-style:none;}
+.snav-sec{font-size:.68rem;font-weight:600;color:var(--text-s);text-transform:uppercase;letter-spacing:.1em;padding:14px 14px 4px;}
+.snav a{display:block;padding:7px 14px;color:var(--text-m);text-decoration:none;border-radius:6px;margin:1px 6px;font-size:.85rem;transition:all .15s;}
+.snav a:hover,.snav a.on{background:var(--bg3);color:var(--text);}
+
+/* Bottom nav (mobile only) */
+.bnav{display:none;background:var(--bg2);border-top:1px solid var(--border);padding:6px 0 calc(6px + env(safe-area-inset-bottom));flex-shrink:0;}
+.bnav-inner{display:flex;justify-content:space-around;}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 10px;cursor:pointer;border-radius:8px;min-width:52px;}
+.bnav-item.on{color:var(--green-l);}
+.bnav-icon{font-size:1.2rem;line-height:1;}
+.bnav-label{font-size:.6rem;color:var(--text-m);}
+.bnav-item.on .bnav-label{color:var(--green-l);}
+
+/* ─── PAGE TITLE ─── */
+.ptitle{font-size:1.2rem;font-weight:800;margin-bottom:16px;}
+
+/* ─── CARDS ─── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:14px;}
+.card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.card-title{font-weight:600;font-size:.92rem;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;text-align:center;}
+.sv{font-size:1.8rem;font-weight:800;}
+.sl{font-size:.75rem;color:var(--text-m);margin-top:3px;}
+.text-green{color:var(--green-l);} .text-gold{color:var(--gold-l);} .text-muted{color:var(--text-m);}
+.text-sm{font-size:.8rem;} .fw-bold{font-weight:600;} .text-center{text-align:center;}
+.mt-8{margin-top:8px;} .mt-12{margin-top:12px;} .mt-16{margin-top:16px;}
+
+/* ─── BADGES ─── */
+.bdg{display:inline-block;padding:2px 7px;border-radius:20px;font-size:.7rem;font-weight:700;}
+.bdg-P{background:rgba(240,173,78,.2);color:var(--P);}
+.bdg-D{background:rgba(92,184,92,.2);color:var(--D);}
+.bdg-C{background:rgba(91,192,222,.2);color:var(--C);}
+.bdg-A{background:rgba(217,83,79,.2);color:var(--A);}
+.bdg-g{background:rgba(35,134,54,.2);color:var(--green-l);}
+.bdg-gold{background:rgba(210,153,34,.2);color:var(--gold-l);}
+.bdg-gray{background:var(--bg3);color:var(--text-m);}
+
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border:1px solid transparent;border-radius:6px;cursor:pointer;font-size:.88rem;font-weight:500;transition:all .15s;}
+.btn-p{background:var(--green);color:#fff;}
+.btn-p:hover{background:var(--green-l);}
+.btn-gold{background:var(--gold);color:#000;}
+.btn-danger{background:var(--red);color:#fff;}
+.btn-out{background:transparent;color:var(--text-m);border-color:var(--border);}
+.btn-sm{padding:5px 10px;font-size:.78rem;}
+.btn-lg{padding:11px 20px;font-size:.95rem;}
+.btn-block{width:100%;justify-content:center;}
+
+/* ─── FORMS ─── */
+.fc{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:6px;font-size:.9rem;}
+.fc:focus{outline:none;border-color:var(--blue);}
+.flabel{display:block;font-size:.78rem;color:var(--text-m);margin-bottom:4px;}
+.fg{margin-bottom:12px;}
+
+/* ─── ALERTS ─── */
+.al{padding:10px 12px;border-radius:6px;font-size:.85rem;margin-bottom:10px;}
+.al-i{background:rgba(31,111,235,.12);border:1px solid rgba(31,111,235,.3);color:#79b8ff;}
+.al-w{background:rgba(210,153,34,.12);border:1px solid rgba(210,153,34,.3);color:var(--gold-l);}
+.al-e{background:rgba(218,54,51,.12);border:1px solid rgba(218,54,51,.3);color:var(--red-h);}
+.al-s{background:rgba(35,134,54,.12);border:1px solid rgba(35,134,54,.3);color:var(--green-l);}
+
+/* ─── AUCTION BANNER ─── */
+.auc-banner{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:0 0 0 1px rgba(35,134,54,.3),0 0 20px rgba(35,134,54,.08);}
+.auc-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:8px;}
+.auc-hdr-btns{display:flex;gap:6px;flex-shrink:0;}
+.live-badge{display:flex;align-items:center;gap:6px;font-weight:700;font-size:.85rem;color:var(--green-l);}
+.live-dot{width:9px;height:9px;border-radius:50%;background:var(--red-h);animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+.auc-player{display:flex;gap:12px;align-items:center;margin-bottom:14px;}
+.role-icon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:900;flex-shrink:0;}
+.ri-P{background:rgba(240,173,78,.2);color:var(--P);}
+.ri-D{background:rgba(92,184,92,.2);color:var(--D);}
+.ri-C{background:rgba(91,192,222,.2);color:var(--C);}
+.ri-A{background:rgba(217,83,79,.2);color:var(--A);}
+.pinfo h2{font-size:1.25rem;font-weight:800;}
+.pmeta{font-size:.8rem;color:var(--text-m);margin-top:3px;}
+.pq{font-size:.82rem;color:var(--text-m);margin-top:3px;}
+
+/* Timer */
+.timer-wrap{display:flex;flex-direction:column;align-items:center;margin:10px 0 6px;gap:1px;}
+.timer-lbl{font-size:.68rem;color:var(--text-m);text-transform:uppercase;letter-spacing:.08em;}
+.timer-num{font-size:2.8rem;font-weight:900;color:var(--green-l);line-height:1;min-width:3ch;text-align:center;}
+.timer-num.urg{color:var(--red-h);animation:pt .5s ease-in-out infinite;}
+.timer-sub{font-size:.65rem;color:var(--text-s);text-transform:uppercase;}
+@keyframes pt{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
+
+/* Bid counter */
+.bid-ctr{text-align:center;padding:10px;background:var(--bg3);border-radius:8px;margin:10px 0;}
+.bid-ctr-lbl{font-size:.78rem;color:var(--text-m);margin-right:6px;}
+.bid-ctr-num{font-size:1.4rem;font-weight:800;color:var(--green-l);}
+
+/* Bid form */
+.bid-form{display:flex;gap:8px;align-items:flex-end;margin-top:10px;flex-wrap:wrap;}
+.bid-form .fg{flex:1;min-width:120px;margin-bottom:0;}
+
+/* Tiebreaker */
+.tb-banner{background:linear-gradient(135deg,#3a2d00,#1e1800);border:1px solid var(--gold);border-radius:var(--r);padding:10px 14px;color:var(--gold-l);font-size:.88rem;text-align:center;margin:10px 0;}
+
+/* Bids reveal */
+.bids-list{margin-top:12px;}
+.bid-row{display:flex;justify-content:space-between;align-items:center;padding:9px 12px;border-radius:8px;background:var(--bg3);margin-bottom:5px;border:1px solid var(--border);}
+.bid-row.win{background:rgba(35,134,54,.12);border-color:var(--green);}
+.bid-row.tied{background:rgba(210,153,34,.1);border-color:var(--gold);}
+.bid-team{font-weight:600;font-size:.9rem;display:flex;align-items:center;gap:6px;}
+.bid-amt{font-weight:800;font-size:1.05rem;color:var(--gold-l);}
+
+/* Budget bar */
+.bbar-wrap{margin-top:8px;}
+.bbar{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden;}
+.bbar-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--green-l));border-radius:3px;}
+
+/* Roster */
+.roster-grid{display:flex;flex-direction:column;gap:5px;margin-top:6px;}
+.roster-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg3);border-radius:8px;}
+.rt{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;flex-shrink:0;}
+.rt-P{background:rgba(240,173,78,.2);color:var(--P);}
+.rt-D{background:rgba(92,184,92,.2);color:var(--D);}
+.rt-C{background:rgba(91,192,222,.2);color:var(--C);}
+.rt-A{background:rgba(217,83,79,.2);color:var(--A);}
+.rname{font-weight:600;font-size:.88rem;}
+.rprice{font-weight:700;color:var(--gold-l);font-size:.82rem;margin-left:auto;}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;font-size:.85rem;}
+thead th{background:var(--bg3);padding:7px 10px;font-size:.72rem;text-transform:uppercase;color:var(--text-m);text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+tbody td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+
+/* Team cards */
+.team-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;}
+.tc-hdr{display:flex;gap:10px;align-items:center;margin-bottom:10px;}
+.tc-icon{font-size:1.8rem;}
+.tc-name{font-weight:700;font-size:.92rem;}
+.tc-budget{font-size:.78rem;color:var(--gold-l);margin-top:2px;}
+.rbar{display:flex;gap:5px;flex-wrap:wrap;}
+
+/* Login */
+.login-wrap{min-height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#0f2410,var(--bg) 70%);padding:20px;}
+.login-box{width:100%;max-width:360px;padding:28px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;}
+.login-logo{text-align:center;margin-bottom:24px;}
+.login-logo .icon{font-size:2.5rem;}
+.login-logo h1{font-size:1.6rem;font-weight:900;margin-top:6px;}
+.login-logo p{color:var(--text-m);font-size:.85rem;margin-top:3px;}
+
+/* No auction */
+.no-auc{text-align:center;padding:48px 20px;}
+.no-auc-icon{font-size:3.5rem;margin-bottom:14px;}
+
+/* Confetti */
+.win-card{text-align:center;padding:28px 16px;}
+.win-icon{font-size:3rem;animation:bounce .9s ease infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+
+/* TOAST */
+.tc{position:fixed;bottom:80px;right:12px;z-index:9999;display:flex;flex-direction:column;gap:6px;max-width:260px;}
+.toast{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 13px;font-size:.82rem;box-shadow:0 4px 16px rgba(0,0,0,.5);animation:sin .25s ease;}
+.toast-s{border-color:var(--green);color:var(--green-l);}
+.toast-e{border-color:var(--red);color:var(--red-h);}
+.toast-i{border-color:var(--blue);color:#79b8ff;}
+@keyframes sin{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+
+/* Screens */
+.screen{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.screen.on{display:flex;}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:700px){
+  .sidebar{display:none;}
+  .bnav{display:block;}
+  .g4{grid-template-columns:1fr 1fr;}
+  .g2{grid-template-columns:1fr 1fr;}
+  .auc-hdr{flex-wrap:wrap;}
+  .bid-form{flex-direction:column;}
+  .bid-form .btn-lg{width:100%;justify-content:center;}
+}
+@media(max-width:380px){
+  .g4{grid-template-columns:1fr 1fr;}
+  .g2{grid-template-columns:1fr;}
+  .pinfo h2{font-size:1.1rem;}
+  .timer-num{font-size:2.4rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- DEMO STRIP -->
+<div class="demo-strip">
+  <strong>DEMO</strong>
+  <button class="db active" onclick="go('login')">🔐 Login</button>
+  <button class="db" onclick="go('admin')">📊 Admin</button>
+  <button class="db" onclick="go('asta')">⏱️ Asta 30s</button>
+  <button class="db" onclick="go('spareggio')">⚖️ Spareggio</button>
+  <button class="db" onclick="go('reveal')">📊 Buste</button>
+  <button class="db" onclick="go('winner')">🏆 Vincitore</button>
+  <button class="db" onclick="go('pres')">👤 Presidente</button>
+  <button class="db" onclick="go('elim')">🚫 Eliminato</button>
+  <button class="db" onclick="go('rosa')">🛡️ Mia Rosa</button>
+  <button class="db" onclick="go('players')">⚽ Giocatori</button>
+  <button class="db" onclick="go('teams')">📋 Squadre</button>
+</div>
+
+<div id="toast-container" class="tc"></div>
+
+<!-- ═══════ LOGIN ═══════ -->
+<div class="screen on" id="s-login">
+  <div class="app-body" style="overflow-y:auto;">
+    <div class="login-wrap">
+      <div class="login-box">
+        <div class="login-logo">
+          <div class="icon">🏆</div>
+          <h1>FANTACASERMA</h1>
+          <p>Asta a Busta Chiusa</p>
+        </div>
+        <div class="fg"><label class="flabel">Username</label><input class="fc" value="presidente1" placeholder="username"></div>
+        <div class="fg"><label class="flabel">Password</label><input class="fc" type="password" value="••••"></div>
+        <button class="btn btn-p btn-block btn-lg" style="margin-top:8px" onclick="go('pres');toast('Benvenuto!','s')">🚪 Accedi</button>
+        <div style="text-align:center;margin-top:12px;">
+          <button class="btn-xs" onclick="go('admin');toast('Admin','s')">→ Entra come Admin</button>
+        </div>
+        <div class="text-center text-sm text-muted mt-12">Fantacaserma © 2025</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ ADMIN DASHBOARD ═══════ -->
+<div class="screen" id="s-admin">
+  <div class="navbar">
+    <div class="nb-brand">🏆 FANTACASERMA</div>
+    <div class="nb-spacer"></div>
+    <div class="nb-right"><div class="ws-dot"></div><span class="nb-team">Admin</span><button class="btn-xs">Esci</button></div>
+  </div>
+  <div class="app-body">
+    <div class="sidebar">
+      <ul class="snav">
+        <li class="snav-sec">Commissario</li>
+        <li><a href="#" class="on" onclick="return false">📊 Dashboard</a></li>
+        <li><a href="#" onclick="go('teams');return false">🛡️ Squadre</a></li>
+        <li><a href="#" onclick="return false">👥 Utenti</a></li>
+        <li><a href="#" onclick="go('players');return false">⚽ Giocatori</a></li>
+        <li><a href="#" onclick="return false">📜 Storico</a></li>
+        <li class="snav-sec">Asta</li>
+        <li><a href="#" onclick="go('asta');return false">🔴 Asta Live</a></li>
+      </ul>
+    </div>
+    <div class="page">
+      <div class="ptitle">📊 Dashboard</div>
+      <div class="g4">
+        <div class="stat-card"><div class="sv text-green">8</div><div class="sl">Squadre</div></div>
+        <div class="stat-card"><div class="sv">12</div><div class="sl">Utenti</div></div>
+        <div class="stat-card"><div class="sv text-gold">47</div><div class="sl">Venduti</div></div>
+        <div class="stat-card"><div class="sv">249</div><div class="sl">Disponibili</div></div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">Progresso Asta</div><div class="text-muted text-sm">47/296 (15%)</div></div>
+        <div class="bbar-wrap"><div class="bbar"><div class="bbar-fill" style="width:15%"></div></div></div>
+      </div>
+      <div class="al al-i">✅ Nessuna asta in corso. <button class="btn btn-sm btn-out" style="margin-left:8px" onclick="go('asta');toast('Asta aperta!','i')">⚽ Apri Asta</button></div>
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">⚠️ Zona Pericolo</div></div>
+        <div class="text-muted text-sm" style="margin-bottom:10px">Reset completo — IRREVERSIBILE.</div>
+        <button class="btn btn-danger btn-sm" onclick="toast('Reset eseguito','e')">🔄 Reset Completo</button>
+      </div>
+    </div>
+  </div>
+  <div class="bnav"><div class="bnav-inner">
+    <div class="bnav-item on"><div class="bnav-icon">📊</div><div class="bnav-label">Dashboard</div></div>
+    <div class="bnav-item" onclick="go('asta')"><div class="bnav-icon">🔴</div><div class="bnav-label">Asta</div></div>
+    <div class="bnav-item" onclick="go('players')"><div class="bnav-icon">⚽</div><div class="bnav-label">Giocatori</div></div>
+    <div class="bnav-item" onclick="go('teams')"><div class="bnav-icon">🛡️</div><div class="bnav-label">Squadre</div></div>
+  </div></div>
+</div>
+
+<!-- ═══════ ASTA APERTA (ADMIN) ═══════ -->
+<div class="screen" id="s-asta">
+  <div class="navbar">
+    <div class="nb-brand">🏆 FANTACASERMA</div>
+    <div class="nb-spacer"></div>
+    <div class="nb-right"><div class="ws-dot"></div><span>Admin</span></div>
+  </div>
+  <div class="app-body">
+    <div class="sidebar">
+      <ul class="snav">
+        <li class="snav-sec">Asta</li>
+        <li><a href="#" class="on">🔴 Asta Live</a></li>
+        <li><a href="#" onclick="go('admin');return false">📊 Dashboard</a></li>
+      </ul>
+    </div>
+    <div class="page">
+      <div class="ptitle">🔴 Asta Live</div>
+      <div class="auc-banner">
+        <div class="auc-hdr">
+          <div class="live-badge"><div class="live-dot"></div>ASTA APERTA — R.1</div>
+          <div class="auc-hdr-btns">
+            <button class="btn btn-gold btn-sm" onclick="go('reveal');toast('Buste aperte!','s')">🔓 Chiudi ora</button>
+            <button class="btn btn-danger btn-sm" onclick="go('admin');toast('Annullata','e')">❌</button>
+          </div>
+        </div>
+        <div class="auc-player">
+          <div class="role-icon ri-A">A</div>
+          <div class="pinfo">
+            <h2>Lautaro Martinez</h2>
+            <div class="pmeta">🏟️ Inter</div>
+            <div class="pq">💰 Quot. <strong>42 cr</strong> · Min <strong>1 cr</strong></div>
+          </div>
+        </div>
+        <div class="timer-wrap">
+          <div class="timer-lbl">⏱️ Tempo rimasto</div>
+          <div class="timer-num" id="t-asta">30</div>
+          <div class="timer-sub">secondi</div>
+        </div>
+        <div class="bid-ctr">
+          <span class="bid-ctr-lbl">Buste ricevute:</span>
+          <span class="bid-ctr-num" id="bc-asta">3 / 8</span>
+        </div>
+        <div class="al al-i" style="font-size:.8rem;margin-top:10px">👁️ Vedi <b>chi ha offerto</b>, non gli importi. Le buste si aprono automaticamente.</div>
+        <div class="bids-list">
+          <div class="bid-row"><div class="bid-team">🦁 La Caserma FC</div><span class="bdg bdg-g">✓</span></div>
+          <div class="bid-row"><div class="bid-team">⚡ Fulmine FC</div><span class="bdg bdg-g">✓</span></div>
+          <div class="bid-row"><div class="bid-team">🔥 Drago Rosso</div><span class="bdg bdg-g">✓</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bnav"><div class="bnav-inner">
+    <div class="bnav-item" onclick="go('admin')"><div class="bnav-icon">📊</div><div class="bnav-label">Dashboard</div></div>
+    <div class="bnav-item on"><div class="bnav-icon">🔴</div><div class="bnav-label">Asta</div></div>
+    <div class="bnav-item" onclick="go('players')"><div class="bnav-icon">⚽</div><div class="bnav-label">Giocatori</div></div>
+    <div class="bnav-item" onclick="go('teams')"><div class="bnav-icon">🛡️</div><div class="bnav-label">Squadre</div></div>
+  </div></div>
+</div>
+
+<!-- ═══════ SPAREGGIO (ADMIN) ═══════ -->
+<div class="screen" id="s-spareggio">
+  <div class="navbar">
+    <div class="nb-brand">🏆 FANTACASERMA</div>
+    <div class="nb-spacer"></div>
+    <div class="nb-right"><div class="ws-dot"></div><span>Admin</span></div>
+  </div>
+  <div class="app-body">
+    <div class="sidebar">
+      <ul class="snav"><li><a href="#" class="on">🔴 Asta Live</a></li></ul>
+    </div>
+    <div class="page">
+      <div class="ptitle">🔴 Asta Live</div>
+      <div class="auc-banner">
+        <div class="auc-hdr">
+          <div class="live-badge"><div class="live-dot"></div>⚖️ SPAREGGIO — R.2</div>
+          <button class="btn btn-gold btn-sm" onclick="go('reveal');toast('Spareggio chiuso!','s')">🔓 Chiudi ora</button>
+        </div>
+        <div class="auc-player">
+          <div class="role-icon ri-A">A</div>
+          <div class="pinfo">
+            <h2>Lautaro Martinez</h2>
+            <div class="pq">⚖️ Min. spareggio: <strong class="text-gold">56 cr</strong></div>
+          </div>
+        </div>
+        <div class="timer-wrap">
+          <div class="timer-lbl">⏱️ Tempo rimasto</div>
+          <div class="timer-num urg" id="t-spar">8</div>
+          <div class="timer-sub">secondi</div>
+        </div>
+        <div class="bid-ctr"><span class="bid-ctr-lbl">Buste spareggio:</span><span class="bid-ctr-num">1 / 2</span></div>
+        <div class="al al-w mt-8">⚖️ Pareggio a 55 cr — <strong>🦁 Caserma FC</strong> vs <strong>⚡ Fulmine FC</strong>. Min 56 cr.</div>
+        <div class="bids-list" style="margin-top:10px">
+          <div class="text-sm text-muted fw-bold" style="margin-bottom:6px">Round 1 — offerte:</div>
+          <div class="bid-row tied"><div class="bid-team">🦁 La Caserma FC <span class="bdg bdg-gold">⚖️</span></div><div class="bid-amt">55 cr</div></div>
+          <div class="bid-row tied"><div class="bid-team">⚡ Fulmine FC <span class="bdg bdg-gold">⚖️</span></div><div class="bid-amt">55 cr</div></div>
+          <div class="bid-row"><div class="bid-team">🔥 Drago Rosso</div><div class="bid-amt">48 cr</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bnav"><div class="bnav-inner">
+    <div class="bnav-item" onclick="go('admin')"><div class="bnav-icon">📊</div><div class="bnav-label">Dashboard</div></div>
+    <div class="bnav-item on"><div class="bnav-icon">🔴</div><div class="bnav-label">Asta</div></div>
+    <div class="bnav-item" onclick="go('players')"><div class="bnav-icon">⚽</div><div class="bnav-label">Giocatori</div></div>
+    <div class="bnav-item" onclick="go('teams')"><div class="bnav-icon">🛡️</div><div class="bnav-label">Squadre</div></div>
+  </div></div>
+</div>
+
+<!-- ═══════ BUSTE RIVELATE ═══════ -->
+<div class="screen" id="s-reveal">
+  <div class="navbar">
+    <div class="nb-brand">🏆 FANTACASERMA</div>
+    <div class="nb-spacer"></div>
+    <div class="nb-right"><div class="ws-dot"></div><span>Admin</span></div>
+  </div>
+  <div class="app-body">
+    <div class="sidebar"><ul class="snav"><li><a href="#" class="on">🔴 Asta Live</a></li></ul></div>
+    <div class="page">
+      <div class="ptitle">🔴 Asta Live</div>
+      <div class="auc-banner">
+        <div class="auc-hdr">
+          <div class="live-badge" style="color:var(--gold-l)"><div class="live-dot" style="background:var(--gold-l)"></div>BUSTE APERTE — R.2</div>
+        </div>
+        <div class="auc-player">
+          <div class="role-icon ri-A">A</div>
+          <div class="pinfo"><h2>Lautaro Martinez</h2><div class="pmeta">🏟️ Inter · 42 cr Q.</div></div>
+        </div>
+        <div class="bids-list">
+          <div class="text-sm fw-bold" style="margin-bottom:8px">📊 Risultati Round 2 (spareggio):</div>
+          <div class="bid-row win"><div class="bid-team">🦁 La Caserma FC <span class="bdg bdg-g">🏆 VINCE</span></div><div class="bid-amt">60 cr</div></div>
+          <div class="bid-row"><div class="bid-team">⚡ Fulmine FC</div><div class="bid-amt">57 cr</div></div>
+        </div>
+        <div style="margin-top:14px">
+          <button class="btn btn-p btn-lg btn-block" onclick="go('winner');toast('Assegnato!','s')">🏆 Assegna a 🦁 La Caserma FC per 60 cr</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bnav"><div class="bnav-inner">
+    <div class="bnav-item" onclick="go('admin')"><div class="bnav-icon">📊</div><div class="bnav-label">Dashboard</div></div>
+    <div class="bnav-item on"><div class="bnav-icon">🔴</div><div class="bnav-label">Asta</div></div>
+    <div class="bnav-item" onclick="go('players')"><div class="bnav-icon">⚽</div><div class="bnav-label">Giocatori</div></div>
+    <div class="bnav-item" onclick="go('teams')"><div class="bnav-icon">🛡️</div><div class="bnav-label">Squadre</div></div>
+  </div></div>
+</div>
+
+<!-- ═══════ VINCITORE ═══════ -->
+<div class="screen" id="s-winner">
+  <div class="navbar">
+    <div class="nb-brand">🏆 FANTACASERMA</div>
+    <div class="nb-spacer"></div>
+    <div class="nb-right"><div class="ws-dot"></div><span>Admin</span></div>
+  </div>
+  <div class="app-body">
+    <div class="sidebar"><ul class="snav"><li><a href="#" class="on">🔴 Asta Live</a></li></ul></div>
+    <div class="page">
+      <div class="ptitle">🔴 Asta Live</div>
+      <div class="card win-card">
+        <div class="win-icon">🎊</div>
+        <h2 style="margin-top:10px;font-size:1.4rem">Aggiudicato!</h2>
+        <p class="text-muted text-sm mt-8">Completato in 2 round</p>
+      </div>
+      <div class="auc-banner">
+        <div class="auc-player">
+          <div class="role-icon ri-A">A</div>
+          <div class="pinfo"><h2>Lautaro Martinez</h2><div class="pmeta">Inter · 42 cr Q.</div></div>
+        </div>
+        <div style="text-align:center;padding:14px;background:rgba(35,134,54,.1);border-radius:8px;margin-top:10px">
+          <div style="font-size:2.2rem;margin-bottom:6px">🦁</div>
+          <div style="font-size:1.1rem;font-weight:800">La Caserma FC</div>
+          <div style="font-size:1.8rem;font-weight:900;color:var(--gold-l);margin-top:4px">60 crediti</div>
+          <div class="text-muted text-sm mt-8">Budget rimasto: 440 cr</div>
+        </div>
+      </div>
+      <button class="btn btn-p btn-block btn-lg" onclick="go('admin');toast('Prossima asta!','i')" style="margin-top:14px">⚽ Prossimo Giocatore</button>
+    </div>
+  </div>
+  <div class="bnav"><div class="bnav-inner">
+    <div class="bnav-item" onclick="go('admin')"><div class="bnav-icon">📊</div><div class="bnav-label">Dashboard</div></div>
+    <div class="bnav-item on"><div class="bnav-icon">🔴</div><div class="bnav-label">Asta</div></div>
+    <div class="bnav-item" onclick="go('players')"><div class="bnav-icon">⚽</div><div class="bnav-label">Giocatori</div></div>
+    <div class="bnav-item" onclick="go('teams')"><div class="bnav-icon">🛡️</div><div class="bnav-label">Squadre</div></div>
+  </div></div>
+</div>
+
+<!-- ═══════ VISTA PRESIDENTE (asta aperta) ═══════ -->
+<div class="screen" id="s-pres">
+  <div class="navbar">
+    <div class="nb-brand">🏆 FANTACASERMA</div>
+    <div class="nb-spacer"></div>
+    <div class="nb-right"><div class="ws-dot"></div><span class="nb-team">🦁 Caserma</span><span class="text-muted text-sm">mario</span></div>
+  </div>
+  <div class="app-body">
+    <div class="sidebar">
+      <ul class="snav">
+        <li class="snav-sec">La mia squadra</li>
+        <li><a href="#" class="on">🔴 Asta Live</a></li>
+        <li><a href="#" onclick="go('rosa');return false">🛡️ Mia Rosa</a></li>
+        <li><a href="#" onclick="go('teams');return false">📋 Squadre</a></li>
+        <li><a href="#" onclick="go('players');return false">⚽ Giocatori</a></li>
+      </ul>
+    </div>
+    <div class="page">
+      <div class="ptitle">🔴 Asta Live</div>
+      <div class="auc-banner">
+        <div class="auc-hdr">
+          <div class="live-badge"><div class="live-dot"></div>ASTA APERTA — R.1</div>
+        </div>
+        <div class="auc-player">
+          <div class="role-icon ri-A">A</div>
+          <div class="pinfo">
+            <h2>Lautaro Martinez</h2>
+            <div class="pmeta">🏟️ Inter</div>
+            <div class="pq">💰 Quot. <strong>42 cr</strong> · Min <strong>1 cr</strong></div>
+          </div>
+        </div>
+        <div class="timer-wrap">
+          <div class="timer-lbl">⏱️ Tempo rimasto</div>
+          <div class="timer-num" id="t-pres">20</div>
+          <div class="timer-sub">secondi</div>
+        </div>
+        <div class="bid-ctr"><span class="bid-ctr-lbl">Buste ricevute:</span><span class="bid-ctr-num">5 / 8</span></div>
+        <div class="al al-i mt-8">✅ Busta inviata: <strong>55 cr</strong>. Puoi modificarla finché il timer gira.</div>
+        <div class="bid-form">
+          <div class="fg flex-1" style="min-width:120px">
+            <label class="flabel">Offerta — budget: <strong class="text-gold">445 cr</strong></label>
+            <input type="number" class="fc" value="55" min="1">
+          </div>
+          <button class="btn btn-p btn-lg" onclick="toast('✅ Offerta: 55 cr','s')">✏️ Modifica</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bnav"><div class="bnav-inner">
+    <div class="bnav-item on"><div class="bnav-icon">🔴</div><div class="bnav-label">Asta</div></div>
+    <div class="bnav-item" onclick="go('rosa')"><div class="bnav-icon">🛡️</div><div class="bnav-label">Mia Rosa</div></div>
+    <div class="bnav-item" onclick="go('teams')"><div class="bnav-icon">📋</div><div class="bnav-label">Squadre</div></div>
+    <div class="bnav-item" onclick="go('players')"><div class="bnav-icon">⚽</div><div class="bnav-label">Giocatori</div></div>
+  </div></div>
+</div>
+
+<!-- ═══════ PRESIDENTE ELIMINATO ═══════ -->
+<div class="screen" id="s-elim">
+  <div class="navbar">
+    <div class="nb-brand">🏆 FANTACASERMA</div>
+    <div class="nb-spacer"></div>
+    <div class="nb-right"><div class="ws-dot"></div><span class="nb-team">🔥 Drago</span></div>
+  </div>
+  <div class="app-body">
+    <div class="sidebar"><ul class="snav"><li><a href="#" class="on">🔴 Asta Live</a></li></ul></div>
+    <div class="page">
+      <div class="ptitle">🔴 Asta Live</div>
+      <div class="auc-banner">
+        <div class="auc-hdr">
+          <div class="live-badge"><div class="live-dot"></div>⚖️ SPAREGGIO — R.2</div>
+        </div>
+        <div class="auc-player">
+          <div class="role-icon ri-A">A</div>
+          <div class="pinfo">
+            <h2>Lautaro Martinez</h2>
+            <div class="pq">⚖️ Min. spareggio: <strong class="text-gold">56 cr</strong></div>
+          </div>
+        </div>
+        <div class="timer-wrap">
+          <div class="timer-lbl">⏱️ Tempo rimasto</div>
+          <div class="timer-num urg">14</div>
+          <div class="timer-sub">secondi</div>
+        </div>
+        <div class="al al-w mt-8">⚠️ La tua squadra è stata eliminata (offerta: 48 cr).<br>In attesa dello spareggio tra 🦁 Caserma e ⚡ Fulmine.</div>
+        <div class="card text-center" style="margin-top:10px;padding:24px">
+          <div style="font-size:2rem;margin-bottom:8px">😴</div>
+          <div class="text-muted">In attesa dei risultati...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bnav"><div class="bnav-inner">
+    <div class="bnav-item on"><div class="bnav-icon">🔴</div><div class="bnav-label">Asta</div></div>
+    <div class="bnav-item" onclick="go('rosa')"><div class="bnav-icon">🛡️</div><div class="bnav-label">Mia Rosa</div></div>
+    <div class="bnav-item" onclick="go('teams')"><div class="bnav-icon">📋</div><div class="bnav-label">Squadre</div></div>
+    <div class="bnav-item" onclick="go('players')"><div class="bnav-icon">⚽</div><div class="bnav-label">Giocatori</div></div>
+  </div></div>
+</div>
+
+<!-- ═══════ MIA ROSA ═══════ -->
+<div class="screen" id="s-rosa">
+  <div class="navbar">
+    <div class="nb-brand">🏆 FANTACASERMA</div>
+    <div class="nb-spacer"></div>
+    <div class="nb-right"><div class="ws-dot"></div><span class="nb-team">🦁 Caserma</span></div>
+  </div>
+  <div class="app-body">
+    <div class="sidebar">
+      <ul class="snav">
+        <li class="snav-sec">La mia squadra</li>
+        <li><a href="#" onclick="go('pres');return false">🔴 Asta Live</a></li>
+        <li><a href="#" class="on">🛡️ Mia Rosa</a></li>
+        <li><a href="#" onclick="go('teams');return false">📋 Squadre</a></li>
+        <li><a href="#" onclick="go('players');return false">⚽ Giocatori</a></li>
+      </ul>
+    </div>
+    <div class="page">
+      <div class="ptitle">🦁 La Caserma FC</div>
+      <div class="g2">
+        <div class="stat-card">
+          <div class="sv text-gold">380 cr</div><div class="sl">Budget rimasto</div>
+          <div class="bbar-wrap"><div class="bbar"><div class="bbar-fill" style="width:76%"></div></div></div>
+          <div class="text-sm text-muted mt-8">Speso: 120/500 cr</div>
+        </div>
+        <div class="stat-card">
+          <div class="sv">7<span style="font-size:1.2rem;font-weight:400">/25</span></div><div class="sl">Giocatori</div>
+          <div class="rbar" style="justify-content:center;margin-top:8px">
+            <span class="bdg bdg-P">1P</span><span class="bdg bdg-D">3D</span><span class="bdg bdg-C">2C</span><span class="bdg bdg-A">1A</span>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">⚔️ Attaccanti</div><span class="bdg bdg-A">1/6</span></div>
+        <div class="roster-grid">
+          <div class="roster-item"><div class="rt rt-A">A</div><div><div class="rname">Lautaro Martinez</div><div class="text-sm text-muted">Inter</div></div><div class="rprice">60 cr</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">🛡️ Difensori</div><span class="bdg bdg-D">3/8</span></div>
+        <div class="roster-grid">
+          <div class="roster-item"><div class="rt rt-D">D</div><div><div class="rname">Bastoni</div><div class="text-sm text-muted">Inter</div></div><div class="rprice">22 cr</div></div>
+          <div class="roster-item"><div class="rt rt-D">D</div><div><div class="rname">Di Lorenzo</div><div class="text-sm text-muted">Napoli</div></div><div class="rprice">18 cr</div></div>
+          <div class="roster-item"><div class="rt rt-D">D</div><div><div class="rname">Gatti</div><div class="text-sm text-muted">Juventus</div></div><div class="rprice">8 cr</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bnav"><div class="bnav-inner">
+    <div class="bnav-item" onclick="go('pres')"><div class="bnav-icon">🔴</div><div class="bnav-label">Asta</div></div>
+    <div class="bnav-item on"><div class="bnav-icon">🛡️</div><div class="bnav-label">Mia Rosa</div></div>
+    <div class="bnav-item" onclick="go('teams')"><div class="bnav-icon">📋</div><div class="bnav-label">Squadre</div></div>
+    <div class="bnav-item" onclick="go('players')"><div class="bnav-icon">⚽</div><div class="bnav-label">Giocatori</div></div>
+  </div></div>
+</div>
+
+<!-- ═══════ GIOCATORI ═══════ -->
+<div class="screen" id="s-players">
+  <div class="navbar">
+    <div class="nb-brand">🏆 FANTACASERMA</div>
+    <div class="nb-spacer"></div>
+    <div class="nb-right"><div class="ws-dot"></div><span>mario</span></div>
+  </div>
+  <div class="app-body">
+    <div class="sidebar">
+      <ul class="snav">
+        <li class="snav-sec">La mia squadra</li>
+        <li><a href="#" onclick="go('pres');return false">🔴 Asta Live</a></li>
+        <li><a href="#" onclick="go('rosa');return false">🛡️ Mia Rosa</a></li>
+        <li><a href="#" onclick="go('teams');return false">📋 Squadre</a></li>
+        <li><a href="#" class="on">⚽ Giocatori</a></li>
+      </ul>
+    </div>
+    <div class="page">
+      <div class="ptitle">⚽ Lista Giocatori</div>
+      <div style="display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap">
+        <input class="fc" style="flex:1;min-width:120px" placeholder="🔍 Cerca...">
+        <select class="fc" style="width:120px"><option>Tutti</option><option>Portieri</option><option>Difensori</option><option>Centrocampisti</option><option>Attaccanti</option></select>
+        <button class="btn btn-p btn-sm">Cerca</button>
+      </div>
+      <div class="card">
+        <div class="card-hdr"><div class="card-title">249 giocatori</div></div>
+        <div class="tbl-wrap"><table>
+          <thead><tr><th>R.</th><th>Nome</th><th>Squadra</th><th>Q.</th><th>Stato</th></tr></thead>
+          <tbody>
+            <tr><td><span class="bdg bdg-A">A</span></td><td class="fw-bold">Osimhen</td><td class="text-muted">Napoli</td><td class="text-gold">45</td><td><span class="text-green text-sm">✅</span></td></tr>
+            <tr><td><span class="bdg bdg-A">A</span></td><td class="fw-bold">Vlahovic</td><td class="text-muted">Juventus</td><td class="text-gold">38</td><td><span class="text-green text-sm">✅</span></td></tr>
+            <tr><td><span class="bdg bdg-C">C</span></td><td class="fw-bold">Barella</td><td class="text-muted">Inter</td><td class="text-gold">32</td><td><span class="text-muted text-sm">🦁 28cr</span></td></tr>
+            <tr><td><span class="bdg bdg-D">D</span></td><td class="fw-bold">Theo Hernandez</td><td class="text-muted">Milan</td><td class="text-gold">28</td><td><span class="text-green text-sm">✅</span></td></tr>
+            <tr><td><span class="bdg bdg-P">P</span></td><td class="fw-bold">Maignan</td><td class="text-muted">Milan</td><td class="text-gold">22</td><td><span class="text-green text-sm">✅</span></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+  <div class="bnav"><div class="bnav-inner">
+    <div class="bnav-item" onclick="go('pres')"><div class="bnav-icon">🔴</div><div class="bnav-label">Asta</div></div>
+    <div class="bnav-item" onclick="go('rosa')"><div class="bnav-icon">🛡️</div><div class="bnav-label">Mia Rosa</div></div>
+    <div class="bnav-item" onclick="go('teams')"><div class="bnav-icon">📋</div><div class="bnav-label">Squadre</div></div>
+    <div class="bnav-item on"><div class="bnav-icon">⚽</div><div class="bnav-label">Giocatori</div></div>
+  </div></div>
+</div>
+
+<!-- ═══════ SQUADRE ═══════ -->
+<div class="screen" id="s-teams">
+  <div class="navbar">
+    <div class="nb-brand">🏆 FANTACASERMA</div>
+    <div class="nb-spacer"></div>
+    <div class="nb-right"><div class="ws-dot"></div><span>mario</span></div>
+  </div>
+  <div class="app-body">
+    <div class="sidebar">
+      <ul class="snav">
+        <li class="snav-sec">La mia squadra</li>
+        <li><a href="#" onclick="go('pres');return false">🔴 Asta Live</a></li>
+        <li><a href="#" onclick="go('rosa');return false">🛡️ Mia Rosa</a></li>
+        <li><a href="#" class="on">📋 Squadre</a></li>
+        <li><a href="#" onclick="go('players');return false">⚽ Giocatori</a></li>
+      </ul>
+    </div>
+    <div class="page">
+      <div class="ptitle">📋 Tutte le Squadre</div>
+      <div class="g2">
+        <div class="team-card"><div class="tc-hdr"><div class="tc-icon">🦁</div><div><div class="tc-name">La Caserma FC</div><div class="tc-budget">💰 380 cr</div></div></div><div class="rbar"><span class="bdg bdg-P">1P</span><span class="bdg bdg-D">3D</span><span class="bdg bdg-C">2C</span><span class="bdg bdg-A">1A</span><span class="bdg bdg-gray">7</span></div></div>
+        <div class="team-card"><div class="tc-hdr"><div class="tc-icon">⚡</div><div><div class="tc-name">Fulmine FC</div><div class="tc-budget">💰 415 cr</div></div></div><div class="rbar"><span class="bdg bdg-P">1P</span><span class="bdg bdg-D">2D</span><span class="bdg bdg-C">1C</span><span class="bdg bdg-A">1A</span><span class="bdg bdg-gray">5</span></div></div>
+        <div class="team-card"><div class="tc-hdr"><div class="tc-icon">🔥</div><div><div class="tc-name">Drago Rosso</div><div class="tc-budget">💰 452 cr</div></div></div><div class="rbar"><span class="bdg bdg-P">1P</span><span class="bdg bdg-D">1D</span><span class="bdg bdg-C">2C</span><span class="bdg bdg-A">0A</span><span class="bdg bdg-gray">4</span></div></div>
+        <div class="team-card"><div class="tc-hdr"><div class="tc-icon">🐉</div><div><div class="tc-name">I Magnifici</div><div class="tc-budget">💰 470 cr</div></div></div><div class="rbar"><span class="bdg bdg-P">1P</span><span class="bdg bdg-D">2D</span><span class="bdg bdg-C">1C</span><span class="bdg bdg-A">0A</span><span class="bdg bdg-gray">4</span></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="bnav"><div class="bnav-inner">
+    <div class="bnav-item" onclick="go('pres')"><div class="bnav-icon">🔴</div><div class="bnav-label">Asta</div></div>
+    <div class="bnav-item" onclick="go('rosa')"><div class="bnav-icon">🛡️</div><div class="bnav-label">Mia Rosa</div></div>
+    <div class="bnav-item on"><div class="bnav-icon">📋</div><div class="bnav-label">Squadre</div></div>
+    <div class="bnav-item" onclick="go('players')"><div class="bnav-icon">⚽</div><div class="bnav-label">Giocatori</div></div>
+  </div></div>
+</div>
+
+<script>
+let _timer = null;
+
+const screenMap = {
+  login:'s-login', admin:'s-admin', asta:'s-asta', spareggio:'s-spareggio',
+  reveal:'s-reveal', winner:'s-winner', pres:'s-pres', elim:'s-elim',
+  rosa:'s-rosa', players:'s-players', teams:'s-teams'
+};
+
+const btnMap = {
+  login:'🔐 Login', admin:'📊 Admin', asta:'⏱️ Asta 30s', spareggio:'⚖️ Spareggio',
+  reveal:'📊 Buste', winner:'🏆 Vincitore', pres:'👤 Presidente', elim:'🚫 Eliminato',
+  rosa:'🛡️ Mia Rosa', players:'⚽ Giocatori', teams:'📋 Squadre'
+};
+
+function go(id) {
+  if (_timer) { clearInterval(_timer); _timer = null; }
+  Object.values(screenMap).forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.classList.remove('on');
+  });
+  const target = document.getElementById(screenMap[id]);
+  if (target) target.classList.add('on');
+  document.querySelectorAll('.db').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+id+"'"));
+  });
+  // Avvia timer demo
+  setTimeout(() => {
+    if (id === 'asta') {
+      let v = 30, cnt = 3;
+      _timer = setInterval(() => {
+        v--; const e = document.getElementById('t-asta');
+        if(!e){clearInterval(_timer);return;}
+        e.textContent = v; e.className = 'timer-num' + (v<=10?' urg':'');
+        cnt += (Math.random() > .5 && cnt < 8 ? 1 : 0);
+        const bc = document.getElementById('bc-asta');
+        if(bc) bc.textContent = cnt + ' / 8';
+        if (v <= 0) { clearInterval(_timer); toast('⏱️ Timer scaduto! Buste rivelate...','i'); setTimeout(()=>go('reveal'),1200); }
+      }, 1000);
+    }
+    if (id === 'spareggio') {
+      let v = 8;
+      _timer = setInterval(() => {
+        v--; const e = document.getElementById('t-spar');
+        if(!e){clearInterval(_timer);return;}
+        e.textContent = v; e.className = 'timer-num urg';
+        if (v<=0) { clearInterval(_timer); toast('⚖️ Spareggio chiuso! 🦁 vince!','s'); setTimeout(()=>go('winner'),1200); }
+      }, 1000);
+    }
+    if (id === 'pres') {
+      let v = 20;
+      _timer = setInterval(() => {
+        v--; const e = document.getElementById('t-pres');
+        if(!e){clearInterval(_timer);return;}
+        e.textContent = v; e.className = 'timer-num' + (v<=10?' urg':'');
+        if (v<=0) { clearInterval(_timer); toast('⏱️ Tempo scaduto!','i'); }
+      }, 1000);
+    }
+  }, 80);
+}
+
+function toast(msg, type) {
+  const tc = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = 'toast toast-' + (type||'i');
+  el.textContent = msg;
+  tc.appendChild(el);
+  setTimeout(() => { if(el.parentNode) tc.removeChild(el); }, 3000);
+}
+</script>
+</body>
+</html>
