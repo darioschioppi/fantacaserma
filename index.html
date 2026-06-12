@@ -422,6 +422,11 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <div class="table-waiting-msg" id="tableWaitingMsg">In attesa dell'admin…</div>
         </div>
       </div>
+      <!-- Banner giocatore in asta - sempre leggibile sopra la bid area -->
+      <div id="auctionPlayerBanner" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 14px;text-align:center;width:100%;box-sizing:border-box;flex-shrink:0;">
+        <div style="font-size:1rem;font-weight:900;color:var(--text);" id="bannerPlayerName">—</div>
+        <div style="font-size:.75rem;color:var(--text-m);margin-top:2px;" id="bannerPlayerMeta">—</div>
+      </div>
       <div class="bid-area" id="bidArea">
         <div class="bid-area-waiting" id="bidAreaWaiting">In attesa dell'asta…</div>
         <div id="bidInputArea" style="display:none;flex-direction:column;gap:8px;">
@@ -1324,9 +1329,11 @@ function handleGameStateChange() {
   updateBudgetDisplay();
   const centerMsg = document.getElementById('tableWaitingMsg');
   const center = document.getElementById('tableCenter');
+  const bannerEl = document.getElementById('auctionPlayerBanner');
   if (!cp || phase === 'waiting') {
     center.querySelectorAll('.player-card,.timer-wrap').forEach(el => el.remove());
     centerMsg.style.display = 'block';
+    if (bannerEl) bannerEl.style.display = 'none';
     document.getElementById('bidAreaWaiting').style.display = 'block';
     setText('bidAreaWaiting', 'In attesa dell\'asta…');
     document.getElementById('bidInputArea').style.display = 'none';
@@ -1334,6 +1341,14 @@ function handleGameStateChange() {
     document.getElementById('tiebreakerBanner').classList.remove('visible');
     TEAMS.forEach(t => { const s = document.getElementById('seat-' + t.id); if (s) s.classList.remove('dimmed'); });
     return;
+  }
+  // Aggiorna banner giocatore
+  if (bannerEl && cp.nome) {
+    bannerEl.style.display = 'block';
+    const roleChar = (cp.ruolo || '').charAt(0);
+    const roleLabels = { P: '🧤', D: '🛡️', C: '⚙️', A: '⚽' };
+    setText('bannerPlayerName', (roleLabels[roleChar] || '') + ' ' + cp.nome);
+    setText('bannerPlayerMeta', cp.squadra + ' · ' + cp.ruolo + ' · QI ' + cp.qi);
   }
   centerMsg.style.display = 'none';
   let card = center.querySelector('.player-card');
