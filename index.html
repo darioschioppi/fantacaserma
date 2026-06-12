@@ -420,6 +420,17 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <div class="bid-sent" id="bidSent">✅ Offerta inviata! Attendi la rivelazione.</div>
         </div>
       </div>
+      <!-- Overlay rivelazione: dentro poker-area così non copre Rosa/Acquisti -->
+      <div class="reveal-overlay" id="revealOverlay">
+        <div class="reveal-title">🎯 RIVELAZIONE</div>
+        <div style="font-size:.9rem;color:var(--text-m);" id="revealPlayerLabel">—</div>
+        <div class="reveal-bids" id="revealBidsList"></div>
+        <div class="reveal-assigned" id="revealAssigned" style="display:none;"></div>
+        <div id="revealPresActions" style="display:none;gap:12px;margin-top:12px;">
+          <button class="btn-assign" onclick="adminAssign()">✅ Assegna</button>
+          <button class="btn-skip" onclick="adminSkip()">⏭ Salta</button>
+        </div>
+      </div>
     </div>
     <!-- PLAYERS PANEL -->
     <div class="players-panel" id="playersPanel">
@@ -510,17 +521,6 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <button class="btn-pass" id="paBtnPass" onclick="presidentPass()" style="width:100%;margin-top:4px;">🤚 Passa questo giocatore</button>
           <div class="bid-sent" id="paBidSent">✅ Offerta inviata!</div>
         </div>
-      </div>
-    </div>
-    <div class="reveal-overlay" id="revealOverlay">
-      <div class="reveal-title">🎯 RIVELAZIONE</div>
-      <div style="font-size:.9rem;color:var(--text-m);" id="revealPlayerLabel">—</div>
-      <div class="reveal-bids" id="revealBidsList"></div>
-      <div class="reveal-assigned" id="revealAssigned" style="display:none;"></div>
-      <!-- Azioni presidente direttamente nell'overlay (il panel Asta è coperto dall'overlay) -->
-      <div id="revealPresActions" style="display:none;gap:12px;margin-top:12px;">
-        <button class="btn-assign" onclick="adminAssign()">✅ Assegna</button>
-        <button class="btn-skip" onclick="adminSkip()">⏭ Salta</button>
       </div>
     </div>
     <div class="recent-sidebar">
