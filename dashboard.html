@@ -217,9 +217,8 @@ document.getElementById('lockInput').addEventListener('keydown',function(e){if(e
 function unlock(){
   var val=document.getElementById('lockInput').value.trim();
   if(val===ADMIN_PASSWORD){
-    document.getElementById('lockScreen').style.display='none';
-    var d=document.getElementById('mainDash');d.style.display='flex';
-    initDashboard();
+    sessionStorage.setItem('fcDashAuth','1');
+    showDash();
   }else{
     var err=document.getElementById('lockErr');err.style.display='block';
     document.getElementById('lockInput').value='';
@@ -228,7 +227,19 @@ function unlock(){
   }
 }
 
+function showDash(){
+  document.getElementById('lockScreen').style.display='none';
+  var d=document.getElementById('mainDash');d.style.display='flex';
+  initDashboard();
+}
+
+// Auto-login se sessione ancora valida
+if(sessionStorage.getItem('fcDashAuth')==='1'){
+  document.addEventListener('DOMContentLoaded',function(){showDash();});
+}
+
 function exitDash(){
+  sessionStorage.removeItem('fcDashAuth');
   document.getElementById('mainDash').style.display='none';
   document.getElementById('lockScreen').style.display='flex';
   document.getElementById('lockInput').value='';
