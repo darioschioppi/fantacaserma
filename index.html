@@ -117,7 +117,14 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 #screen-participant{background:radial-gradient(ellipse at 50% 40%,#0d2818 0%,var(--bg) 80%);overflow:hidden;position:relative;}
 .participant-layout{display:flex;flex:1;overflow:hidden;position:relative;}
 .poker-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:visible;padding:10px 30px;}
-@media(max-width:600px){.poker-area{justify-content:flex-start;overflow-y:auto;padding:6px 8px;}.bid-area{width:100%;padding:0 4px;box-sizing:border-box;}}
+@media(max-width:600px){
+  .poker-area{justify-content:flex-start;overflow-y:auto;padding:6px 8px;}
+  .bid-area{width:100%;padding:0 4px;box-sizing:border-box;}
+  /* Su mobile il banner mostra già il giocatore: nasconde la card dentro la tavola */
+  .player-card{display:none !important;}
+  /* Riduce margini tavola per guadagnare spazio verticale */
+  .poker-table{margin-top:16px;margin-bottom:16px;}
+}
 .poker-table{width:min(560px,calc(100vw - 80px));height:min(320px,50vw);min-height:180px;background:radial-gradient(ellipse at 50% 50%,#1e5535 0%,var(--table) 50%,var(--table2) 100%);border-radius:50%;border:6px solid #0d2010;box-shadow:0 0 0 3px #1a3d1a,0 0 60px rgba(0,0,0,.8),inset 0 0 40px rgba(0,0,0,.3);position:relative;flex-shrink:0;overflow:visible;margin-top:38px;margin-bottom:36px;}
 .seat{position:absolute;width:72px;display:flex;flex-direction:column;align-items:center;gap:3px;transform:translate(-50%,-50%);transition:opacity .3s;}
 .seat.dimmed{opacity:.25;}
@@ -1180,9 +1187,9 @@ function enterParticipant() {
 function buildPokerTable() {
   const table = document.getElementById('pokerTable');
   table.querySelectorAll('.seat').forEach(s => s.remove());
-  const isMobile = window.innerWidth <= 480;
-  const rx = isMobile ? 40 : 44;
-  const ry = isMobile ? 38 : 42;
+  const isMobile = window.innerWidth <= 600;
+  const rx = isMobile ? 44 : 44;
+  const ry = isMobile ? 43 : 42;
   TEAMS.forEach((t, i) => {
     const angle = (i / TEAMS.length) * 2 * Math.PI - Math.PI / 2;
     const leftPct = 50 + rx * Math.cos(angle);
