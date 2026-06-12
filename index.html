@@ -688,7 +688,7 @@ function loginAdmin() {
 
 function logout() {
   if (currentUser && db && (currentUser.type === 'team' || currentUser.isPresident) && currentUser.teamId) {
-    db.ref('/presence/' + currentUser.teamId).set(false);
+    db.ref('/presence/' + currentUser.teamId).remove();
   }
   clearFirebaseListeners();
   clearTimerInterval();
@@ -1225,10 +1225,14 @@ function updateConnectedChips() {
 
 function initParticipantFirebase() {
   if (!db) return;
-  // Presenza: onDisconnect garantisce la pulizia lato server anche se il browser si chiude di botto
+  // Presenza: pattern ufficiale Firebase — registra onDisconnect PRIMA di set
   const presRef = db.ref('/presence/' + currentUser.teamId);
-  presRef.set(true);
-  presRef.onDisconnect().set(false);
+  db.ref('.info/connected').on('value', snap => {
+    if (snap.val() === true) {
+      presRef.onDisconnect().remove(); // rimuove il nodo alla disconnessione
+      presRef.set(true);              // imposta presenza dopo aver registrato onDisconnect
+    }
+  });
   db.ref('/game').on('value', snap => { gameState = snap.val() || {}; handleGameStateChange(); });
   db.ref('/bidSubmitted').on('value', snap => { bidSubmittedState = snap.val() || {}; updateSeatSubmitted(); });
   db.ref('/bids').on('value', snap => {
