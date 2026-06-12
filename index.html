@@ -53,9 +53,11 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 .login-error{background:rgba(239,68,68,.15);border:1px solid var(--red2);color:var(--red);padding:10px 14px;border-radius:8px;font-size:.85rem;display:none;}
 .login-error.visible{display:block;}
 /* TOPBAR */
-.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;height:54px;display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:100;}
-.topbar-brand{font-weight:800;font-size:1rem;display:flex;align-items:center;gap:7px;}
-.topbar-spacer{flex:1;}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 12px;height:54px;display:flex;align-items:center;gap:8px;flex-shrink:0;z-index:100;}
+.topbar-brand{font-weight:800;font-size:1rem;display:flex;align-items:center;gap:7px;min-width:0;overflow:hidden;}
+.topbar-brand span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.topbar-spacer{flex:1;min-width:4px;}
+@media(max-width:480px){.phase-badge{display:none !important;}.topbar-budget{font-size:.78rem;padding:4px 8px;}}
 .topbar-budget{background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);color:var(--gold);font-weight:700;font-size:.85rem;padding:5px 12px;border-radius:20px;}
 .btn-logout{background:transparent;color:var(--text-s);font-size:.78rem;padding:5px 10px;border-radius:6px;border:1px solid var(--border);}
 .btn-logout:hover{color:var(--red);border-color:var(--red);}
@@ -151,6 +153,8 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 .bid-sent{text-align:center;color:var(--green);font-weight:700;font-size:.9rem;display:none;}
 .bid-sent.visible{display:block;}
 .bid-area-waiting{text-align:center;color:var(--text-m);font-size:.85rem;font-style:italic;}
+.mobile-status-bar{display:none;background:rgba(255,255,255,.04);border-bottom:1px solid var(--border);padding:5px 16px;font-size:.8rem;font-weight:600;color:var(--text-m);gap:6px;align-items:center;}
+@media(max-width:480px){.mobile-status-bar{display:flex;}}
 .reveal-overlay{position:absolute;inset:0;background:rgba(10,22,40,.92);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:50;padding:20px;}
 .reveal-overlay.visible{display:flex;}
 .reveal-title{font-size:1.4rem;font-weight:900;color:var(--gold);text-shadow:0 0 30px rgba(255,215,0,.4);}
@@ -321,6 +325,10 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
     <div class="topbar-budget" id="participantBudget">💰 500 cr</div>
     <div id="participantPhaseBadge" class="phase-badge"><span class="phase-dot"></span> In attesa</div>
     <button class="btn-logout" onclick="logout()">Esci</button>
+  </div>
+  <div id="mobileStatusBar" class="mobile-status-bar">
+    <span id="mobileStatusDot" class="phase-dot"></span>
+    <span id="mobileStatusLabel">In attesa</span>
   </div>
   <div class="participant-layout">
     <div class="poker-area" id="pokerArea">
@@ -1029,6 +1037,11 @@ function updateParticipantPhase(phase) {
   badge.textContent = '';
   const dot = document.createElement('span'); dot.className = 'phase-dot'; badge.appendChild(dot);
   badge.appendChild(document.createTextNode(' ' + (labels[phase] || phase)));
+  // Aggiorna anche barra mobile
+  const mLabel = document.getElementById('mobileStatusLabel');
+  if (mLabel) mLabel.textContent = labels[phase] || phase;
+  const mBar = document.getElementById('mobileStatusBar');
+  if (mBar) mBar.style.color = phase === 'bidding' ? 'var(--green)' : phase === 'tiebreaker' ? 'var(--red)' : 'var(--text-m)';
 }
 
 function updateBudgetDisplay() {
