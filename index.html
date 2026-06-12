@@ -517,6 +517,11 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
       <div style="font-size:.9rem;color:var(--text-m);" id="revealPlayerLabel">—</div>
       <div class="reveal-bids" id="revealBidsList"></div>
       <div class="reveal-assigned" id="revealAssigned" style="display:none;"></div>
+      <!-- Azioni presidente direttamente nell'overlay (il panel Asta è coperto dall'overlay) -->
+      <div id="revealPresActions" style="display:none;gap:12px;margin-top:12px;">
+        <button class="btn-assign" onclick="adminAssign()">✅ Assegna</button>
+        <button class="btn-skip" onclick="adminSkip()">⏭ Salta</button>
+      </div>
     </div>
     <div class="recent-sidebar">
       <div class="recent-title">🛒 Ultimi acquisti</div>
@@ -1537,6 +1542,12 @@ function renderRevealOverlay(isAssigned) {
     assignedEl.textContent = '✅ ' + cp.nome + ' assegnato a ' + (rows[0].team ? rows[0].team.name : rows[0].tid);
   } else {
     assignedEl.style.display = 'none';
+  }
+  // Mostra pulsanti Assegna/Salta nell'overlay per il presidente (il pannello asta è coperto)
+  const presActions = document.getElementById('revealPresActions');
+  if (presActions) {
+    const isPresident = currentUser && currentUser.isPresident;
+    presActions.style.display = (isPresident && !isAssigned) ? 'flex' : 'none';
   }
   overlay.classList.add('visible');
   if (isAssigned) {
