@@ -277,9 +277,10 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 <!-- ADMIN -->
 <div class="screen" id="screen-admin">
   <div class="topbar">
-    <div class="topbar-brand">👑 <span>Admin</span></div>
+    <div class="topbar-brand" id="adminBrand">👑 <span>Admin</span></div>
     <div id="adminPhaseBadge" class="phase-badge"><span class="phase-dot"></span> In attesa</div>
     <div class="topbar-spacer"></div>
+    <div class="topbar-budget hidden" id="adminPresidentBudget">💰 500 cr</div>
     <div class="admin-stats">
       <div class="stat-pill">Venduti <strong id="statSold" style="color:var(--text)">0</strong></div>
       <div class="stat-pill">Budget tot. <strong id="statBudget" style="color:var(--text)">0</strong> cr</div>
@@ -346,6 +347,15 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
             <button class="btn-assign" onclick="adminAssign()">✅ Assegna</button>
             <button class="btn-skip" onclick="adminSkip()">⏭ Salta (non assegnare)</button>
           </div>
+        </div>
+        <!-- OFFERTA PRESIDENTE (solo per Benfiga) -->
+        <div id="aapPresidentBid" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+          <div style="font-size:.75rem;color:var(--text-m);margin-bottom:7px;">🦅 La tua offerta come <strong style="color:var(--gold)">Benfiga</strong>:</div>
+          <div class="bid-row">
+            <input class="bid-input" type="number" id="presidentBidInput" min="1" value="1" step="1" style="font-size:1rem;padding:8px 12px;">
+            <button class="btn-bid" id="presidentBidBtn" onclick="presidentSubmitBid()" style="font-size:.88rem;padding:9px 16px;">💰 OFFERTA</button>
+          </div>
+          <div class="bid-sent" id="presidentBidSent">✅ Offerta inviata!</div>
         </div>
       </div>
     </div>
@@ -451,7 +461,7 @@ const firebaseConfig = {
 
 const TEAMS = [
   { id: 't1',  name: 'Barca',            emoji: '⚓', password: 'caserma1' },
-  { id: 't2',  name: 'Benfiga',          emoji: '🦅', password: 'caserma1' },
+  { id: 't2',  name: 'Benfiga',          emoji: '🦅', password: 'caserma1', isPresident: true },
   { id: 't3',  name: 'Frattese1985',     emoji: '🔴', password: 'caserma1' },
   { id: 't4',  name: 'Morpheus',         emoji: '💊', password: 'caserma1' },
   { id: 't5',  name: 'Paris San Giuann', emoji: '🗼', password: 'caserma1' },
@@ -583,10 +593,16 @@ function loginTeam() {
   if (!teamId) { errEl.textContent = 'Seleziona una squadra.'; errEl.classList.add('visible'); return; }
   const team = TEAMS.find(t => t.id === teamId);
   if (!team || team.password !== pwd) { errEl.classList.add('visible'); return; }
-  currentUser = { type: 'team', teamId: team.id, teamName: team.name, teamEmoji: team.emoji };
+  if (team.isPresident) {
+    // Presidente-Admin: accede come admin ma partecipa anche come squadra
+    currentUser = { type: 'admin', isPresident: true, teamId: team.id, teamName: team.name, teamEmoji: team.emoji };
+  } else {
+    currentUser = { type: 'team', teamId: team.id, teamName: team.name, teamEmoji: team.emoji };
+  }
   sessionStorage.setItem('fcUser', JSON.stringify(currentUser));
   if (db) db.ref('/teams/' + team.id + '/connected').set(true);
-  enterParticipant();
+  if (team.isPresident) enterAdmin();
+  else enterParticipant();
 }
 
 function loginAdmin() {
@@ -600,7 +616,7 @@ function loginAdmin() {
 }
 
 function logout() {
-  if (currentUser && currentUser.type === 'team' && db) {
+  if (currentUser && db && (currentUser.type === 'team' || currentUser.isPresident) && currentUser.teamId) {
     db.ref('/teams/' + currentUser.teamId + '/connected').set(false);
   }
   clearFirebaseListeners();
@@ -616,6 +632,13 @@ function logout() {
 function enterAdmin() {
   showScreen('screen-admin');
   filterPlayers();
+  // Personalizza topbar per presidente
+  if (currentUser && currentUser.isPresident) {
+    const brand = document.getElementById('adminBrand');
+    if (brand) brand.innerHTML = currentUser.teamEmoji + ' <span>' + currentUser.teamName + ' <small style="opacity:.6;font-size:.75rem;">(Admin)</small></span>';
+    const budgetEl = document.getElementById('adminPresidentBudget');
+    if (budgetEl) budgetEl.classList.remove('hidden');
+  }
   initAdminFirebase();
 }
 
@@ -633,10 +656,39 @@ function initAdminFirebase() {
   db.ref('/game').once('value').then(snap => {
     if (!snap.exists()) db.ref('/game').set({ phase: 'waiting', round: 1, minBid: 1 });
   });
-  db.ref('/teams').on('value', snap => { teamsState = snap.val() || {}; renderAdminTeams(); updateAdminStats(); });
+  db.ref('/teams').on('value', snap => {
+    teamsState = snap.val() || {};
+    renderAdminTeams();
+    updateAdminStats();
+    // Aggiorna budget presidente
+    if (currentUser && currentUser.isPresident) {
+      const td = teamsState[currentUser.teamId] || {};
+      const budget = td.budget != null ? td.budget : BUDGET_START;
+      const budgetEl = document.getElementById('adminPresidentBudget');
+      if (budgetEl) budgetEl.textContent = '💰 ' + budget + ' cr';
+    }
+  });
   db.ref('/game').on('value', snap => { gameState = snap.val() || {}; updateAdminPhase(); renderAdminAuctionPanel(); });
   db.ref('/bids').on('value', snap => { bidsState = snap.val() || {}; renderAdminBids(); });
-  db.ref('/bidSubmitted').on('value', snap => { bidSubmittedState = snap.val() || {}; renderAdminBids(); });
+  db.ref('/bidSubmitted').on('value', snap => {
+    bidSubmittedState = snap.val() || {};
+    renderAdminBids();
+    // Sync bid button for president
+    if (currentUser && currentUser.isPresident) {
+      const phase = gameState.phase || 'waiting';
+      if (phase === 'bidding' || phase === 'tiebreaker') {
+        const mySubmitted = !!bidSubmittedState[currentUser.teamId];
+        const btn = document.getElementById('presidentBidBtn');
+        const sent = document.getElementById('presidentBidSent');
+        const inp = document.getElementById('presidentBidInput');
+        if (btn && sent && inp) {
+          btn.disabled = mySubmitted;
+          inp.disabled = mySubmitted;
+          if (mySubmitted) sent.classList.add('visible');
+        }
+      }
+    }
+  });
   db.ref('/assignments').on('value', snap => {
     const raw = snap.val();
     assignmentsState = raw ? Object.values(raw) : [];
@@ -709,16 +761,36 @@ function renderAdminAuctionPanel() {
   const phaseLabels = { bidding: '⚡ Asta in corso', reveal: '🎯 Rivelazione', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato' };
   setText('aapPhaseLabel', phaseLabels[phase] || phase);
   timerEndTs = gameState.timerEnd || null;
+  const presEl = document.getElementById('aapPresidentBid');
   if (phase === 'bidding' || phase === 'tiebreaker') {
     document.getElementById('aapActions').style.display = 'flex';
     document.getElementById('aapPostReveal').style.display = 'none';
+    // Pannello offerta presidente
+    if (presEl && currentUser && currentUser.isPresident) {
+      const tiebreakers = gameState.tiebreakers || null;
+      const inTiebreaker = !tiebreakers || tiebreakers.includes(currentUser.teamId);
+      presEl.style.display = inTiebreaker ? 'block' : 'none';
+      if (inTiebreaker) {
+        const minBid = gameState.minBid || 1;
+        const inp = document.getElementById('presidentBidInput');
+        if (inp) { inp.min = minBid; if (!bidSubmittedState[currentUser.teamId]) inp.value = minBid; }
+        const mySubmitted = !!bidSubmittedState[currentUser.teamId];
+        const btn = document.getElementById('presidentBidBtn');
+        const sent = document.getElementById('presidentBidSent');
+        if (btn) btn.disabled = mySubmitted;
+        if (inp) inp.disabled = mySubmitted;
+        if (sent) mySubmitted ? sent.classList.add('visible') : sent.classList.remove('visible');
+      }
+    }
   } else if (phase === 'reveal') {
     document.getElementById('aapActions').style.display = 'none';
     document.getElementById('aapPostReveal').style.display = 'block';
+    if (presEl) presEl.style.display = 'none';
     computeAndShowWinner();
   } else {
     document.getElementById('aapActions').style.display = 'none';
     document.getElementById('aapPostReveal').style.display = 'none';
+    if (presEl) presEl.style.display = 'none';
   }
 }
 
@@ -819,6 +891,22 @@ function adminStartAuction(playerData) {
     minBid: 1, timerEnd: timerEnd, tiebreakers: null
   });
   toast('⚡ Asta avviata: ' + playerData.Nome, 'success');
+}
+
+function presidentSubmitBid() {
+  const phase = gameState.phase || 'waiting';
+  if (phase !== 'bidding' && phase !== 'tiebreaker') return;
+  const tiebreakers = gameState.tiebreakers || null;
+  if (tiebreakers && !tiebreakers.includes(currentUser.teamId)) { toast('Sei fuori dallo spareggio', 'info'); return; }
+  const minBid = gameState.minBid || 1;
+  const amount = parseInt(document.getElementById('presidentBidInput').value);
+  if (isNaN(amount) || amount < minBid) { toast('Offerta minima: ' + minBid + ' cr', 'error'); return; }
+  const td = teamsState[currentUser.teamId] || {};
+  const budget = td.budget != null ? td.budget : BUDGET_START;
+  if (amount > budget) { toast('Budget insufficiente! Hai ' + budget + ' cr', 'error'); return; }
+  db.ref('/bids/' + currentUser.teamId).set(amount);
+  db.ref('/bidSubmitted/' + currentUser.teamId).set(true);
+  toast('💰 Offerta Benfiga: ' + amount + ' cr', 'success');
 }
 
 function adminReveal() { db.ref('/game/phase').set('reveal'); }
