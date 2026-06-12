@@ -955,6 +955,13 @@ setInterval(() => {
   }
 }, 500);
 
+// ─── AUCTION LOG ───
+function writeLog(type, data) {
+  if (!db) return;
+  const entry = Object.assign({ type: type, ts: Date.now() }, data);
+  db.ref('/log').push(entry);
+}
+
 function adminStartAuction(playerData) {
   const phase = gameState.phase || 'waiting';
   if (phase !== 'waiting' && phase !== 'assigned') { toast('Prima chiudi l\'asta corrente!', 'error'); return; }
@@ -966,6 +973,7 @@ function adminStartAuction(playerData) {
     currentPlayer: { nome: playerData.Nome, squadra: playerData.Squadra, ruolo: playerData.Ruolo_Classic, qi: playerData.QI },
     minBid: 1, timerEnd: timerEnd, tiebreakers: null
   });
+  writeLog('auction_start', { player: playerData.Nome, ruolo: playerData.Ruolo_Classic, squadra: playerData.Squadra, qi: playerData.QI });
   toast('⚡ Asta avviata: ' + playerData.Nome, 'success');
 }
 
@@ -986,7 +994,11 @@ function presidentSubmitBid() {
   toast('💰 Offerta Benfiga: ' + amount + ' cr', 'success');
 }
 
-function adminReveal() { db.ref('/game/phase').set('reveal'); }
+function adminReveal() {
+  db.ref('/game/phase').set('reveal');
+  const cp = gameState.currentPlayer;
+  if (cp) writeLog('reveal', { player: cp.nome, ruolo: cp.ruolo, squadra: cp.squadra });
+}
 
 function adminAssign() {
   if (!adminWinner) { toast('Nessun vincitore trovato', 'error'); return; }
@@ -1006,13 +1018,17 @@ function adminAssign() {
   updates['/game/phase'] = 'assigned';
   db.ref().update(updates).then(() => {
     toast('✅ ' + cp.nome + ' → ' + adminWinner.teamName + ' (' + adminWinner.amount + ' cr)', 'success');
+    const winnerTeam = TEAMS.find(t => t.id === adminWinner.teamId);
+    writeLog('assigned', { player: cp.nome, ruolo: cp.ruolo, squadra: cp.squadra, teamId: adminWinner.teamId, teamName: adminWinner.teamName, teamEmoji: winnerTeam ? winnerTeam.emoji : '', price: adminWinner.amount });
   });
 }
 
 function adminSkip() {
+  const cp = gameState.currentPlayer;
   db.ref('/game').update({ phase: 'waiting', currentPlayer: null, timerEnd: null, tiebreakers: null });
   db.ref('/bids').set(null);
   db.ref('/bidSubmitted').set(null);
+  if (cp) writeLog('skipped', { player: cp.nome, ruolo: cp.ruolo, squadra: cp.squadra });
   toast('⏭ Giocatore saltato', 'info');
   if (currentUser && currentUser.isPresident) updatePresidentBidPanel();
 }
