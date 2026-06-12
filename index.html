@@ -429,21 +429,18 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <div class="table-waiting-msg" id="tableWaitingMsg">In attesa dell'admin…</div>
         </div>
       </div>
-      <!-- Banner giocatore in asta - sempre leggibile sopra la bid area -->
-      <div id="auctionPlayerBanner" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 14px;text-align:center;width:100%;box-sizing:border-box;flex-shrink:0;">
-        <div style="font-size:1rem;font-weight:900;color:var(--text);" id="bannerPlayerName">—</div>
-        <div style="font-size:.75rem;color:var(--text-m);margin-top:2px;" id="bannerPlayerMeta">—</div>
-      </div>
       <div class="bid-area" id="bidArea">
         <div class="bid-area-waiting" id="bidAreaWaiting">In attesa dell'asta…</div>
-        <div id="bidInputArea" style="display:none;flex-direction:column;gap:8px;">
-          <div class="bid-hint">Offerta minima: <strong id="bidMinLabel">1</strong> cr</div>
+        <!-- Card compatta: giocatore + offerta + passa tutto insieme -->
+        <div id="bidInputArea" style="display:none;flex-direction:column;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px 10px;width:100%;box-sizing:border-box;">
+          <div id="bidPlayerInfo" style="font-size:.88rem;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</div>
           <div id="rosterFullMsg" class="roster-full-msg">🚫 Rosa completa per questo ruolo — devi passare</div>
           <div class="bid-row">
-            <input class="bid-input" type="number" id="bidInput" min="1" value="1" step="1">
+            <span style="font-size:.7rem;color:var(--text-m);white-space:nowrap;flex-shrink:0;">Min: <strong id="bidMinLabel">1</strong>cr</span>
+            <input class="bid-input" type="number" id="bidInput" min="1" value="1" step="1" style="max-width:80px;">
             <button class="btn-bid" id="btnBid" onclick="submitBid()">💰 OFFERTA</button>
+            <button class="btn-pass" id="btnPass" onclick="passAuction()">🤚 Passa</button>
           </div>
-          <button class="btn-pass" id="btnPass" onclick="passAuction()" style="width:100%;">🤚 Passa</button>
           <div class="bid-sent" id="bidSent">✅ Offerta inviata! Attendi la rivelazione.</div>
         </div>
       </div>
@@ -1336,11 +1333,10 @@ function handleGameStateChange() {
   updateBudgetDisplay();
   const centerMsg = document.getElementById('tableWaitingMsg');
   const center = document.getElementById('tableCenter');
-  const bannerEl = document.getElementById('auctionPlayerBanner');
   if (!cp || phase === 'waiting') {
     center.querySelectorAll('.player-card,.timer-wrap').forEach(el => el.remove());
     centerMsg.style.display = 'block';
-    if (bannerEl) bannerEl.style.display = 'none';
+    setText('bidPlayerInfo', '—');
     document.getElementById('bidAreaWaiting').style.display = 'block';
     setText('bidAreaWaiting', 'In attesa dell\'asta…');
     document.getElementById('bidInputArea').style.display = 'none';
@@ -1350,12 +1346,10 @@ function handleGameStateChange() {
     return;
   }
   // Aggiorna banner giocatore
-  if (bannerEl && cp.nome) {
-    bannerEl.style.display = 'block';
+  if (cp.nome) {
     const roleChar = (cp.ruolo || '').charAt(0);
     const roleLabels = { P: '🧤', D: '🛡️', C: '⚙️', A: '⚽' };
-    setText('bannerPlayerName', (roleLabels[roleChar] || '') + ' ' + cp.nome);
-    setText('bannerPlayerMeta', cp.squadra + ' · ' + cp.ruolo + ' · QI ' + cp.qi);
+    setText('bidPlayerInfo', (roleLabels[roleChar] || '') + ' ' + cp.nome + ' · ' + cp.squadra + ' · QI ' + cp.qi);
   }
   centerMsg.style.display = 'none';
   let card = center.querySelector('.player-card');
