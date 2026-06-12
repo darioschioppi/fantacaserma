@@ -422,7 +422,11 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
   </div>
   <div class="participant-layout">
     <div class="poker-area" id="pokerArea">
-      <div class="connected-bar" id="connectedBar">👥 Caricamento…</div>
+      <!-- HEADER: nome giocatore in asta (top) -->
+      <div id="auctionHeader" style="display:none;width:100%;box-sizing:border-box;padding:6px 10px;background:var(--card);border:1px solid var(--border);border-radius:10px;flex-shrink:0;">
+        <div id="auctionHeaderName" style="font-size:1rem;font-weight:900;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+        <div id="auctionHeaderMeta" style="font-size:.72rem;color:var(--text-m);margin-top:1px;"></div>
+      </div>
       <div class="tiebreaker-banner" id="tiebreakerBanner">⚖️ SPAREGGIO — offerta minima: <strong id="tiebreakerMin">—</strong> cr</div>
       <div class="poker-table" id="pokerTable">
         <div class="table-center" id="tableCenter">
@@ -431,9 +435,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
       </div>
       <div class="bid-area" id="bidArea">
         <div class="bid-area-waiting" id="bidAreaWaiting">In attesa dell'asta…</div>
-        <!-- Card compatta: giocatore + offerta + passa tutto insieme -->
         <div id="bidInputArea" style="display:none;flex-direction:column;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px 10px;width:100%;box-sizing:border-box;">
-          <div id="bidPlayerInfo" style="font-size:.88rem;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</div>
           <div id="rosterFullMsg" class="roster-full-msg">🚫 Rosa completa per questo ruolo — devi passare</div>
           <div class="bid-row">
             <span style="font-size:.7rem;color:var(--text-m);white-space:nowrap;flex-shrink:0;">Min: <strong id="bidMinLabel">1</strong>cr</span>
@@ -444,6 +446,8 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <div class="bid-sent" id="bidSent">✅ Offerta inviata! Attendi la rivelazione.</div>
         </div>
       </div>
+      <!-- connectedBar spostata in fondo -->
+      <div class="connected-bar" id="connectedBar" style="width:100%;margin-top:auto;flex-shrink:0;">👥 Caricamento…</div>
       <!-- Overlay rivelazione: dentro poker-area così non copre Rosa/Acquisti -->
       <div class="reveal-overlay" id="revealOverlay">
         <div class="reveal-title">🎯 RIVELAZIONE</div>
@@ -1336,7 +1340,7 @@ function handleGameStateChange() {
   if (!cp || phase === 'waiting') {
     center.querySelectorAll('.player-card,.timer-wrap').forEach(el => el.remove());
     centerMsg.style.display = 'block';
-    setText('bidPlayerInfo', '—');
+    const ah = document.getElementById('auctionHeader'); if (ah) ah.style.display = 'none';
     document.getElementById('bidAreaWaiting').style.display = 'block';
     setText('bidAreaWaiting', 'In attesa dell\'asta…');
     document.getElementById('bidInputArea').style.display = 'none';
@@ -1349,7 +1353,12 @@ function handleGameStateChange() {
   if (cp.nome) {
     const roleChar = (cp.ruolo || '').charAt(0);
     const roleLabels = { P: '🧤', D: '🛡️', C: '⚙️', A: '⚽' };
-    setText('bidPlayerInfo', (roleLabels[roleChar] || '') + ' ' + cp.nome + ' · ' + cp.squadra + ' · QI ' + cp.qi);
+    const ah = document.getElementById('auctionHeader');
+    if (ah) {
+      ah.style.display = 'block';
+      setText('auctionHeaderName', (roleLabels[roleChar] || '') + ' ' + cp.nome);
+      setText('auctionHeaderMeta', cp.squadra + ' · ' + cp.ruolo + ' · QI ' + cp.qi);
+    }
   }
   centerMsg.style.display = 'none';
   let card = center.querySelector('.player-card');
