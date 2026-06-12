@@ -140,6 +140,15 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 .seat-badge-you{z-index:3 !important;}
 .seat-chip-cam{position:absolute;bottom:-2px;right:-2px;width:20px;height:20px;background:var(--bg2);border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.62rem;z-index:4;cursor:pointer;line-height:1;}
 @media(max-width:480px){.seat-chip-cam{width:16px;height:16px;font-size:.5rem;}}
+/* ONLINE DOT su chip */
+.seat-online-dot{position:absolute;top:1px;right:1px;width:11px;height:11px;border-radius:50%;background:var(--text-s);border:2px solid var(--bg2);z-index:5;transition:background .4s,box-shadow .4s;}
+.seat-online-dot.online{background:var(--green);box-shadow:0 0 6px var(--green);}
+@media(max-width:480px){.seat-online-dot{width:9px;height:9px;border-width:1.5px;}}
+/* BARRA CONNESSI */
+.connected-bar{padding:5px 10px;text-align:center;font-size:.72rem;color:var(--text-m);flex-shrink:0;background:rgba(0,0,0,.25);border-bottom:1px solid rgba(255,255,255,.04);letter-spacing:.2px;transition:color .4s;}
+.connected-bar.all-ok{color:var(--green);font-weight:600;}
+.connected-bar .cb-count{color:var(--green);font-weight:800;}
+.connected-bar .cb-miss{color:var(--red);font-weight:600;}
 .table-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;width:180px;pointer-events:none;}
 .table-waiting-msg{text-align:center;color:rgba(255,255,255,.4);font-size:.85rem;font-style:italic;}
 .player-card{background:linear-gradient(135deg,var(--card) 0%,#162233 100%);border:1px solid var(--border);border-radius:10px;padding:10px 14px;text-align:center;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,.5);}
@@ -386,6 +395,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
   </div>
   <div class="participant-layout">
     <div class="poker-area" id="pokerArea">
+      <div class="connected-bar" id="connectedBar">👥 Caricamento…</div>
       <div class="tiebreaker-banner" id="tiebreakerBanner">⚖️ SPAREGGIO — offerta minima: <strong id="tiebreakerMin">—</strong> cr</div>
       <div class="poker-table" id="pokerTable">
         <div class="table-center" id="tableCenter">
@@ -1137,6 +1147,12 @@ function buildPokerTable() {
     chip.className = 'seat-chip' + (isMe ? ' mine' : '');
     chip.id = 'chip-' + t.id;
 
+    // dot connessione
+    const onlineDot = document.createElement('span');
+    onlineDot.className = 'seat-online-dot';
+    onlineDot.id = 'online-dot-' + t.id;
+    chip.appendChild(onlineDot);
+
     if (isMe) {
       const badge = document.createElement('div');
       badge.className = 'seat-badge-you';
@@ -1170,6 +1186,29 @@ function buildPokerTable() {
   });
 }
 
+function updateConnectedChips() {
+  if (!teamsState) return;
+  let count = 0;
+  const missing = [];
+  TEAMS.forEach(t => {
+    const td = teamsState[t.id] || {};
+    const online = !!td.connected;
+    if (online) count++; else missing.push(t.name.split(' ')[0]);
+    const dot = document.getElementById('online-dot-' + t.id);
+    if (dot) dot.classList.toggle('online', online);
+  });
+  const bar = document.getElementById('connectedBar');
+  if (!bar) return;
+  const total = TEAMS.length;
+  if (count === total) {
+    bar.className = 'connected-bar all-ok';
+    bar.innerHTML = '✅ Tutti connessi — pronti per l\'asta! 🚀';
+  } else {
+    bar.className = 'connected-bar';
+    bar.innerHTML = '👥 <span class="cb-count">' + count + '/' + total + '</span> connessi &nbsp;·&nbsp; Mancano: <span class="cb-miss">' + missing.join(', ') + '</span>';
+  }
+}
+
 function initParticipantFirebase() {
   if (!db) return;
   db.ref('/teams/' + currentUser.teamId + '/connected').set(true);
@@ -1183,7 +1222,7 @@ function initParticipantFirebase() {
     if (gameState.phase === 'reveal' || gameState.phase === 'assigned') renderRevealOverlay(gameState.phase === 'assigned');
     if (currentUser && currentUser.isPresident) renderPresidentBids();
   });
-  db.ref('/teams').on('value', snap => { teamsState = snap.val() || {}; updateBudgetDisplay(); });
+  db.ref('/teams').on('value', snap => { teamsState = snap.val() || {}; updateBudgetDisplay(); updateConnectedChips(); });
   db.ref('/assignments').on('value', snap => {
     const raw = snap.val();
     assignmentsState = raw ? Object.values(raw) : [];
