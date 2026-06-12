@@ -244,6 +244,21 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 .pp-table tr:hover td{background:rgba(255,255,255,.03);}
 .pp-assigned-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3);color:var(--gold);padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:700;white-space:nowrap;}
 .pp-row-assigned td{opacity:.45;}
+/* ROSA (mia rosa) */
+.rosa-header{padding:10px 12px 8px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.rosa-header-title{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-s);margin-bottom:8px;}
+.rosa-progress{display:flex;gap:6px;flex-wrap:wrap;}
+.rosa-prog-pill{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:4px 10px;font-size:.75rem;font-weight:700;color:var(--text-m);}
+.rosa-prog-pill.complete{background:rgba(34,197,94,.15);border-color:var(--green);color:var(--green);}
+.rosa-list{flex:1;overflow-y:auto;}
+.rosa-group-header{padding:8px 12px 4px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-s);border-top:1px solid var(--border);}
+.rosa-group-header:first-child{border-top:none;}
+.rosa-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,.04);}
+.rosa-item:hover{background:rgba(255,255,255,.03);}
+.rosa-item-info{flex:1;min-width:0;}
+.rosa-item-name{font-weight:700;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rosa-item-meta{font-size:.72rem;color:var(--text-m);margin-top:1px;}
+.rosa-item-price{font-weight:700;color:var(--gold);font-size:.85rem;white-space:nowrap;flex-shrink:0;}
 /* UTILS */
 .hidden{display:none!important;}
 .phase-badge{display:inline-flex;align-items:center;gap:5px;font-size:.75rem;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text-m);}
@@ -349,8 +364,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         <div class="aap-timer-bar"><div class="aap-timer-fill" id="aapTimerFill"></div></div>
         <div class="aap-bids" id="aapBids"><div class="empty-state" style="font-size:.75rem;">In attesa di offerte…</div></div>
         <div class="aap-actions" id="aapActions">
-          <button class="btn-reveal" onclick="adminReveal()">🎯 Rivela ora</button>
-          <button class="btn-skip" onclick="adminSkip()">⏭ Salta</button>
+          <button class="btn-skip" onclick="adminSkip()">⏭ Salta giocatore</button>
         </div>
         <div id="aapPostReveal" style="display:none;margin-top:8px;">
           <div style="font-size:.8rem;color:var(--text-m);margin-bottom:8px;">
@@ -426,37 +440,26 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         <div style="font-size:.9rem;color:var(--text-m);" id="revealPlayerLabel">—</div>
         <div class="reveal-bids" id="revealBidsList"></div>
         <div class="reveal-assigned" id="revealAssigned" style="display:none;"></div>
-        <div id="revealPresActions" style="display:none;gap:12px;margin-top:12px;">
-          <button class="btn-assign" onclick="adminAssign()">✅ Assegna</button>
-          <button class="btn-skip" onclick="adminSkip()">⏭ Salta</button>
+        <div id="revealPresActions" style="display:none;gap:10px;margin-top:12px;flex-wrap:wrap;justify-content:center;width:100%;max-width:320px;">
+          <button class="btn-assign" id="btnRevealAssign" onclick="adminAssign()">✅ Assegna</button>
+          <button class="btn-skip" id="btnRevealSkip" onclick="adminSkip()">⏭ Salta</button>
+          <button class="btn-assign" id="btnRevealNext" onclick="presidentNextAuction()" style="display:none;width:100%;background:var(--blue);">⚡ Prossima asta →</button>
         </div>
       </div>
     </div>
-    <!-- PLAYERS PANEL -->
+    <!-- PLAYERS PANEL = Mia rosa -->
     <div class="players-panel" id="playersPanel">
-      <div class="pp-search-bar">
-        <input class="pp-search-input" id="ppSearch" placeholder="🔍 Cerca giocatore…" oninput="filterParticipantPlayers()">
-        <select class="pp-select" id="ppFilterRuolo" onchange="filterParticipantPlayers()">
-          <option value="">Tutti i ruoli</option>
-          <option value="P">🧤 P</option>
-          <option value="D">🛡️ D</option>
-          <option value="C">⚙️ C</option>
-          <option value="A">⚽ A</option>
-        </select>
-        <select class="pp-select" id="ppSort" onchange="filterParticipantPlayers()">
-          <option value="az">🔤 A→Z</option>
-          <option value="za">🔤 Z→A</option>
-          <option value="qa_desc">💰 QA ↓</option>
-          <option value="qa_asc">💰 QA ↑</option>
-          <option value="qi_desc">📊 QI ↓</option>
-          <option value="qi_asc">📊 QI ↑</option>
-        </select>
+      <div class="rosa-header">
+        <div class="rosa-header-title">📋 Mia rosa</div>
+        <div class="rosa-progress">
+          <span class="rosa-prog-pill" id="rpP">🧤 P 0/3</span>
+          <span class="rosa-prog-pill" id="rpD">🛡️ D 0/8</span>
+          <span class="rosa-prog-pill" id="rpC">⚙️ C 0/8</span>
+          <span class="rosa-prog-pill" id="rpA">⚽ A 0/6</span>
+        </div>
       </div>
-      <div class="pp-table-wrap">
-        <table class="pp-table">
-          <thead><tr><th>Nome</th><th>Sq.</th><th>R</th><th>QA</th><th>Acquistato da</th></tr></thead>
-          <tbody id="ppTableBody"><tr><td colspan="5" class="empty-state">Caricamento…</td></tr></tbody>
-        </table>
+      <div class="rosa-list" id="myRosaList">
+        <div class="empty-state" style="margin:24px auto;font-size:.85rem;">Nessun acquisto ancora…</div>
       </div>
     </div>
     <!-- ASTA PANEL (solo Presidente) -->
@@ -498,10 +501,9 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
             <div class="timer-num" id="paTimerNum" style="font-size:.9rem;">—</div>
           </div>
         </div>
-        <div class="aap-bids" id="paBidsList"></div>
+        <div class="aap-bids" id="paBidsList" style="max-height:120px;overflow-y:auto;"></div>
         <div id="paActions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
-          <button class="btn-reveal" onclick="adminReveal()">🎯 Rivela ora</button>
-          <button class="btn-skip" onclick="adminSkip()">⏭ Salta</button>
+          <button class="btn-skip" onclick="adminSkip()">⏭ Salta giocatore</button>
         </div>
         <div id="paPostReveal" style="display:none;margin-top:8px;">
           <div style="font-size:.8rem;color:var(--text-m);margin-bottom:8px;">Vincitore: <strong id="paWinnerName" style="color:var(--gold)">—</strong> con <strong id="paWinnerBid" style="color:var(--gold)">—</strong> cr</div>
@@ -510,17 +512,17 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
             <button class="btn-skip" onclick="adminSkip()">⏭ Salta</button>
           </div>
         </div>
-        <!-- Offerta presidente nell'asta panel -->
-        <div id="paBidArea" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
-          <div style="font-size:.75rem;color:var(--text-m);margin-bottom:7px;">🦅 Tua offerta come <strong style="color:var(--gold)">Benfiga</strong> · Budget: <strong id="paBudgetLabel" style="color:var(--gold)">500</strong> cr</div>
-          <div id="paRosterFullMsg" class="roster-full-msg">🚫 Rosa completa per questo ruolo — devi passare</div>
-          <div class="bid-row">
-            <input class="bid-input" type="number" id="paBidInput" min="1" value="1" step="1">
-            <button class="btn-bid" id="paBidBtn" onclick="presidentSubmitBid()">💰 OFFERTA</button>
-          </div>
-          <button class="btn-pass" id="paBtnPass" onclick="presidentPass()" style="width:100%;margin-top:4px;">🤚 Passa questo giocatore</button>
-          <div class="bid-sent" id="paBidSent">✅ Offerta inviata!</div>
+      </div>
+      <!-- Offerta presidente: SEMPRE visibile in fondo al pannello -->
+      <div id="paBidArea" style="display:none;flex-shrink:0;padding:10px 14px;border-top:2px solid var(--border);background:var(--bg2);">
+        <div style="font-size:.72rem;color:var(--text-m);margin-bottom:6px;">🦅 Tua offerta come <strong style="color:var(--gold)">Benfiga</strong> · Budget: <strong id="paBudgetLabel" style="color:var(--gold)">500</strong> cr</div>
+        <div id="paRosterFullMsg" class="roster-full-msg" style="margin-bottom:6px;">🚫 Rosa completa per questo ruolo — devi passare</div>
+        <div class="bid-row">
+          <input class="bid-input" type="number" id="paBidInput" min="1" value="1" step="1">
+          <button class="btn-bid" id="paBidBtn" onclick="presidentSubmitBid()">💰 OFFERTA</button>
         </div>
+        <button class="btn-pass" id="paBtnPass" onclick="presidentPass()" style="width:100%;margin-top:6px;">🤚 Passa questo giocatore</button>
+        <div class="bid-sent" id="paBidSent">✅ Offerta inviata!</div>
       </div>
     </div>
     <div class="recent-sidebar">
@@ -581,6 +583,7 @@ let timerInterval = null;
 let timerEndTs = null;
 let myBidSent = false;
 let adminWinner = null;
+let autoRevealFired = false;
 
 // ─── SAFE DOM HELPERS ───
 function setText(id, val) {
@@ -991,6 +994,7 @@ function adminStartAuction(playerData) {
     toast('⚠️ Non tutti connessi — mancano: ' + notConn.map(t => t.name.split(' ')[0]).join(', '), 'error');
     return;
   }
+  autoRevealFired = false;
   const timerEnd = Date.now() + AUCTION_DURATION * 1000;
   db.ref('/bids').set(null);
   db.ref('/bidSubmitted').set(null);
@@ -1261,13 +1265,17 @@ function updateConnectedChips() {
 function getRosterCounts(teamId) {
   const counts = { P: 0, D: 0, C: 0, A: 0 };
   assignmentsState.forEach(a => {
-    if (a.teamId === teamId && a.ruolo && counts[a.ruolo] !== undefined) counts[a.ruolo]++;
+    if (a.teamId !== teamId || !a.ruolo) return;
+    const r = a.ruolo.charAt(0); // gestisce "DC","PC","Pc",ecc.
+    if (counts[r] !== undefined) counts[r]++;
   });
   return counts;
 }
 function isRosterFull(teamId, ruolo) {
-  if (!ruolo || ROSTER_MAX[ruolo] === undefined) return false;
-  return getRosterCounts(teamId)[ruolo] >= ROSTER_MAX[ruolo];
+  if (!ruolo) return false;
+  const r = ruolo.charAt(0);
+  if (ROSTER_MAX[r] === undefined) return false;
+  return getRosterCounts(teamId)[r] >= ROSTER_MAX[r];
 }
 
 function initParticipantFirebase() {
@@ -1281,7 +1289,11 @@ function initParticipantFirebase() {
     }
   });
   db.ref('/game').on('value', snap => { gameState = snap.val() || {}; handleGameStateChange(); });
-  db.ref('/bidSubmitted').on('value', snap => { bidSubmittedState = snap.val() || {}; updateSeatSubmitted(); });
+  db.ref('/bidSubmitted').on('value', snap => {
+    bidSubmittedState = snap.val() || {};
+    updateSeatSubmitted();
+    checkAutoReveal(); // auto-reveal se tutti hanno inviato
+  });
   db.ref('/bids').on('value', snap => {
     bidsState = snap.val() || {};
     if (gameState.phase === 'reveal' || gameState.phase === 'assigned') renderRevealOverlay(gameState.phase === 'assigned');
@@ -1292,7 +1304,10 @@ function initParticipantFirebase() {
     const raw = snap.val();
     assignmentsState = raw ? Object.values(raw) : [];
     renderRecentList();
-    filterParticipantPlayers(); // aggiorna badge acquistati in real-time
+    filterParticipantPlayers(); // aggiorna rosa in real-time
+    // Aggiorna anche il pannello asta del presidente se visibile
+    const ap = document.getElementById('presidentAstaPanel');
+    if (ap && ap.style.display !== 'none') filterAstaPlayers();
   });
   db.ref('/avatars').on('value', snap => {
     avatarsState = snap.val() || {};
@@ -1352,6 +1367,7 @@ function handleGameStateChange() {
 
   timerEndTs = gameState.timerEnd || null;
   if (phase === 'bidding' || phase === 'tiebreaker') {
+    if (phase === 'tiebreaker') autoRevealFired = false; // reset per spareggio
     document.getElementById('bidAreaWaiting').style.display = 'none';
     document.getElementById('bidInputArea').style.display = 'flex';
     document.getElementById('revealOverlay').classList.remove('visible');
@@ -1543,14 +1559,31 @@ function renderRevealOverlay(isAssigned) {
   } else {
     assignedEl.style.display = 'none';
   }
-  // Mostra pulsanti Assegna/Salta nell'overlay per il presidente (il pannello asta è coperto)
+  // Mostra pulsanti Assegna/Salta/ProssimaAsta nell'overlay per il presidente
   const presActions = document.getElementById('revealPresActions');
   if (presActions) {
     const isPresident = currentUser && currentUser.isPresident;
-    presActions.style.display = (isPresident && !isAssigned) ? 'flex' : 'none';
+    const btnAssign = document.getElementById('btnRevealAssign');
+    const btnSkip = document.getElementById('btnRevealSkip');
+    const btnNext = document.getElementById('btnRevealNext');
+    if (isPresident) {
+      presActions.style.display = 'flex';
+      if (isAssigned) {
+        if (btnAssign) btnAssign.style.display = 'none';
+        if (btnSkip) btnSkip.style.display = 'none';
+        if (btnNext) btnNext.style.display = 'block';
+      } else {
+        if (btnAssign) btnAssign.style.display = '';
+        if (btnSkip) btnSkip.style.display = '';
+        if (btnNext) btnNext.style.display = 'none';
+      }
+    } else {
+      presActions.style.display = 'none';
+    }
   }
   overlay.classList.add('visible');
-  if (isAssigned) {
+  // Per i non-presidenti: auto-chiudi dopo 5s quando assegnato
+  if (isAssigned && !(currentUser && currentUser.isPresident)) {
     setTimeout(() => {
       overlay.classList.remove('visible');
       TEAMS.forEach(t => { const chip = document.getElementById('chip-' + t.id); if (chip) chip.classList.remove('submitted','tiebreaker'); });
@@ -1613,6 +1646,22 @@ function submitBid() {
   toast('💰 Offerta inviata!', 'success');
 }
 
+function presidentNextAuction() {
+  // Update atomico multi-path per evitare stati intermedi
+  const updates = {};
+  updates['/game/phase'] = 'waiting';
+  updates['/game/currentPlayer'] = null;
+  updates['/game/timerEnd'] = null;
+  updates['/game/tiebreakers'] = null;
+  updates['/game/minBid'] = null;
+  updates['/bids'] = null;
+  updates['/bidSubmitted'] = null;
+  db.ref().update(updates);
+  // Passa al tab Asta
+  const tabBtn = document.getElementById('tabAstaBtn');
+  participantMobileTab('asta', tabBtn);
+}
+
 function passAuction() {
   const phase = gameState.phase || 'waiting';
   if (phase !== 'bidding' && phase !== 'tiebreaker') return;
@@ -1643,8 +1692,37 @@ function startLocalTimer() {
     const remaining = Math.max(0, Math.ceil((timerEndTs - Date.now()) / 1000));
     updateTimerDisplay('partTimerRing', 'partTimerNum', remaining, AUCTION_DURATION);
     updateTimerDisplay('paTimerRing', 'paTimerNum', remaining, AUCTION_DURATION);
-    if (remaining === 0) clearTimerInterval();
+    if (remaining === 0) {
+      clearTimerInterval();
+      // Auto-reveal alla scadenza (solo il presidente)
+      if (currentUser && currentUser.isPresident && !autoRevealFired) {
+        const phase = gameState.phase || 'waiting';
+        if (phase === 'bidding' || phase === 'tiebreaker') {
+          autoRevealFired = true;
+          adminReveal();
+        }
+      }
+    }
   }, 200);
+}
+
+// Controlla se tutti i partecipanti hanno inviato l'offerta → auto-reveal
+function checkAutoReveal() {
+  if (!currentUser || !currentUser.isPresident || autoRevealFired) return;
+  const phase = gameState.phase || 'waiting';
+  if (phase !== 'bidding' && phase !== 'tiebreaker') return;
+  const tiebreakers = gameState.tiebreakers || null;
+  const eligible = tiebreakers
+    ? TEAMS.filter(t => tiebreakers.includes(t.id))
+    : TEAMS.filter(t => (teamsState[t.id] || {}).connected);
+  if (!eligible.length) return;
+  const allSubmitted = eligible.every(t => bidSubmittedState[t.id]);
+  if (allSubmitted) {
+    autoRevealFired = true;
+    setTimeout(() => {
+      if ((gameState.phase || 'waiting') === phase) adminReveal();
+    }, 800); // breve delay per sincronizzazione Firebase
+  }
 }
 
 function stopLocalTimer() {
@@ -1918,58 +1996,80 @@ function participantMobileTab(tab, btn) {
 function filterParticipantPlayers() {
   const pp = document.getElementById('playersPanel');
   if (!pp || pp.style.display === 'none') return;
-  const query = (document.getElementById('ppSearch').value || '').toLowerCase().trim();
-  const ruolo = document.getElementById('ppFilterRuolo').value;
-  const sort = document.getElementById('ppSort').value;
-  let results = [...allPlayers];
-  if (query) results = results.filter(p => p.Nome && p.Nome.toLowerCase().includes(query));
-  if (ruolo) results = results.filter(p => (p.Ruolo_Classic || '').startsWith(ruolo));
-  if (sort === 'az')       results.sort((a,b) => (a.Nome||'').localeCompare(b.Nome||''));
-  else if (sort === 'za')  results.sort((a,b) => (b.Nome||'').localeCompare(a.Nome||''));
-  else if (sort === 'qa_desc') results.sort((a,b) => (parseInt(b.QA)||0) - (parseInt(a.QA)||0));
-  else if (sort === 'qa_asc')  results.sort((a,b) => (parseInt(a.QA)||0) - (parseInt(b.QA)||0));
-  else if (sort === 'qi_desc') results.sort((a,b) => (parseInt(b.QI)||0) - (parseInt(a.QI)||0));
-  else if (sort === 'qi_asc')  results.sort((a,b) => (parseInt(a.QI)||0) - (parseInt(b.QI)||0));
-  renderParticipantPlayers(results.slice(0, 150));
+  renderMyRosa();
 }
 
-function renderParticipantPlayers(players) {
-  const tbody = document.getElementById('ppTableBody');
-  if (!tbody) return;
-  tbody.textContent = '';
-  // Build assignment lookup by player name
-  const assignedMap = {};
-  assignmentsState.forEach(a => { if (a.player) assignedMap[a.player.toLowerCase()] = a; });
-  if (!players.length) {
-    const tr = document.createElement('tr');
-    const td = document.createElement('td'); td.colSpan = 5; td.className = 'empty-state';
-    td.textContent = 'Nessun risultato'; tr.appendChild(td); tbody.appendChild(tr); return;
+function renderMyRosa() {
+  if (!currentUser) return;
+  const myTeamId = currentUser.teamId;
+  // Aggiorna contatori ruolo
+  const counts = getRosterCounts(myTeamId);
+  const rpP = document.getElementById('rpP');
+  const rpD = document.getElementById('rpD');
+  const rpC = document.getElementById('rpC');
+  const rpA = document.getElementById('rpA');
+  if (rpP) { rpP.textContent = '🧤 P ' + counts.P + '/3'; rpP.classList.toggle('complete', counts.P >= 3); }
+  if (rpD) { rpD.textContent = '🛡️ D ' + counts.D + '/8'; rpD.classList.toggle('complete', counts.D >= 8); }
+  if (rpC) { rpC.textContent = '⚙️ C ' + counts.C + '/8'; rpC.classList.toggle('complete', counts.C >= 8); }
+  if (rpA) { rpA.textContent = '⚽ A ' + counts.A + '/6'; rpA.classList.toggle('complete', counts.A >= 6); }
+  const container = document.getElementById('myRosaList');
+  if (!container) return;
+  container.textContent = '';
+  const myPlayers = assignmentsState
+    .filter(a => a.teamId === myTeamId)
+    .sort((a, b) => {
+      const roleOrder = { P: 0, D: 1, C: 2, A: 3 };
+      const ra = roleOrder[(a.ruolo||'').charAt(0)] ?? 99;
+      const rb = roleOrder[(b.ruolo||'').charAt(0)] ?? 99;
+      if (ra !== rb) return ra - rb;
+      return (a.player||'').localeCompare(b.player||'');
+    });
+  if (!myPlayers.length) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.style.cssText = 'margin:24px auto;font-size:.85rem;';
+    empty.textContent = 'Nessun acquisto ancora…';
+    container.appendChild(empty);
+    return;
   }
-  players.forEach(p => {
-    const assigned = assignedMap[(p.Nome||'').toLowerCase()];
-    const tr = document.createElement('tr');
-    if (assigned) tr.className = 'pp-row-assigned';
-    const tdName = document.createElement('td');
-    tdName.style.fontWeight = '600'; tdName.textContent = p.Nome || '—';
-    const tdSq = document.createElement('td');
-    tdSq.style.cssText = 'color:var(--text-m);font-size:.75rem'; tdSq.textContent = p.Squadra || '—';
-    const tdR = document.createElement('td');
-    const badge = document.createElement('span');
-    const r = (p.Ruolo_Classic||'').charAt(0);
-    badge.className = 'role-badge role-' + r; badge.textContent = r || '—';
-    tdR.appendChild(badge);
-    const tdQA = document.createElement('td');
-    tdQA.style.color = 'var(--text-m)'; tdQA.textContent = p.QA != null ? p.QA : '—';
-    const tdAssigned = document.createElement('td');
-    if (assigned) {
-      const b = document.createElement('span'); b.className = 'pp-assigned-badge';
-      const team = TEAMS.find(t => t.id === assigned.teamId);
-      b.textContent = (team ? team.emoji + ' ' + team.name.split(' ')[0] : (assigned.teamName||'')) + ' · ' + assigned.amount + 'cr';
-      tdAssigned.appendChild(b);
-    }
-    tr.appendChild(tdName); tr.appendChild(tdSq); tr.appendChild(tdR);
-    tr.appendChild(tdQA); tr.appendChild(tdAssigned);
-    tbody.appendChild(tr);
+  // Raggruppa per ruolo
+  const roleOrder = ['P','D','C','A'];
+  const roleNames = { P:'🧤 Portieri', D:'🛡️ Difensori', C:'⚙️ Centrocampisti', A:'⚽ Attaccanti' };
+  let firstGroup = true;
+  roleOrder.forEach(role => {
+    const rolePlayers = myPlayers.filter(a => (a.ruolo||'').charAt(0) === role);
+    if (!rolePlayers.length) return;
+    const groupHeader = document.createElement('div');
+    groupHeader.className = 'rosa-group-header';
+    if (firstGroup) groupHeader.style.borderTop = 'none';
+    groupHeader.textContent = roleNames[role];
+    container.appendChild(groupHeader);
+    firstGroup = false;
+    rolePlayers.forEach(a => {
+      const pd = allPlayers.find(p => p.Nome && p.Nome.toLowerCase() === (a.player||'').toLowerCase());
+      const item = document.createElement('div');
+      item.className = 'rosa-item';
+      const roleEl = document.createElement('span');
+      roleEl.className = 'role-badge role-' + role;
+      roleEl.textContent = role;
+      const info = document.createElement('div');
+      info.className = 'rosa-item-info';
+      const nameEl = document.createElement('div');
+      nameEl.className = 'rosa-item-name';
+      nameEl.textContent = a.player || '—';
+      const metaEl = document.createElement('div');
+      metaEl.className = 'rosa-item-meta';
+      metaEl.textContent = pd ? pd.Squadra : (a.ruolo || '—');
+      info.appendChild(nameEl);
+      info.appendChild(metaEl);
+      const priceEl = document.createElement('span');
+      priceEl.className = 'rosa-item-price';
+      priceEl.textContent = (a.amount || 0) + ' cr';
+      item.appendChild(roleEl);
+      item.appendChild(info);
+      item.appendChild(priceEl);
+      container.appendChild(item);
+    });
   });
 }
 </script>
