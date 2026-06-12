@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fantacaserma — Dashboard Admin</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<style>
+:root{--bg:#0a1628;--bg2:#111d35;--bg3:#1a2744;--card:#1e2d40;--card2:#162233;--gold:#ffd700;--green:#22c55e;--red:#ef4444;--blue:#3b82f6;--text:#e2e8f0;--text-m:#94a3b8;--text-s:#64748b;--border:#2d3f5c;--P:#f59e0b;--D:#22c55e;--C:#3b82f6;--A:#ef4444;--r:10px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;font-size:14px;display:flex;flex-direction:column;}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#lockScreen{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 30%,#162a50,var(--bg));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:9999;}
+#lockScreen h1{font-size:2rem;font-weight:900;color:var(--gold);letter-spacing:-1px}
+#lockBox{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:28px 32px;display:flex;flex-direction:column;gap:14px;width:320px;}
+#lockInput{background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:11px 14px;font-size:1rem;outline:none}
+#lockInput:focus{border-color:var(--gold)}
+#lockBtn{background:var(--gold);color:#000;font-weight:800;font-size:1rem;padding:12px;border-radius:8px;border:none;cursor:pointer}
+#lockErr{color:var(--red);font-size:.83rem;text-align:center;display:none}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;height:52px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.topbar-brand{font-weight:900;font-size:1.05rem;color:var(--gold)}
+.topbar-spacer{flex:1}
+.phase-pill{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:.8rem;font-weight:700}
+.phase-pill.bidding{border-color:var(--green);color:var(--green)}
+.phase-pill.reveal{border-color:var(--blue);color:var(--blue)}
+.phase-pill.tiebreaker{border-color:var(--red);color:var(--red)}
+.phase-pill.assigned{border-color:#a855f7;color:#a855f7}
+.phase-dot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0}
+.conn-pill{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:20px;padding:5px 13px;font-size:.78rem;font-weight:700;color:var(--green)}
+.conn-pill.partial{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);color:#f59e0b}
+.topbar-clock{font-variant-numeric:tabular-nums;font-size:.82rem;color:var(--text-m)}
+.btn-exit{background:transparent;color:var(--text-s);font-size:.75rem;padding:5px 10px;border-radius:6px;border:1px solid var(--border);cursor:pointer}
+.round-badge{background:var(--bg3);border-radius:6px;padding:3px 10px;font-size:.72rem;font-weight:700;color:var(--text-m)}
+.dash-body{flex:1;display:grid;grid-template-columns:260px 1fr 260px;grid-template-rows:1fr auto;gap:10px;padding:10px;overflow:hidden}
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);display:flex;flex-direction:column;overflow:hidden}
+.panel-header{padding:10px 14px;border-bottom:1px solid var(--border);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-s);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.ph-count{margin-left:auto;background:var(--bg3);border-radius:10px;padding:2px 8px;color:var(--text-m);font-size:.68rem}
+.panel-body{flex:1;overflow-y:auto;padding:8px}
+.team-card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:5px;display:flex;align-items:center;gap:8px;transition:border-color .3s}
+.team-card.online{border-color:rgba(34,197,94,.35)}
+.tc-dot{width:9px;height:9px;border-radius:50%;background:var(--text-s);flex-shrink:0;transition:background .4s,box-shadow .4s}
+.tc-dot.online{background:var(--green);box-shadow:0 0 6px var(--green)}
+.tc-info{flex:1;min-width:0}
+.tc-name{font-size:.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tc-sub{font-size:.68rem;color:var(--text-m);margin-top:1px}
+.tc-budget-num{font-size:.88rem;font-weight:800;color:var(--gold)}
+.tc-budget-bar{height:3px;background:var(--border);border-radius:2px;margin-top:3px;width:50px;overflow:hidden}
+.tc-budget-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .6s}
+.tc-budget-fill.low{background:var(--red)}
+.tc-budget-fill.mid{background:#f59e0b}
+.auction-card{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--border);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;align-items:center;gap:10px;flex-shrink:0}
+.auction-card.bidding{border-color:var(--green);box-shadow:0 0 20px rgba(34,197,94,.15)}
+.auction-card.reveal{border-color:var(--blue);box-shadow:0 0 20px rgba(59,130,246,.15)}
+.auction-card.tiebreaker{border-color:var(--red);box-shadow:0 0 20px rgba(239,68,68,.15)}
+.auction-card.assigned{border-color:#a855f7;box-shadow:0 0 20px rgba(168,85,247,.15)}
+.timer-wrap{position:relative;width:96px;height:96px;flex-shrink:0}
+.timer-svg{width:100%;height:100%;transform:rotate(-90deg)}
+.timer-bg{fill:none;stroke:var(--bg3);stroke-width:6}
+.timer-ring{fill:none;stroke:var(--green);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .9s linear,stroke .4s}
+.timer-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.role-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.72rem;font-weight:700}
+.role-P{background:rgba(245,158,11,.2);color:var(--P)}
+.role-D{background:rgba(34,197,94,.2);color:var(--D)}
+.role-C{background:rgba(59,130,246,.2);color:var(--C)}
+.role-A{background:rgba(239,68,68,.2);color:var(--A)}
+.bids-grid{width:100%;border-collapse:collapse;font-size:.8rem}
+.bids-grid th{background:var(--bg3);padding:6px 10px;text-align:left;color:var(--text-s);font-size:.68rem;text-transform:uppercase;letter-spacing:.5px}
+.bids-grid td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.04)}
+.bids-grid tr.winner td{background:rgba(34,197,94,.08)}
+.bids-grid tr.winner td:first-child{border-left:3px solid var(--green)}
+.bid-val{font-weight:800;color:var(--gold)}
+.recent-item{background:var(--card2);border-radius:7px;padding:8px 10px;margin-bottom:5px;display:flex;align-items:center;gap:8px}
+.ri-info{flex:1;min-width:0}
+.ri-player{font-size:.8rem;font-weight:700}
+.ri-team{font-size:.68rem;color:var(--text-m);margin-top:1px}
+.ri-price{font-size:.85rem;font-weight:800;color:var(--gold)}
+.stats-bar{grid-column:1/-1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:8px 16px;display:flex;align-items:center;gap:20px;flex-shrink:0}
+.stat-item{display:flex;align-items:center;gap:6px}
+.stat-label{font-size:.7rem;color:var(--text-s);text-transform:uppercase;letter-spacing:.5px}
+.stat-value{font-size:.95rem;font-weight:800}
+.center-panel{grid-column:2;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .3s ease}
+</style>
+</head>
+<body>
+<div id="lockScreen">
+  <div style="font-size:3rem">🏆</div>
+  <h1>Fantacaserma Dashboard</h1>
+  <p style="color:var(--text-m);font-size:.9rem">Accesso riservato all'amministratore</p>
+  <div id="lockBox">
+    <label style="font-size:.8rem;color:var(--text-m)">Password admin</label>
+    <input type="password" id="lockInput" placeholder="Inserisci password…" autocomplete="off">
+    <button id="lockBtn" onclick="unlock()">Entra nella Dashboard →</button>
+    <div id="lockErr">Password errata. Riprova.</div>
+  </div>
+</div>
+<div id="mainDash" style="display:none;flex-direction:column;height:100%;">
+  <div class="topbar">
+    <div class="topbar-brand">🏆 Fantacaserma <span style="font-size:.65rem;font-weight:400;color:var(--text-s);background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.2);border-radius:4px;padding:1px 6px;margin-left:4px;">DASHBOARD</span></div>
+    <div class="topbar-spacer"></div>
+    <div class="round-badge" id="roundBadge">Round 1</div>
+    <div class="phase-pill" id="phasePill"><span class="phase-dot"></span><span id="phaseLabel">In attesa</span></div>
+    <div class="conn-pill partial" id="connPill">0/10 online</div>
+    <div class="topbar-clock" id="topClock">--:--:--</div>
+    <button class="btn-exit" onclick="exitDash()">✕ Esci</button>
+  </div>
+  <div class="dash-body">
+    <div class="panel">
+      <div class="panel-header">👥 Squadre <span class="ph-count" id="teamsConnCount">0/10</span></div>
+      <div class="panel-body" id="teamsBody"></div>
+    </div>
+    <div class="center-panel">
+      <div class="auction-card" id="auctionCard">
+        <div id="acWaiting" style="color:var(--text-s);font-size:.9rem;font-style:italic;padding:20px 0;">⏳ In attesa dell'asta…</div>
+        <div id="acActive" style="display:none;width:100%;flex-direction:column;align-items:center;gap:10px;">
+          <div style="display:flex;gap:16px;align-items:center;width:100%;">
+            <div class="timer-wrap">
+              <svg class="timer-svg" viewBox="0 0 100 100">
+                <circle class="timer-bg" cx="50" cy="50" r="44"/>
+                <circle class="timer-ring" id="dashTimerRing" cx="50" cy="50" r="44" stroke-dasharray="276.46" stroke-dashoffset="0"/>
+              </svg>
+              <div class="timer-num">
+                <span id="dashTimerNum" style="font-size:1.6rem;font-weight:900;line-height:1;">30</span>
+                <span style="font-size:.55rem;color:var(--text-s);text-transform:uppercase;letter-spacing:.5px;">sec</span>
+              </div>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div id="acPlayerName" style="font-size:1.4rem;font-weight:900;line-height:1.1;">—</div>
+              <div id="acPlayerSub" style="font-size:.78rem;color:var(--text-m);margin-top:2px;"></div>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+                <span class="role-badge" id="acRoleBadge">—</span>
+                <span id="acQi" style="font-size:.75rem;color:var(--text-m);background:var(--bg3);border-radius:4px;padding:2px 7px;">QI —</span>
+                <span id="acMinBid" style="font-size:.72rem;color:var(--text-s);margin-left:auto;">min: 1 cr</span>
+              </div>
+            </div>
+          </div>
+          <div id="bidsTableWrap" style="width:100%;display:none;">
+            <table class="bids-grid">
+              <thead><tr><th>Squadra</th><th>Offerta</th><th></th></tr></thead>
+              <tbody id="bidsTableBody"></tbody>
+            </table>
+          </div>
+          <div id="bidsWaitingWrap" style="width:100%;display:none;">
+            <table class="bids-grid">
+              <thead><tr><th>Squadra</th><th>Stato offerta</th></tr></thead>
+              <tbody id="bidsWaitingBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="panel" style="flex:1;min-height:0;">
+        <div class="panel-header">🎽 Ultimi acquisti <span class="ph-count" id="totalSold">0</span></div>
+        <div class="panel-body" id="recentBody"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">📋 Rosa per squadra</div>
+      <div class="panel-body" id="rosterBody"></div>
+    </div>
+    <div class="stats-bar">
+      <div class="stat-item"><span class="stat-label">Venduti</span><span class="stat-value" style="color:var(--green)" id="statSold">0</span><span style="font-size:.72rem;color:var(--text-s)">/663</span></div>
+      <div style="width:1px;height:24px;background:var(--border)"></div>
+      <div class="stat-item"><span class="stat-label">Budget tot</span><span class="stat-value" style="color:var(--gold)" id="statBudget">5000</span><span style="font-size:.72rem;color:var(--text-s)">cr</span></div>
+      <div style="width:1px;height:24px;background:var(--border)"></div>
+      <div class="stat-item"><span class="stat-label">Speso</span><span class="stat-value" id="statSpent">0</span><span style="font-size:.72rem;color:var(--text-s)">cr</span></div>
+      <div style="width:1px;height:24px;background:var(--border)"></div>
+      <div class="stat-item"><span class="stat-label">Prezzo medio</span><span class="stat-value" id="statAvg">—</span><span style="font-size:.72rem;color:var(--text-s)">cr</span></div>
+      <div style="width:1px;height:24px;background:var(--border)"></div>
+      <div class="stat-item"><span class="stat-label">Fase</span><span class="stat-value" id="statPhase">In attesa</span></div>
+      <div class="topbar-spacer"></div>
+      <div style="font-size:.7rem;color:var(--red);font-weight:700;display:flex;align-items:center;gap:4px;"><span style="width:7px;height:7px;border-radius:50%;background:var(--red);display:inline-block;"></span>LIVE</div>
+    </div>
+  </div>
+</div>
+<script>
+const firebaseConfig={apiKey:"AIzaSyCOTpDSNMVvK8kYNw11OfBIQm3JaAx9kIM",authDomain:"fantacaserma-f2fe2.firebaseapp.com",databaseURL:"https://fantacaserma-f2fe2-default-rtdb.europe-west1.firebasedatabase.app",projectId:"fantacaserma-f2fe2",storageBucket:"fantacaserma-f2fe2.appspot.com",messagingSenderId:"691084462499",appId:"1:691084462499:web:2b69cac83d04a8f0f30989"};
+const TEAMS=[{id:'t1',name:'Barca',emoji:'⚓'},{id:'t2',name:'Benfiga',emoji:'🦅'},{id:'t3',name:'Frattese1985',emoji:'🔴'},{id:'t4',name:'Morpheus',emoji:'💊'},{id:'t5',name:'Paris San Giuann',emoji:'🗼'},{id:'t6',name:'REAL',emoji:'👑'},{id:'t7',name:'Sharktar',emoji:'🦈'},{id:'t8',name:'SoxTeam',emoji:'🧦'},{id:'t9',name:'Vincan',emoji:'🍷'},{id:'t10',name:'giomammo',emoji:'🎮'}];
+const ADMIN_PASSWORD='fantacaserma2025';
+const BUDGET_START=500;
+const AUCTION_DURATION=30;
+const CIRC=276.46;
+let db=null,gameState={},teamsState={},bidsState={},bidSubmittedState={},assignmentsState=[],avatarsState={};
+let timerInterval=null;
+
+document.getElementById('lockInput').addEventListener('keydown',function(e){if(e.key==='Enter')unlock();});
+
+function unlock(){
+  var val=document.getElementById('lockInput').value.trim();
+  if(val===ADMIN_PASSWORD){
+    document.getElementById('lockScreen').style.display='none';
+    var d=document.getElementById('mainDash');d.style.display='flex';
+    initDashboard();
+  }else{
+    var err=document.getElementById('lockErr');err.style.display='block';
+    document.getElementById('lockInput').value='';
+    document.getElementById('lockInput').focus();
+    setTimeout(function(){err.style.display='none';},2000);
+  }
+}
+
+function exitDash(){
+  document.getElementById('mainDash').style.display='none';
+  document.getElementById('lockScreen').style.display='flex';
+  document.getElementById('lockInput').value='';
+  if(db){['game','teams','bids','bidSubmitted','assignments','avatars'].forEach(function(k){db.ref('/'+k).off();});}
+  clearInterval(timerInterval);
+}
+
+function pad(n){return String(n).padStart(2,'0');}
+
+function startClock(){
+  function tick(){var n=new Date();document.getElementById('topClock').textContent=pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());}
+  tick();setInterval(tick,1000);
+}
+
+function setText(id,val){var el=document.getElementById(id);if(el)el.textContent=val;}
+function clearEl(el){while(el.firstChild)el.removeChild(el.firstChild);}
+
+function initDashboard(){
+  startClock();renderTeams();renderRecent();renderRoster();
+  try{firebase.initializeApp(firebaseConfig);db=firebase.database();}catch(e){console.warn(e);db=null;}
+  if(!db)return;
+  db.ref('/game').on('value',function(s){gameState=s.val()||{};onGameChange();});
+  db.ref('/teams').on('value',function(s){teamsState=s.val()||{};renderTeams();updateStats();});
+  db.ref('/bids').on('value',function(s){bidsState=s.val()||{};renderBidsTable();});
+  db.ref('/bidSubmitted').on('value',function(s){bidSubmittedState=s.val()||{};renderBidsWaiting();});
+  db.ref('/assignments').on('value',function(s){
+    var raw=s.val();assignmentsState=raw?Object.values(raw):[];
+    renderRecent();renderRoster();updateStats();
+  });
+  db.ref('/avatars').on('value',function(s){avatarsState=s.val()||{};renderTeams();});
+}
+
+function onGameChange(){
+  var phase=gameState.phase||'waiting';
+  var cp=gameState.currentPlayer;
+  var labels={waiting:'In attesa',bidding:'Asta in corso',reveal:'Rivelazione',tiebreaker:'Spareggio',assigned:'Assegnato'};
+  var pill=document.getElementById('phasePill');
+  pill.className='phase-pill '+(phase!=='waiting'?phase:'');
+  setText('phaseLabel',(phase==='bidding'?'⚡ ':phase==='reveal'?'🎯 ':phase==='tiebreaker'?'⚖️ ':phase==='assigned'?'✅ ':'')+labels[phase]||phase);
+  setText('statPhase',labels[phase]||phase);
+  if(gameState.round)setText('roundBadge','Round '+gameState.round);
+  var acWaiting=document.getElementById('acWaiting');
+  var acActive=document.getElementById('acActive');
+  var aCard=document.getElementById('auctionCard');
+  if(!cp||phase==='waiting'){
+    acWaiting.style.display='block';acActive.style.display='none';
+    aCard.className='auction-card';
+    clearInterval(timerInterval);
+    setText('dashTimerNum',AUCTION_DURATION);
+    document.getElementById('dashTimerRing').style.strokeDashoffset='0';
+  }else{
+    acWaiting.style.display='none';acActive.style.display='flex';
+    aCard.className='auction-card '+phase;
+    setText('acPlayerName',cp.nome||'—');
+    setText('acPlayerSub',(cp.squadra||'')+(cp.squadra&&cp.ruolo?' · ':'')+(cp.ruolo||''));
+    var rb=document.getElementById('acRoleBadge');rb.textContent=cp.ruolo||'—';rb.className='role-badge role-'+(cp.ruolo||'');
+    setText('acQi','QI '+(cp.qi||'—'));
+    setText('acMinBid','min: '+(gameState.minBid||1)+' cr');
+  }
+  clearInterval(timerInterval);
+  if((phase==='bidding'||phase==='tiebreaker')&&gameState.timerEnd)startTimer(gameState.timerEnd);
+  var btw=document.getElementById('bidsTableWrap');
+  var bww=document.getElementById('bidsWaitingWrap');
+  if(phase==='reveal'||phase==='assigned'||phase==='tiebreaker'){
+    btw.style.display='block';bww.style.display='none';renderBidsTable();
+  }else if(phase==='bidding'){
+    btw.style.display='none';bww.style.display='block';renderBidsWaiting();
+  }else{btw.style.display='none';bww.style.display='none';}
+}
+
+function startTimer(endTs){
+  clearInterval(timerInterval);
+  var ring=document.getElementById('dashTimerRing');
+  var num=document.getElementById('dashTimerNum');
+  function tick(){
+    var rem=Math.max(0,Math.ceil((endTs-Date.now())/1000));
+    num.textContent=rem;
+    ring.style.strokeDashoffset=((1-rem/AUCTION_DURATION)*CIRC).toFixed(2);
+    ring.style.stroke=rem<=8?'var(--red)':rem<=15?'#f59e0b':'var(--green)';
+    if(rem<=0)clearInterval(timerInterval);
+  }
+  tick();timerInterval=setInterval(tick,500);
+}
+
+function renderTeams(){
+  var body=document.getElementById('teamsBody');clearEl(body);
+  var connCount=0;
+  TEAMS.forEach(function(t){
+    var td=teamsState[t.id]||{};
+    var online=!!td.connected;
+    var budget=td.budget!=null?td.budget:BUDGET_START;
+    var roster=td.rosterCount||0;
+    var pct=Math.max(0,Math.min(100,(budget/BUDGET_START)*100));
+    if(online)connCount++;
+    var card=document.createElement('div');
+    card.className='team-card'+(online?' online':'');
+    var av=avatarsState[t.id];
+    if(av){var img=document.createElement('img');img.src=av;img.alt=t.name;img.style.cssText='width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border);flex-shrink:0;';card.appendChild(img);}
+    else{var em=document.createElement('span');em.style.fontSize='1.1rem';em.textContent=t.emoji;card.appendChild(em);}
+    var dot=document.createElement('span');dot.className='tc-dot'+(online?' online':'');card.appendChild(dot);
+    var info=document.createElement('div');info.className='tc-info';
+    var nm=document.createElement('div');nm.className='tc-name';nm.textContent=t.name;info.appendChild(nm);
+    var sub=document.createElement('div');sub.className='tc-sub';sub.textContent=roster+' giocatori';info.appendChild(sub);
+    card.appendChild(info);
+    var bDiv=document.createElement('div');bDiv.style.textAlign='right';
+    var bNum=document.createElement('div');bNum.className='tc-budget-num';bNum.textContent=budget;bDiv.appendChild(bNum);
+    var bBar=document.createElement('div');bBar.className='tc-budget-bar';
+    var bFill=document.createElement('div');bFill.className='tc-budget-fill'+(pct<20?' low':pct<50?' mid':'');
+    bFill.style.width=pct+'%';bBar.appendChild(bFill);bDiv.appendChild(bBar);card.appendChild(bDiv);
+    body.appendChild(card);
+  });
+  setText('teamsConnCount',connCount+'/'+TEAMS.length);
+  var cp=document.getElementById('connPill');
+  cp.textContent=connCount+'/'+TEAMS.length+' online';
+  cp.className='conn-pill'+(connCount===TEAMS.length?'':' partial');
+}
+
+function renderBidsTable(){
+  var phase=gameState.phase||'waiting';
+  if(phase!=='reveal'&&phase!=='assigned'&&phase!=='tiebreaker')return;
+  var tbody=document.getElementById('bidsTableBody');clearEl(tbody);
+  var entries=TEAMS.map(function(t){return{t:t,bid:bidsState[t.id]!=null?bidsState[t.id]:null};})
+    .filter(function(e){return e.bid!=null;}).sort(function(a,b){return b.bid-a.bid;});
+  var maxBid=entries.length?entries[0].bid:0;
+  entries.forEach(function(e,idx){
+    var isW=e.bid===maxBid&&idx===0;
+    var tr=document.createElement('tr');if(isW)tr.className='winner';
+    var td1=document.createElement('td');td1.textContent=e.t.emoji+' '+e.t.name;tr.appendChild(td1);
+    var td2=document.createElement('td');var bv=document.createElement('span');bv.className='bid-val';bv.textContent=e.bid+' cr';td2.appendChild(bv);tr.appendChild(td2);
+    var td3=document.createElement('td');td3.textContent=isW?'🏆':'';tr.appendChild(td3);
+    tbody.appendChild(tr);
+  });
+  var biddedIds=new Set(entries.map(function(e){return e.t.id;}));
+  TEAMS.forEach(function(t){
+    if(!biddedIds.has(t.id)){
+      var tr=document.createElement('tr');
+      var td1=document.createElement('td');td1.style.color='var(--text-s)';td1.textContent=t.emoji+' '+t.name;tr.appendChild(td1);
+      var td2=document.createElement('td');td2.style.cssText='color:var(--text-s);font-style:italic;';td2.textContent='—';tr.appendChild(td2);
+      var td3=document.createElement('td');tr.appendChild(td3);tbody.appendChild(tr);
+    }
+  });
+}
+
+function renderBidsWaiting(){
+  var phase=gameState.phase||'waiting';
+  if(phase!=='bidding')return;
+  var tbody=document.getElementById('bidsWaitingBody');clearEl(tbody);
+  TEAMS.forEach(function(t){
+    var submitted=!!(bidSubmittedState[t.id]);
+    var tr=document.createElement('tr');
+    var td1=document.createElement('td');td1.textContent=t.emoji+' '+t.name;tr.appendChild(td1);
+    var td2=document.createElement('td');
+    var dot=document.createElement('span');dot.style.cssText='display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:'+(submitted?'var(--green)':'var(--text-s)');
+    if(submitted)dot.style.boxShadow='0 0 5px var(--green)';td2.appendChild(dot);
+    var lbl=document.createElement('span');lbl.style.cssText=submitted?'color:var(--green);font-weight:700':'color:var(--text-s)';
+    lbl.textContent=submitted?'Inviata':'In attesa…';td2.appendChild(lbl);tr.appendChild(td2);tbody.appendChild(tr);
+  });
+}
+
+function renderRecent(){
+  var body=document.getElementById('recentBody');clearEl(body);
+  setText('totalSold',assignmentsState.length);
+  if(!assignmentsState.length){
+    var msg=document.createElement('div');msg.style.cssText='text-align:center;color:var(--text-s);padding:20px;font-size:.8rem;';
+    msg.textContent='Nessun acquisto ancora';body.appendChild(msg);return;
+  }
+  var list=assignmentsState.slice().reverse().slice(0,25);
+  list.forEach(function(a){
+    var team=TEAMS.find(function(t){return t.id===a.teamId;});
+    var item=document.createElement('div');item.className='recent-item fade-in';
+    var rb=document.createElement('span');rb.className='role-badge role-'+(a.ruolo||'');rb.textContent=a.ruolo||'?';item.appendChild(rb);
+    var inf=document.createElement('div');inf.className='ri-info';
+    var pn=document.createElement('div');pn.className='ri-player';pn.textContent=a.nome||'—';inf.appendChild(pn);
+    var tm=document.createElement('div');tm.className='ri-team';tm.textContent=(team?team.emoji+' '+team.name:'—')+' · '+(a.squadra||'');inf.appendChild(tm);
+    item.appendChild(inf);
+    var pr=document.createElement('div');pr.className='ri-price';pr.textContent=(a.price||'?')+' cr';item.appendChild(pr);
+    body.appendChild(item);
+  });
+}
+
+function renderRoster(){
+  var body=document.getElementById('rosterBody');clearEl(body);
+  var hasAny=false;
+  TEAMS.forEach(function(t){
+    var players=assignmentsState.filter(function(a){return a.teamId===t.id;});
+    if(!players.length)return;
+    hasAny=true;
+    var sec=document.createElement('div');sec.style.marginBottom='10px';
+    var hdr=document.createElement('div');hdr.style.cssText='font-size:.72rem;font-weight:700;color:var(--text-m);margin-bottom:4px;';
+    hdr.textContent=t.emoji+' '+t.name+' ('+players.length+')';sec.appendChild(hdr);
+    players.forEach(function(p){
+      var row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:6px;padding:3px 6px;border-radius:5px;font-size:.75rem;margin-bottom:2px;background:rgba(255,255,255,.02);';
+      var rb=document.createElement('span');rb.className='role-badge role-'+(p.ruolo||'');rb.style.cssText='padding:1px 5px;font-size:.62rem;';rb.textContent=p.ruolo||'?';row.appendChild(rb);
+      var nm=document.createElement('span');nm.style.flex='1';nm.textContent=p.nome||'—';row.appendChild(nm);
+      var pr=document.createElement('span');pr.style.cssText='color:var(--gold);font-weight:700;';pr.textContent=p.price||'?';row.appendChild(pr);
+      sec.appendChild(row);
+    });
+    body.appendChild(sec);
+  });
+  if(!hasAny){
+    var msg=document.createElement('div');msg.style.cssText='text-align:center;color:var(--text-s);padding:20px;font-size:.8rem;';
+    msg.textContent='Nessun calciatore acquistato';body.appendChild(msg);
+  }
+}
+
+function updateStats(){
+  var sold=assignmentsState.length;
+  setText('statSold',sold);
+  var totalBudget=TEAMS.reduce(function(s,t){var td=teamsState[t.id]||{};return s+(td.budget!=null?td.budget:BUDGET_START);},0);
+  var spent=TEAMS.length*BUDGET_START-totalBudget;
+  setText('statBudget',totalBudget);setText('statSpent',spent);
+  setText('statAvg',sold>0?Math.round(spent/sold):'—');
+}
+</script>
+</body>
+</html>
