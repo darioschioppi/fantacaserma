@@ -132,7 +132,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 @keyframes pulse-green{0%,100%{box-shadow:0 0 14px var(--green),0 0 28px rgba(34,197,94,.4);}50%{box-shadow:0 0 22px var(--green),0 0 44px rgba(34,197,94,.6);}}
 @keyframes pulse-red{0%,100%{box-shadow:0 0 14px var(--red),0 0 28px rgba(239,68,68,.4);}50%{box-shadow:0 0 22px var(--red),0 0 44px rgba(239,68,68,.6);}}
 .seat-badge-you{position:absolute;top:-6px;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;font-size:.55rem;font-weight:900;padding:1px 5px;border-radius:4px;letter-spacing:.5px;white-space:nowrap;}
-.seat-name{font-size:.62rem;font-weight:700;text-align:center;color:var(--text-m);max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.seat-name{font-size:.62rem;font-weight:700;text-align:center;color:var(--text);max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.8);}
 .seat-name.mine{color:var(--gold);}
 /* AVATAR */
 .seat-chip img.avatar-img{position:absolute;inset:0;width:100%;height:100%;border-radius:50%;object-fit:cover;z-index:1;}
@@ -992,7 +992,8 @@ function buildPokerTable() {
 
     const nameEl = document.createElement('div');
     nameEl.className = 'seat-name' + (isMe ? ' mine' : '');
-    nameEl.textContent = t.name.split(' ')[0];
+    const shortN = t.name.split(' ')[0];
+    nameEl.textContent = shortN.length > 8 ? shortN.substring(0, 7) + '…' : shortN;
 
     seat.appendChild(chip);
     seat.appendChild(nameEl);
