@@ -561,6 +561,7 @@ let bidsState = {};
 let bidSubmittedState = {};
 let avatarsState = {};
 let assignmentsState = [];
+let presenceState = {};
 let timerInterval = null;
 let timerEndTs = null;
 let myBidSent = false;
@@ -672,7 +673,6 @@ function loginTeam() {
   if (!team || team.password !== pwd) { errEl.classList.add('visible'); return; }
   currentUser = { type: 'team', teamId: team.id, teamName: team.name, teamEmoji: team.emoji, isPresident: !!team.isPresident };
   sessionStorage.setItem('fcUser', JSON.stringify(currentUser));
-  if (db) db.ref('/teams/' + team.id + '/connected').set(true);
   enterParticipant();
 }
 
@@ -688,7 +688,7 @@ function loginAdmin() {
 
 function logout() {
   if (currentUser && db && (currentUser.type === 'team' || currentUser.isPresident) && currentUser.teamId) {
-    db.ref('/teams/' + currentUser.teamId + '/connected').set(false);
+    db.ref('/presence/' + currentUser.teamId).set(false);
   }
   clearFirebaseListeners();
   clearTimerInterval();
@@ -1203,12 +1203,10 @@ function buildPokerTable() {
 }
 
 function updateConnectedChips() {
-  if (!teamsState) return;
   let count = 0;
   const missing = [];
   TEAMS.forEach(t => {
-    const td = teamsState[t.id] || {};
-    const online = !!td.connected;
+    const online = !!(presenceState[t.id]);
     if (online) count++; else missing.push(t.name.split(' ')[0]);
     const dot = document.getElementById('online-dot-' + t.id);
     if (dot) dot.classList.toggle('online', online);
@@ -1227,10 +1225,10 @@ function updateConnectedChips() {
 
 function initParticipantFirebase() {
   if (!db) return;
-  db.ref('/teams/' + currentUser.teamId + '/connected').set(true);
-  window.addEventListener('beforeunload', () => {
-    db.ref('/teams/' + currentUser.teamId + '/connected').set(false);
-  });
+  // Presenza: onDisconnect garantisce la pulizia lato server anche se il browser si chiude di botto
+  const presRef = db.ref('/presence/' + currentUser.teamId);
+  presRef.set(true);
+  presRef.onDisconnect().set(false);
   db.ref('/game').on('value', snap => { gameState = snap.val() || {}; handleGameStateChange(); });
   db.ref('/bidSubmitted').on('value', snap => { bidSubmittedState = snap.val() || {}; updateSeatSubmitted(); });
   db.ref('/bids').on('value', snap => {
@@ -1238,7 +1236,8 @@ function initParticipantFirebase() {
     if (gameState.phase === 'reveal' || gameState.phase === 'assigned') renderRevealOverlay(gameState.phase === 'assigned');
     if (currentUser && currentUser.isPresident) renderPresidentBids();
   });
-  db.ref('/teams').on('value', snap => { teamsState = snap.val() || {}; updateBudgetDisplay(); updateConnectedChips(); });
+  db.ref('/teams').on('value', snap => { teamsState = snap.val() || {}; updateBudgetDisplay(); });
+  db.ref('/presence').on('value', snap => { presenceState = snap.val() || {}; updateConnectedChips(); });
   db.ref('/assignments').on('value', snap => {
     const raw = snap.val();
     assignmentsState = raw ? Object.values(raw) : [];

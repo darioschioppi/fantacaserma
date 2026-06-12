@@ -209,7 +209,7 @@ const ADMIN_PASSWORD='fantacaserma2025';
 const BUDGET_START=500;
 const AUCTION_DURATION=30;
 const CIRC=276.46;
-let db=null,gameState={},teamsState={},bidsState={},bidSubmittedState={},assignmentsState=[],avatarsState={};
+let db=null,gameState={},teamsState={},bidsState={},bidSubmittedState={},assignmentsState=[],avatarsState={},presenceState={};
 let timerInterval=null;
 
 document.getElementById('lockInput').addEventListener('keydown',function(e){if(e.key==='Enter')unlock();});
@@ -232,7 +232,7 @@ function exitDash(){
   document.getElementById('mainDash').style.display='none';
   document.getElementById('lockScreen').style.display='flex';
   document.getElementById('lockInput').value='';
-  if(db){['game','teams','bids','bidSubmitted','assignments','avatars','log'].forEach(function(k){db.ref('/'+k).off();});}
+  if(db){['game','teams','bids','bidSubmitted','assignments','avatars','log','presence'].forEach(function(k){db.ref('/'+k).off();});}
   clearInterval(timerInterval);
 }
 
@@ -255,6 +255,7 @@ function initDashboard(){
   if(!db)return;
   db.ref('/game').on('value',function(s){gameState=s.val()||{};onGameChange();});
   db.ref('/teams').on('value',function(s){teamsState=s.val()||{};renderTeams();updateStats();});
+  db.ref('/presence').on('value',function(s){presenceState=s.val()||{};renderTeams();});
   db.ref('/bids').on('value',function(s){bidsState=s.val()||{};renderBidsTable();});
   db.ref('/bidSubmitted').on('value',function(s){bidSubmittedState=s.val()||{};renderBidsWaiting();});
   db.ref('/assignments').on('value',function(s){
@@ -360,7 +361,7 @@ function renderTeams(){
   var connCount=0;
   TEAMS.forEach(function(t){
     var td=teamsState[t.id]||{};
-    var online=!!td.connected;
+    var online=!!(presenceState[t.id]);
     var budget=td.budget!=null?td.budget:BUDGET_START;
     var roster=td.rosterCount||0;
     var pct=Math.max(0,Math.min(100,(budget/BUDGET_START)*100));
