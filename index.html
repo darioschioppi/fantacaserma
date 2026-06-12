@@ -348,16 +348,20 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
             <button class="btn-skip" onclick="adminSkip()">⏭ Salta (non assegnare)</button>
           </div>
         </div>
-        <!-- OFFERTA PRESIDENTE (solo per Benfiga) -->
-        <div id="aapPresidentBid" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
-          <div style="font-size:.75rem;color:var(--text-m);margin-bottom:7px;">🦅 La tua offerta come <strong style="color:var(--gold)">Benfiga</strong>:</div>
-          <div class="bid-row">
-            <input class="bid-input" type="number" id="presidentBidInput" min="1" value="1" step="1" style="font-size:1rem;padding:8px 12px;">
-            <button class="btn-bid" id="presidentBidBtn" onclick="presidentSubmitBid()" style="font-size:.88rem;padding:9px 16px;">💰 OFFERTA</button>
-          </div>
-          <div class="bid-sent" id="presidentBidSent">✅ Offerta inviata!</div>
-        </div>
       </div>
+    </div>
+  </div>
+  <!-- PANNELLO OFFERTA PRESIDENTE - sempre visibile per Benfiga -->
+  <div id="presidentePanel" style="display:none;background:rgba(255,215,0,.06);border-top:2px solid var(--gold2);padding:14px 18px;flex-shrink:0;">
+    <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gold2);margin-bottom:10px;">🦅 La tua offerta come Benfiga</div>
+    <div id="presWaiting" style="color:var(--text-m);font-size:.85rem;font-style:italic;">In attesa che inizi un'asta…</div>
+    <div id="presidentBidArea" style="display:none;flex-direction:column;gap:7px;">
+      <div style="font-size:.78rem;color:var(--text-m);">Offerta minima: <strong id="presMinLabel">1</strong> cr · Budget: <strong id="presBudgetLabel" style="color:var(--gold)">500</strong> cr</div>
+      <div class="bid-row">
+        <input class="bid-input" type="number" id="presidentBidInput" min="1" value="1" step="1">
+        <button class="btn-bid" id="presidentBidBtn" onclick="presidentSubmitBid()">💰 OFFERTA</button>
+      </div>
+      <div class="bid-sent" id="presidentBidSent">✅ Offerta inviata!</div>
     </div>
   </div>
   <div class="mobile-nav" id="adminMobileNav">
@@ -638,6 +642,8 @@ function enterAdmin() {
     if (brand) brand.innerHTML = currentUser.teamEmoji + ' <span>' + currentUser.teamName + ' <small style="opacity:.6;font-size:.75rem;">(Admin)</small></span>';
     const budgetEl = document.getElementById('adminPresidentBudget');
     if (budgetEl) budgetEl.classList.remove('hidden');
+    const pp = document.getElementById('presidentePanel');
+    if (pp) pp.style.display = 'block';
   }
   initAdminFirebase();
 }
@@ -673,21 +679,7 @@ function initAdminFirebase() {
   db.ref('/bidSubmitted').on('value', snap => {
     bidSubmittedState = snap.val() || {};
     renderAdminBids();
-    // Sync bid button for president
-    if (currentUser && currentUser.isPresident) {
-      const phase = gameState.phase || 'waiting';
-      if (phase === 'bidding' || phase === 'tiebreaker') {
-        const mySubmitted = !!bidSubmittedState[currentUser.teamId];
-        const btn = document.getElementById('presidentBidBtn');
-        const sent = document.getElementById('presidentBidSent');
-        const inp = document.getElementById('presidentBidInput');
-        if (btn && sent && inp) {
-          btn.disabled = mySubmitted;
-          inp.disabled = mySubmitted;
-          if (mySubmitted) sent.classList.add('visible');
-        }
-      }
-    }
+    if (currentUser && currentUser.isPresident) updatePresidentBidPanel();
   });
   db.ref('/assignments').on('value', snap => {
     const raw = snap.val();
@@ -761,36 +753,53 @@ function renderAdminAuctionPanel() {
   const phaseLabels = { bidding: '⚡ Asta in corso', reveal: '🎯 Rivelazione', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato' };
   setText('aapPhaseLabel', phaseLabels[phase] || phase);
   timerEndTs = gameState.timerEnd || null;
-  const presEl = document.getElementById('aapPresidentBid');
   if (phase === 'bidding' || phase === 'tiebreaker') {
     document.getElementById('aapActions').style.display = 'flex';
     document.getElementById('aapPostReveal').style.display = 'none';
-    // Pannello offerta presidente
-    if (presEl && currentUser && currentUser.isPresident) {
-      const tiebreakers = gameState.tiebreakers || null;
-      const inTiebreaker = !tiebreakers || tiebreakers.includes(currentUser.teamId);
-      presEl.style.display = inTiebreaker ? 'block' : 'none';
-      if (inTiebreaker) {
-        const minBid = gameState.minBid || 1;
-        const inp = document.getElementById('presidentBidInput');
-        if (inp) { inp.min = minBid; if (!bidSubmittedState[currentUser.teamId]) inp.value = minBid; }
-        const mySubmitted = !!bidSubmittedState[currentUser.teamId];
-        const btn = document.getElementById('presidentBidBtn');
-        const sent = document.getElementById('presidentBidSent');
-        if (btn) btn.disabled = mySubmitted;
-        if (inp) inp.disabled = mySubmitted;
-        if (sent) mySubmitted ? sent.classList.add('visible') : sent.classList.remove('visible');
-      }
-    }
   } else if (phase === 'reveal') {
     document.getElementById('aapActions').style.display = 'none';
     document.getElementById('aapPostReveal').style.display = 'block';
-    if (presEl) presEl.style.display = 'none';
     computeAndShowWinner();
   } else {
     document.getElementById('aapActions').style.display = 'none';
     document.getElementById('aapPostReveal').style.display = 'none';
-    if (presEl) presEl.style.display = 'none';
+  }
+  // Aggiorna pannello offerta presidente (indipendente)
+  if (currentUser && currentUser.isPresident) updatePresidentBidPanel();
+}
+
+function updatePresidentBidPanel() {
+  const phase = gameState.phase || 'waiting';
+  const waiting = document.getElementById('presWaiting');
+  const bidArea = document.getElementById('presidentBidArea');
+  if (!waiting || !bidArea) return;
+  const tiebreakers = gameState.tiebreakers || null;
+  const inTiebreaker = !tiebreakers || tiebreakers.includes(currentUser.teamId);
+  const canBid = (phase === 'bidding' || phase === 'tiebreaker') && inTiebreaker;
+  if (canBid) {
+    waiting.style.display = 'none';
+    bidArea.style.display = 'flex';
+    const minBid = gameState.minBid || 1;
+    const td = teamsState[currentUser.teamId] || {};
+    const budget = td.budget != null ? td.budget : BUDGET_START;
+    setText('presMinLabel', minBid);
+    setText('presBudgetLabel', budget);
+    const inp = document.getElementById('presidentBidInput');
+    if (inp) { inp.min = minBid; if (!bidSubmittedState[currentUser.teamId]) inp.value = minBid; }
+    const mySubmitted = !!bidSubmittedState[currentUser.teamId];
+    const btn = document.getElementById('presidentBidBtn');
+    const sent = document.getElementById('presidentBidSent');
+    if (btn) btn.disabled = mySubmitted;
+    if (inp) inp.disabled = mySubmitted;
+    if (sent) mySubmitted ? sent.classList.add('visible') : sent.classList.remove('visible');
+  } else if (phase === 'tiebreaker' && !inTiebreaker) {
+    waiting.style.display = 'block';
+    waiting.textContent = '👀 Sei fuori dallo spareggio (solo osservatore)';
+    bidArea.style.display = 'none';
+  } else {
+    waiting.style.display = 'block';
+    waiting.textContent = 'In attesa che inizi un\'asta…';
+    bidArea.style.display = 'none';
   }
 }
 
@@ -937,6 +946,7 @@ function adminSkip() {
   db.ref('/bids').set(null);
   db.ref('/bidSubmitted').set(null);
   toast('⏭ Giocatore saltato', 'info');
+  if (currentUser && currentUser.isPresident) updatePresidentBidPanel();
 }
 
 // ─── PLAYER SEARCH ───
