@@ -213,9 +213,23 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 /* MOBILE NAV */
 .mobile-nav{display:none;background:var(--bg2);border-top:1px solid var(--border);padding:8px 0 max(8px,env(safe-area-inset-bottom));flex-shrink:0;}
 @media(max-width:600px){.mobile-nav{display:flex;}.admin-sidebar{display:none;}}
+#participantMobileNav{display:flex;}
 .mobile-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;color:var(--text-s);font-size:.65rem;padding:4px 0;transition:color .2s;}
 .mobile-nav-btn.active{color:var(--gold);}
 .mobile-nav-btn .icon{font-size:1.3rem;}
+/* PLAYERS PANEL */
+.players-panel{flex:1;display:none;flex-direction:column;overflow:hidden;background:var(--bg);}
+.pp-search-bar{display:flex;gap:6px;flex-wrap:wrap;padding:10px 12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.pp-search-input{flex:1;min-width:120px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 11px;}
+.pp-search-input:focus{border-color:var(--blue);}
+.pp-select{background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 9px;}
+.pp-table-wrap{flex:1;overflow-y:auto;padding:0 8px 8px;}
+.pp-table{width:100%;border-collapse:collapse;font-size:.82rem;}
+.pp-table th{position:sticky;top:0;background:var(--bg2);padding:7px 5px;text-align:left;color:var(--text-s);font-weight:600;font-size:.72rem;text-transform:uppercase;border-bottom:1px solid var(--border);}
+.pp-table td{padding:6px 5px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle;}
+.pp-table tr:hover td{background:rgba(255,255,255,.03);}
+.pp-assigned-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3);color:var(--gold);padding:2px 8px;border-radius:4px;font-size:.7rem;font-weight:700;white-space:nowrap;}
+.pp-row-assigned td{opacity:.45;}
 /* UTILS */
 .hidden{display:none!important;}
 .phase-badge{display:inline-flex;align-items:center;gap:5px;font-size:.75rem;font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--text-m);}
@@ -376,6 +390,33 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         </div>
       </div>
     </div>
+    <!-- PLAYERS PANEL -->
+    <div class="players-panel" id="playersPanel">
+      <div class="pp-search-bar">
+        <input class="pp-search-input" id="ppSearch" placeholder="🔍 Cerca giocatore…" oninput="filterParticipantPlayers()">
+        <select class="pp-select" id="ppFilterRuolo" onchange="filterParticipantPlayers()">
+          <option value="">Tutti i ruoli</option>
+          <option value="P">🧤 P</option>
+          <option value="D">🛡️ D</option>
+          <option value="C">⚙️ C</option>
+          <option value="A">⚽ A</option>
+        </select>
+        <select class="pp-select" id="ppSort" onchange="filterParticipantPlayers()">
+          <option value="az">🔤 A→Z</option>
+          <option value="za">🔤 Z→A</option>
+          <option value="qa_desc">💰 QA ↓</option>
+          <option value="qa_asc">💰 QA ↑</option>
+          <option value="qi_desc">📊 QI ↓</option>
+          <option value="qi_asc">📊 QI ↑</option>
+        </select>
+      </div>
+      <div class="pp-table-wrap">
+        <table class="pp-table">
+          <thead><tr><th>Nome</th><th>Sq.</th><th>R</th><th>QA</th><th>Acquistato da</th></tr></thead>
+          <tbody id="ppTableBody"><tr><td colspan="5" class="empty-state">Caricamento…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
     <div class="reveal-overlay" id="revealOverlay">
       <div class="reveal-title">🎯 RIVELAZIONE</div>
       <div style="font-size:.9rem;color:var(--text-m);" id="revealPlayerLabel">—</div>
@@ -389,6 +430,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
   </div>
   <div class="mobile-nav" id="participantMobileNav">
     <button class="mobile-nav-btn active" onclick="participantMobileTab('table',this)"><span class="icon">🃏</span>Tavolo</button>
+    <button class="mobile-nav-btn" onclick="participantMobileTab('players',this)"><span class="icon">📋</span>Rosa</button>
     <button class="mobile-nav-btn" onclick="participantMobileTab('recent',this)"><span class="icon">🛒</span>Acquisti</button>
   </div>
 </div>
@@ -900,6 +942,8 @@ function enterParticipant() {
   const u = currentUser;
   setText('participantTeamName', u.teamEmoji + ' ' + u.teamName);
   buildPokerTable();
+  // Assicura che il tab iniziale sia "Tavolo"
+  participantMobileTab('table', document.querySelector('#participantMobileNav .mobile-nav-btn'));
   initParticipantFirebase();
 }
 
@@ -971,6 +1015,7 @@ function initParticipantFirebase() {
     const raw = snap.val();
     assignmentsState = raw ? Object.values(raw) : [];
     renderRecentList();
+    filterParticipantPlayers(); // aggiorna badge acquistati in real-time
   });
   db.ref('/avatars').on('value', snap => {
     avatarsState = snap.val() || {};
@@ -1381,17 +1426,83 @@ function adminMobileTab(tab, btn) {
 }
 
 function participantMobileTab(tab, btn) {
-  document.querySelectorAll('#participantMobileNav .mobile-nav-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const rs = document.querySelector('.recent-sidebar');
-  const pa = document.getElementById('pokerArea');
-  if (tab === 'recent') {
-    if (pa) pa.style.display = 'none';
-    if (rs) { rs.style.display = 'flex'; rs.style.width = '100%'; rs.style.borderLeft = 'none'; }
-  } else {
-    if (pa) pa.style.display = 'flex';
-    if (rs) { rs.style.display = 'none'; rs.style.width = '200px'; rs.style.borderLeft = ''; }
+  if (btn) {
+    document.querySelectorAll('#participantMobileNav .mobile-nav-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
   }
+  const pa = document.getElementById('pokerArea');
+  const pp = document.getElementById('playersPanel');
+  const rs = document.querySelector('.recent-sidebar');
+  // Reset all
+  if (pa) pa.style.display = 'none';
+  if (pp) pp.style.display = 'none';
+  if (rs) { rs.style.display = 'none'; rs.style.width = '200px'; rs.style.borderLeft = ''; }
+  if (tab === 'table') {
+    if (pa) pa.style.display = 'flex';
+  } else if (tab === 'players') {
+    if (pp) { pp.style.display = 'flex'; filterParticipantPlayers(); }
+  } else if (tab === 'recent') {
+    if (rs) { rs.style.display = 'flex'; rs.style.width = '100%'; rs.style.borderLeft = 'none'; }
+  }
+}
+
+// ─── PLAYER LIST (PARTICIPANT) ───
+function filterParticipantPlayers() {
+  const pp = document.getElementById('playersPanel');
+  if (!pp || pp.style.display === 'none') return;
+  const query = (document.getElementById('ppSearch').value || '').toLowerCase().trim();
+  const ruolo = document.getElementById('ppFilterRuolo').value;
+  const sort = document.getElementById('ppSort').value;
+  let results = [...allPlayers];
+  if (query) results = results.filter(p => p.Nome && p.Nome.toLowerCase().includes(query));
+  if (ruolo) results = results.filter(p => (p.Ruolo_Classic || '').startsWith(ruolo));
+  if (sort === 'az')       results.sort((a,b) => (a.Nome||'').localeCompare(b.Nome||''));
+  else if (sort === 'za')  results.sort((a,b) => (b.Nome||'').localeCompare(a.Nome||''));
+  else if (sort === 'qa_desc') results.sort((a,b) => (parseInt(b.QA)||0) - (parseInt(a.QA)||0));
+  else if (sort === 'qa_asc')  results.sort((a,b) => (parseInt(a.QA)||0) - (parseInt(b.QA)||0));
+  else if (sort === 'qi_desc') results.sort((a,b) => (parseInt(b.QI)||0) - (parseInt(a.QI)||0));
+  else if (sort === 'qi_asc')  results.sort((a,b) => (parseInt(a.QI)||0) - (parseInt(b.QI)||0));
+  renderParticipantPlayers(results.slice(0, 150));
+}
+
+function renderParticipantPlayers(players) {
+  const tbody = document.getElementById('ppTableBody');
+  if (!tbody) return;
+  tbody.textContent = '';
+  // Build assignment lookup by player name
+  const assignedMap = {};
+  assignmentsState.forEach(a => { if (a.player) assignedMap[a.player.toLowerCase()] = a; });
+  if (!players.length) {
+    const tr = document.createElement('tr');
+    const td = document.createElement('td'); td.colSpan = 5; td.className = 'empty-state';
+    td.textContent = 'Nessun risultato'; tr.appendChild(td); tbody.appendChild(tr); return;
+  }
+  players.forEach(p => {
+    const assigned = assignedMap[(p.Nome||'').toLowerCase()];
+    const tr = document.createElement('tr');
+    if (assigned) tr.className = 'pp-row-assigned';
+    const tdName = document.createElement('td');
+    tdName.style.fontWeight = '600'; tdName.textContent = p.Nome || '—';
+    const tdSq = document.createElement('td');
+    tdSq.style.cssText = 'color:var(--text-m);font-size:.75rem'; tdSq.textContent = p.Squadra || '—';
+    const tdR = document.createElement('td');
+    const badge = document.createElement('span');
+    const r = (p.Ruolo_Classic||'').charAt(0);
+    badge.className = 'role-badge role-' + r; badge.textContent = r || '—';
+    tdR.appendChild(badge);
+    const tdQA = document.createElement('td');
+    tdQA.style.color = 'var(--text-m)'; tdQA.textContent = p.QA != null ? p.QA : '—';
+    const tdAssigned = document.createElement('td');
+    if (assigned) {
+      const b = document.createElement('span'); b.className = 'pp-assigned-badge';
+      const team = TEAMS.find(t => t.id === assigned.teamId);
+      b.textContent = (team ? team.emoji + ' ' + team.name.split(' ')[0] : (assigned.teamName||'')) + ' · ' + assigned.amount + 'cr';
+      tdAssigned.appendChild(b);
+    }
+    tr.appendChild(tdName); tr.appendChild(tdSq); tr.appendChild(tdR);
+    tr.appendChild(tdQA); tr.appendChild(tdAssigned);
+    tbody.appendChild(tr);
+  });
 }
 </script>
 </body>
