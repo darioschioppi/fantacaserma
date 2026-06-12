@@ -120,6 +120,12 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 .seat{position:absolute;width:72px;display:flex;flex-direction:column;align-items:center;gap:3px;transform:translate(-50%,-50%);transition:opacity .3s;}
 .seat.dimmed{opacity:.25;}
 .seat-chip{width:56px;height:56px;border-radius:50%;background:var(--bg3);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;position:relative;transition:all .3s;}
+@media(max-width:480px){
+  .seat{width:52px;}
+  .seat-chip{width:40px;height:40px;font-size:1.1rem;}
+  .seat-name{font-size:.5rem;max-width:52px;}
+  .seat-badge-you{font-size:.45rem;padding:1px 3px;}
+}
 .seat-chip.submitted{border-color:var(--green);box-shadow:0 0 14px var(--green),0 0 28px rgba(34,197,94,.4);animation:pulse-green 1.5s infinite;}
 .seat-chip.mine{border-color:var(--gold);box-shadow:0 0 12px rgba(255,215,0,.4);}
 .seat-chip.tiebreaker{border-color:var(--red);box-shadow:0 0 14px var(--red),0 0 28px rgba(239,68,68,.4);animation:pulse-red 1s infinite;}
@@ -872,7 +878,9 @@ function enterParticipant() {
 function buildPokerTable() {
   const table = document.getElementById('pokerTable');
   table.querySelectorAll('.seat').forEach(s => s.remove());
-  const rx = 46, ry = 44;
+  const isMobile = window.innerWidth <= 480;
+  const rx = isMobile ? 40 : 44;
+  const ry = isMobile ? 38 : 42;
   TEAMS.forEach((t, i) => {
     const angle = (i / TEAMS.length) * 2 * Math.PI - Math.PI / 2;
     const leftPct = 50 + rx * Math.cos(angle);
