@@ -430,9 +430,23 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initFirebase() {
-  try { firebase.initializeApp(firebaseConfig); } catch(e) { /* already init */ }
-  db = firebase.database();
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+  } catch(e) {
+    console.warn('Firebase init error:', e);
+    db = null;
+  }
   loadPlayers();
+  // Fallback: se dopo 5 secondi siamo ancora sul loader, mostra il login comunque
+  setTimeout(() => {
+    const loader = document.getElementById('loader');
+    if (loader && !loader.classList.contains('hidden')) {
+      console.warn('Timeout loader, forcing login screen');
+      loader.classList.add('hidden');
+      showScreen('screen-login');
+    }
+  }, 5000);
 }
 
 function loadPlayers() {
