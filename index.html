@@ -688,7 +688,7 @@ function loginAdmin() {
 
 function logout() {
   if (currentUser && db && (currentUser.type === 'team' || currentUser.isPresident) && currentUser.teamId) {
-    db.ref('/presence/' + currentUser.teamId).remove();
+    db.ref('/teams/' + currentUser.teamId + '/connected').set(false);
   }
   clearFirebaseListeners();
   clearTimerInterval();
@@ -1206,7 +1206,8 @@ function updateConnectedChips() {
   let count = 0;
   const missing = [];
   TEAMS.forEach(t => {
-    const online = !!(presenceState[t.id]);
+    const td = teamsState[t.id] || {};
+    const online = !!td.connected;
     if (online) count++; else missing.push(t.name.split(' ')[0]);
     const dot = document.getElementById('online-dot-' + t.id);
     if (dot) dot.classList.toggle('online', online);
@@ -1225,12 +1226,12 @@ function updateConnectedChips() {
 
 function initParticipantFirebase() {
   if (!db) return;
-  // Presenza: pattern ufficiale Firebase — registra onDisconnect PRIMA di set
-  const presRef = db.ref('/presence/' + currentUser.teamId);
+  // Presenza: pattern ufficiale Firebase su path /teams già permesso dalle regole
+  const connRef = db.ref('/teams/' + currentUser.teamId + '/connected');
   db.ref('.info/connected').on('value', snap => {
     if (snap.val() === true) {
-      presRef.onDisconnect().remove(); // rimuove il nodo alla disconnessione
-      presRef.set(true);              // imposta presenza dopo aver registrato onDisconnect
+      connRef.onDisconnect().set(false);
+      connRef.set(true);
     }
   });
   db.ref('/game').on('value', snap => { gameState = snap.val() || {}; handleGameStateChange(); });
@@ -1240,8 +1241,7 @@ function initParticipantFirebase() {
     if (gameState.phase === 'reveal' || gameState.phase === 'assigned') renderRevealOverlay(gameState.phase === 'assigned');
     if (currentUser && currentUser.isPresident) renderPresidentBids();
   });
-  db.ref('/teams').on('value', snap => { teamsState = snap.val() || {}; updateBudgetDisplay(); });
-  db.ref('/presence').on('value', snap => { presenceState = snap.val() || {}; updateConnectedChips(); });
+  db.ref('/teams').on('value', snap => { teamsState = snap.val() || {}; updateBudgetDisplay(); updateConnectedChips(); });
   db.ref('/assignments').on('value', snap => {
     const raw = snap.val();
     assignmentsState = raw ? Object.values(raw) : [];

@@ -266,7 +266,6 @@ function initDashboard(){
   if(!db)return;
   db.ref('/game').on('value',function(s){gameState=s.val()||{};onGameChange();});
   db.ref('/teams').on('value',function(s){teamsState=s.val()||{};renderTeams();updateStats();});
-  db.ref('/presence').on('value',function(s){presenceState=s.val()||{};renderTeams();});
   db.ref('/bids').on('value',function(s){bidsState=s.val()||{};renderBidsTable();});
   db.ref('/bidSubmitted').on('value',function(s){bidSubmittedState=s.val()||{};renderBidsWaiting();});
   db.ref('/assignments').on('value',function(s){
@@ -372,7 +371,7 @@ function renderTeams(){
   var connCount=0;
   TEAMS.forEach(function(t){
     var td=teamsState[t.id]||{};
-    var online=!!(presenceState[t.id]);
+    var online=!!(td.connected);
     var budget=td.budget!=null?td.budget:BUDGET_START;
     var roster=td.rosterCount||0;
     var pct=Math.max(0,Math.min(100,(budget/BUDGET_START)*100));
