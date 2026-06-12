@@ -10,6 +10,7 @@ console.firebase.google.com → Il tuo progetto → Project Settings → Your ap
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>🏆 Fantacaserma</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
 :root {
@@ -598,6 +599,10 @@ function initFirebase() {
   try {
     firebase.initializeApp(firebaseConfig);
     db = firebase.database();
+    // Sign-in anonimo: necessario per soddisfare le regole Firebase (auth != null)
+    // Vai su Firebase Console → Authentication → Sign-in method → Anonymous → Abilita
+    firebase.auth().signInAnonymously()
+      .catch(e => console.warn('FC: anonymous auth failed (abilita Anonymous in Firebase Console):', e.message));
   } catch(e) {
     console.warn('Firebase init error:', e);
     db = null;

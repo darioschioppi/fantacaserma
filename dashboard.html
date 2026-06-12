@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fantacaserma — Dashboard Admin</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 <style>
 :root{--bg:#0a1628;--bg2:#111d35;--bg3:#1a2744;--card:#1e2d40;--card2:#162233;--gold:#ffd700;--green:#22c55e;--red:#ef4444;--blue:#3b82f6;--text:#e2e8f0;--text-m:#94a3b8;--text-s:#64748b;--border:#2d3f5c;--P:#f59e0b;--D:#22c55e;--C:#3b82f6;--A:#ef4444;--r:10px;}
@@ -262,7 +263,7 @@ var logCount=0;
 
 function initDashboard(){
   startClock();renderTeams();renderRecent();
-  try{firebase.initializeApp(firebaseConfig);db=firebase.database();}catch(e){console.warn(e);db=null;}
+  try{firebase.initializeApp(firebaseConfig);db=firebase.database();firebase.auth().signInAnonymously().catch(function(e){console.warn('FC dash: anonymous auth failed:',e.message);});}catch(e){console.warn(e);db=null;}
   if(!db)return;
   db.ref('/game').on('value',function(s){gameState=s.val()||{};onGameChange();});
   db.ref('/teams').on('value',function(s){teamsState=s.val()||{};renderTeams();updateStats();});
