@@ -116,7 +116,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 #screen-participant{background:radial-gradient(ellipse at 50% 40%,#0d2818 0%,var(--bg) 80%);overflow:hidden;position:relative;}
 .participant-layout{display:flex;flex:1;overflow:hidden;position:relative;}
 .poker-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:visible;padding:10px 30px;}
-.poker-table{width:min(560px,calc(100vw - 80px));height:min(320px,50vw);min-height:180px;background:radial-gradient(ellipse at 50% 50%,#1e5535 0%,var(--table) 50%,var(--table2) 100%);border-radius:50%;border:6px solid #0d2010;box-shadow:0 0 0 3px #1a3d1a,0 0 60px rgba(0,0,0,.8),inset 0 0 40px rgba(0,0,0,.3);position:relative;flex-shrink:0;overflow:visible;}
+.poker-table{width:min(560px,calc(100vw - 80px));height:min(320px,50vw);min-height:180px;background:radial-gradient(ellipse at 50% 50%,#1e5535 0%,var(--table) 50%,var(--table2) 100%);border-radius:50%;border:6px solid #0d2010;box-shadow:0 0 0 3px #1a3d1a,0 0 60px rgba(0,0,0,.8),inset 0 0 40px rgba(0,0,0,.3);position:relative;flex-shrink:0;overflow:visible;margin-bottom:36px;}
 .seat{position:absolute;width:72px;display:flex;flex-direction:column;align-items:center;gap:3px;transform:translate(-50%,-50%);transition:opacity .3s;}
 .seat.dimmed{opacity:.25;}
 .seat-chip{width:56px;height:56px;border-radius:50%;background:var(--bg3);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;position:relative;transition:all .3s;}
@@ -134,6 +134,12 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 .seat-badge-you{position:absolute;top:-6px;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;font-size:.55rem;font-weight:900;padding:1px 5px;border-radius:4px;letter-spacing:.5px;white-space:nowrap;}
 .seat-name{font-size:.62rem;font-weight:700;text-align:center;color:var(--text-m);max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .seat-name.mine{color:var(--gold);}
+/* AVATAR */
+.seat-chip img.avatar-img{position:absolute;inset:0;width:100%;height:100%;border-radius:50%;object-fit:cover;z-index:1;}
+.seat-chip .chip-emoji{position:relative;z-index:1;}
+.seat-badge-you{z-index:3 !important;}
+.seat-chip-cam{position:absolute;bottom:-2px;right:-2px;width:20px;height:20px;background:var(--bg2);border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.62rem;z-index:4;cursor:pointer;line-height:1;}
+@media(max-width:480px){.seat-chip-cam{width:16px;height:16px;font-size:.5rem;}}
 .table-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;width:180px;pointer-events:none;}
 .table-waiting-msg{text-align:center;color:rgba(255,255,255,.4);font-size:.85rem;font-style:italic;}
 .player-card{background:linear-gradient(135deg,var(--card) 0%,#162233 100%);border:1px solid var(--border);border-radius:10px;padding:10px 14px;text-align:center;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,.5);}
@@ -223,6 +229,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
   <div class="loader-text" id="loaderText">Caricamento giocatori…</div>
 </div>
 <div class="toast-container" id="toastContainer"></div>
+<input type="file" id="avatarFileInput" accept="image/*" style="display:none" onchange="handleAvatarFile(event)">
 
 <!-- LOGIN -->
 <div class="screen" id="screen-login">
@@ -418,6 +425,7 @@ let gameState = {};
 let teamsState = {};
 let bidsState = {};
 let bidSubmittedState = {};
+let avatarsState = {};
 let assignmentsState = [];
 let timerInterval = null;
 let timerEndTs = null;
@@ -920,8 +928,18 @@ function buildPokerTable() {
     }
 
     const emojiEl = document.createElement('span');
+    emojiEl.className = 'chip-emoji';
     emojiEl.textContent = t.emoji;
     chip.appendChild(emojiEl);
+
+    if (isMe) {
+      const camBtn = document.createElement('div');
+      camBtn.className = 'seat-chip-cam';
+      camBtn.textContent = '📷';
+      camBtn.title = 'Cambia foto';
+      camBtn.addEventListener('click', e => { e.stopPropagation(); openAvatarUpload(); });
+      chip.appendChild(camBtn);
+    }
 
     const nameEl = document.createElement('div');
     nameEl.className = 'seat-name' + (isMe ? ' mine' : '');
@@ -930,6 +948,7 @@ function buildPokerTable() {
     seat.appendChild(chip);
     seat.appendChild(nameEl);
     table.appendChild(seat);
+    applyAvatarToChip(t.id);
   });
 }
 
@@ -947,6 +966,10 @@ function initParticipantFirebase() {
     const raw = snap.val();
     assignmentsState = raw ? Object.values(raw) : [];
     renderRecentList();
+  });
+  db.ref('/avatars').on('value', snap => {
+    avatarsState = snap.val() || {};
+    TEAMS.forEach(t => applyAvatarToChip(t.id));
   });
 }
 
@@ -1261,6 +1284,57 @@ function updateTimerDisplay(ringId, numId, remaining, total) {
   numEl.classList.toggle('urgent', remaining <= 10 && remaining > 0);
 }
 
+// ─── AVATAR ───
+function openAvatarUpload() {
+  document.getElementById('avatarFileInput').click();
+}
+
+function handleAvatarFile(event) {
+  const file = event.target.files[0];
+  event.target.value = '';
+  if (!file || !file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 96; canvas.height = 96;
+      const ctx = canvas.getContext('2d');
+      // Center-crop to square
+      const side = Math.min(img.width, img.height);
+      const sx = (img.width - side) / 2;
+      const sy = (img.height - side) / 2;
+      ctx.drawImage(img, sx, sy, side, side, 0, 0, 96, 96);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+      if (db) {
+        db.ref('/avatars/' + currentUser.teamId).set(dataUrl)
+          .then(() => toast('✅ Foto aggiornata!', 'success'))
+          .catch(() => toast('❌ Errore upload foto', 'error'));
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function applyAvatarToChip(teamId) {
+  const chip = document.getElementById('chip-' + teamId);
+  if (!chip) return;
+  const avatar = avatarsState[teamId];
+  chip.querySelectorAll('img.avatar-img').forEach(el => el.remove());
+  const emojiSpan = chip.querySelector('.chip-emoji');
+  if (avatar) {
+    if (emojiSpan) emojiSpan.style.display = 'none';
+    const img = document.createElement('img');
+    img.className = 'avatar-img';
+    img.alt = '';
+    img.src = avatar;
+    chip.insertBefore(img, chip.firstChild);
+  } else {
+    if (emojiSpan) emojiSpan.style.display = '';
+  }
+}
+
 // ─── FIREBASE CLEANUP ───
 function clearFirebaseListeners() {
   if (!db) return;
@@ -1270,6 +1344,7 @@ function clearFirebaseListeners() {
     db.ref('/bidSubmitted').off();
     db.ref('/teams').off();
     db.ref('/assignments').off();
+    db.ref('/avatars').off();
   } catch(e) {}
 }
 
