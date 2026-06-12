@@ -1088,6 +1088,30 @@ function updateSeatSubmitted() {
     if (submitted && (phase === 'bidding' || phase === 'tiebreaker') && inTiebreaker) chip.classList.add('submitted');
     if (phase === 'tiebreaker' && tiebreakers && tiebreakers.includes(t.id)) chip.classList.add('tiebreaker');
   });
+  // Sync UI bid button per tutti i dispositivi della stessa squadra
+  if (currentUser && currentUser.type === 'team' && (phase === 'bidding' || phase === 'tiebreaker')) {
+    const mySubmitted = !!bidSubmittedState[currentUser.teamId];
+    myBidSent = mySubmitted; // sincronizza la variabile locale
+    const btnBid = document.getElementById('btnBid');
+    const bidSentEl = document.getElementById('bidSent');
+    const bidInput = document.getElementById('bidInput');
+    if (btnBid && bidSentEl && bidInput) {
+      if (mySubmitted) {
+        btnBid.disabled = true;
+        btnBid.textContent = '✅ Offerta inviata';
+        bidSentEl.classList.add('visible');
+        bidInput.disabled = true;
+      } else {
+        const isTiebreakerObserver = phase === 'tiebreaker' && tiebreakers && !tiebreakers.includes(currentUser.teamId);
+        if (!isTiebreakerObserver) {
+          btnBid.disabled = false;
+          btnBid.textContent = '💰 INVIA OFFERTA';
+          bidSentEl.classList.remove('visible');
+          bidInput.disabled = false;
+        }
+      }
+    }
+  }
 }
 
 function renderRevealOverlay(isAssigned) {
@@ -1201,11 +1225,7 @@ function submitBid() {
   if (amount > budget) { toast('Budget insufficiente! Hai ' + budget + ' cr', 'error'); return; }
   const tid = currentUser.teamId;
   db.ref('/bids/' + tid).set(amount);
-  db.ref('/bidSubmitted/' + tid).set(true);
-  myBidSent = true;
-  document.getElementById('bidSent').classList.add('visible');
-  document.getElementById('btnBid').disabled = true;
-  document.getElementById('btnBid').textContent = '✅ Inviata';
+  db.ref('/bidSubmitted/' + tid).set(true); // Tutti i dispositivi della stessa squadra si aggiornano via Firebase listener
   toast('💰 Offerta inviata!', 'success');
 }
 
