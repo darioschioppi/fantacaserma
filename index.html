@@ -187,6 +187,13 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 .btn-pass:disabled{opacity:.4;cursor:not-allowed;}
 .roster-full-msg{display:none;color:var(--red);font-size:.8rem;text-align:center;padding:8px 10px;background:rgba(239,68,68,.08);border-radius:8px;border:1px solid rgba(239,68,68,.25);font-weight:600;}
 .bid-area-waiting{text-align:center;color:var(--text-m);font-size:.85rem;font-style:italic;}
+.btn-stepper{width:38px;height:38px;border-radius:10px;background:var(--card2);border:1.5px solid var(--border);color:var(--text);font-size:1.3rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.btn-stepper:hover{background:var(--border);border-color:var(--green);}
+.btn-stepper:active{transform:scale(.92);}
+.btn-quick{flex:1;padding:5px 0;border-radius:8px;background:var(--card2);border:1px solid var(--border);color:var(--text-m);font-size:.75rem;font-weight:700;transition:all .15s;}
+.btn-quick:hover{background:var(--border);color:var(--text);}
+.btn-quick:active{transform:scale(.94);}
+.header-timer-urgent{color:var(--red) !important;animation:blink .5s infinite;}
 .mobile-status-bar{display:none;background:rgba(255,255,255,.04);border-bottom:1px solid var(--border);padding:5px 16px;font-size:.8rem;font-weight:600;color:var(--text-m);gap:6px;align-items:center;}
 @media(max-width:480px){.mobile-status-bar{display:flex;}}
 .reveal-overlay{position:absolute;inset:0;background:rgba(10,22,40,.92);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:50;padding:20px;}
@@ -422,9 +429,12 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
   </div>
   <div class="participant-layout">
     <div class="poker-area" id="pokerArea">
-      <!-- HEADER: nome giocatore in asta (top) -->
+      <!-- HEADER: nome giocatore + timer inline (top) -->
       <div id="auctionHeader" style="display:none;width:100%;box-sizing:border-box;padding:6px 10px;background:var(--card);border:1px solid var(--border);border-radius:10px;flex-shrink:0;">
-        <div id="auctionHeaderName" style="font-size:1rem;font-weight:900;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          <div id="auctionHeaderName" style="font-size:1rem;font-weight:900;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;"></div>
+          <div id="auctionHeaderTimer" style="font-size:1.1rem;font-weight:900;color:var(--green);white-space:nowrap;flex-shrink:0;min-width:36px;text-align:right;">—</div>
+        </div>
         <div id="auctionHeaderMeta" style="font-size:.72rem;color:var(--text-m);margin-top:1px;"></div>
       </div>
       <div class="tiebreaker-banner" id="tiebreakerBanner">⚖️ SPAREGGIO — offerta minima: <strong id="tiebreakerMin">—</strong> cr</div>
@@ -435,12 +445,30 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
       </div>
       <div class="bid-area" id="bidArea">
         <div class="bid-area-waiting" id="bidAreaWaiting">In attesa dell'asta…</div>
-        <div id="bidInputArea" style="display:none;flex-direction:column;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:8px 10px;width:100%;box-sizing:border-box;">
+        <div id="bidInputArea" style="display:none;flex-direction:column;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px;width:100%;box-sizing:border-box;">
+          <!-- Riga info: budget + slot ruolo -->
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+            <span style="font-size:.75rem;color:var(--text-m);">💼 Budget: <strong id="bidBudgetLabel" style="color:var(--gold);">500</strong> cr</span>
+            <span id="bidRoleSlots" style="font-size:.75rem;color:var(--text-m);">Slot liberi: <strong id="bidRoleSlotsVal" style="color:var(--green);">—</strong></span>
+          </div>
           <div id="rosterFullMsg" class="roster-full-msg">🚫 Rosa completa per questo ruolo — devi passare</div>
-          <div class="bid-row">
-            <span style="font-size:.7rem;color:var(--text-m);white-space:nowrap;flex-shrink:0;">Min: <strong id="bidMinLabel">1</strong>cr</span>
-            <input class="bid-input" type="number" id="bidInput" min="1" value="1" step="1" style="max-width:80px;">
-            <button class="btn-bid" id="btnBid" onclick="submitBid()">💰 OFFERTA</button>
+          <!-- Stepper − valore + -->
+          <div style="display:flex;align-items:center;gap:6px;">
+            <button class="btn-stepper" onclick="stepBid(-1)">−</button>
+            <input class="bid-input" type="number" id="bidInput" min="1" value="1" step="1" style="flex:1;min-width:0;text-align:center;">
+            <button class="btn-stepper" onclick="stepBid(1)">+</button>
+            <span style="font-size:.68rem;color:var(--text-m);white-space:nowrap;flex-shrink:0;">min <strong id="bidMinLabel">1</strong>cr</span>
+          </div>
+          <!-- Quick bid buttons -->
+          <div style="display:flex;gap:5px;">
+            <button class="btn-quick" onclick="stepBid(1)">+1</button>
+            <button class="btn-quick" onclick="stepBid(5)">+5</button>
+            <button class="btn-quick" onclick="stepBid(10)">+10</button>
+            <button class="btn-quick" onclick="stepBid(25)">+25</button>
+          </div>
+          <!-- Azione: offerta + passa -->
+          <div style="display:flex;gap:8px;">
+            <button class="btn-bid" id="btnBid" onclick="submitBid()" style="flex:1;">💰 OFFERTA</button>
             <button class="btn-pass" id="btnPass" onclick="passAuction()">🤚 Passa</button>
           </div>
           <div class="bid-sent" id="bidSent">✅ Offerta inviata! Attendi la rivelazione.</div>
@@ -1421,8 +1449,25 @@ function handleGameStateChange() {
       document.getElementById('btnBid').disabled = false;
       document.getElementById('btnBid').textContent = '💰 OFFERTA';
     }
-    // Controllo limite rosa per ruolo
+    // Aggiorna budget e slot ruolo nella bid area
     const cp = gameState.currentPlayer;
+    if (currentUser && currentUser.teamId) {
+      const td = teamsState[currentUser.teamId] || {};
+      const budget = td.budget != null ? td.budget : 500;
+      setText('bidBudgetLabel', budget);
+      if (cp && cp.ruolo) {
+        const rc = (cp.ruolo || '').charAt(0);
+        const counts = getRosterCounts(currentUser.teamId);
+        const max = ROSTER_MAX[rc] || '?';
+        const used = counts[rc] || 0;
+        const free = (typeof max === 'number') ? (max - used) : '?';
+        const roleEmoji = { P: '🧤', D: '🛡️', C: '⚙️', A: '⚽' };
+        setText('bidRoleSlotsVal', (roleEmoji[rc] || '') + ' ' + free + '/' + max + ' liberi');
+        const slotEl = document.getElementById('bidRoleSlotsVal');
+        if (slotEl) slotEl.style.color = free > 0 ? 'var(--green)' : 'var(--red)';
+      }
+    }
+    // Controllo limite rosa per ruolo
     const rfMsg = document.getElementById('rosterFullMsg');
     const btnPass = document.getElementById('btnPass');
     if (cp && currentUser && currentUser.teamId) {
@@ -1479,6 +1524,7 @@ function updateBudgetDisplay() {
   const td = teamsState[currentUser.teamId] || {};
   const budget = td.budget != null ? td.budget : BUDGET_START;
   setText('participantBudget', '💰 ' + budget + ' cr');
+  setText('bidBudgetLabel', budget);
 }
 
 function updateSeatSubmitted() {
@@ -1651,6 +1697,16 @@ function renderRecentList() {
   });
 }
 
+// ─── BID STEPPER ───
+function stepBid(delta) {
+  const input = document.getElementById('bidInput');
+  if (!input) return;
+  const minBid = parseInt(gameState.minBid || 1);
+  const current = parseInt(input.value) || minBid;
+  const newVal = Math.max(minBid, current + delta);
+  input.value = newVal;
+}
+
 // ─── BID SUBMIT ───
 function submitBid() {
   const phase = gameState.phase || 'waiting';
@@ -1718,6 +1774,13 @@ function startLocalTimer() {
     const remaining = Math.max(0, Math.ceil((timerEndTs - Date.now()) / 1000));
     updateTimerDisplay('partTimerRing', 'partTimerNum', remaining, AUCTION_DURATION);
     updateTimerDisplay('paTimerRing', 'paTimerNum', remaining, AUCTION_DURATION);
+    // Timer inline nell'header
+    const ht = document.getElementById('auctionHeaderTimer');
+    if (ht) {
+      ht.textContent = remaining + 's';
+      ht.classList.toggle('header-timer-urgent', remaining <= 10 && remaining > 0);
+      ht.style.color = remaining <= 10 ? 'var(--red)' : 'var(--green)';
+    }
     if (remaining === 0) {
       clearTimerInterval();
       // Auto-reveal alla scadenza (solo il presidente)
