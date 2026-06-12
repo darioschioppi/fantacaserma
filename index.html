@@ -192,6 +192,11 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 .recent-item-player{font-weight:700;color:var(--text);}
 .recent-item-team{color:var(--text-m);margin-top:1px;display:flex;justify-content:space-between;}
 .recent-item-amount{color:var(--gold);font-weight:700;}
+@media(max-width:700px){
+  .recent-title{font-size:.85rem;padding:16px 16px 8px;}
+  .recent-item{padding:10px 14px;font-size:.85rem;}
+  .recent-list{padding:0 14px 14px;gap:8px;}
+}
 /* LOADER */
 .loader-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:999;}
 .loader-screen.hidden{display:none;}
@@ -1204,7 +1209,8 @@ function renderRevealOverlay(isAssigned) {
 function renderRecentList() {
   const list = document.getElementById('recentList');
   list.textContent = '';
-  const recent = [...assignmentsState].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, 5);
+  const isMobileAcquisti = window.innerWidth <= 700;
+  const recent = [...assignmentsState].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).slice(0, isMobileAcquisti ? 100 : 5);
   if (!recent.length) {
     const emp = document.createElement('div');
     emp.className = 'empty-state';
@@ -1378,7 +1384,14 @@ function participantMobileTab(tab, btn) {
   document.querySelectorAll('#participantMobileNav .mobile-nav-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   const rs = document.querySelector('.recent-sidebar');
-  if (rs) rs.style.display = tab === 'recent' ? 'flex' : 'none';
+  const pa = document.getElementById('pokerArea');
+  if (tab === 'recent') {
+    if (pa) pa.style.display = 'none';
+    if (rs) { rs.style.display = 'flex'; rs.style.width = '100%'; rs.style.borderLeft = 'none'; }
+  } else {
+    if (pa) pa.style.display = 'flex';
+    if (rs) { rs.style.display = 'none'; rs.style.width = '200px'; rs.style.borderLeft = ''; }
+  }
 }
 </script>
 </body>
