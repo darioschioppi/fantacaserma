@@ -276,6 +276,14 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <option value="A">⚽ A</option>
         </select>
         <select class="search-select" id="filterSquadra" onchange="filterPlayers()"><option value="">Tutte le sq.</option></select>
+        <select class="search-select" id="sortPlayers" onchange="filterPlayers()">
+          <option value="az">🔤 A→Z</option>
+          <option value="za">🔤 Z→A</option>
+          <option value="qa_asc">💰 QA ↑</option>
+          <option value="qa_desc">💰 QA ↓</option>
+          <option value="qi_asc">📊 QI ↑</option>
+          <option value="qi_desc">📊 QI ↓</option>
+        </select>
       </div>
       <div class="players-table-wrap">
         <table class="players-table">
@@ -804,10 +812,17 @@ function filterPlayers() {
   const query = document.getElementById('searchInput').value.toLowerCase().trim();
   const ruolo = document.getElementById('filterRuolo').value;
   const squadra = document.getElementById('filterSquadra').value;
-  let results = allPlayers;
+  const sort = document.getElementById('sortPlayers').value;
+  let results = [...allPlayers];
   if (query) results = results.filter(p => p.Nome && p.Nome.toLowerCase().includes(query));
   if (ruolo) results = results.filter(p => (p.Ruolo_Classic || '').startsWith(ruolo));
   if (squadra) results = results.filter(p => p.Squadra === squadra);
+  if (sort === 'az')       results.sort((a, b) => (a.Nome || '').localeCompare(b.Nome || ''));
+  else if (sort === 'za')  results.sort((a, b) => (b.Nome || '').localeCompare(a.Nome || ''));
+  else if (sort === 'qa_asc')  results.sort((a, b) => (parseInt(a.QA) || 0) - (parseInt(b.QA) || 0));
+  else if (sort === 'qa_desc') results.sort((a, b) => (parseInt(b.QA) || 0) - (parseInt(a.QA) || 0));
+  else if (sort === 'qi_asc')  results.sort((a, b) => (parseInt(a.QI) || 0) - (parseInt(b.QI) || 0));
+  else if (sort === 'qi_desc') results.sort((a, b) => (parseInt(b.QI) || 0) - (parseInt(a.QI) || 0));
   renderPlayersTable(results.slice(0, 80));
 }
 
