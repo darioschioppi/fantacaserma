@@ -483,8 +483,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         <div class="reveal-bids" id="revealBidsList"></div>
         <div class="reveal-assigned" id="revealAssigned" style="display:none;"></div>
         <div id="revealPresActions" style="display:none;gap:10px;margin-top:12px;flex-wrap:wrap;justify-content:center;width:100%;max-width:320px;">
-          <button class="btn-assign" id="btnRevealAssign" onclick="adminAssign()">✅ Assegna</button>
-          <button class="btn-skip" id="btnRevealSkip" onclick="adminSkip()">⏭ Salta</button>
+          <!-- Assegna/Salta rimossi: tutto automatico -->
           <button class="btn-assign" id="btnRevealNext" onclick="presidentNextAuction()" style="display:none;width:100%;background:var(--blue);">⚡ Prossima asta →</button>
         </div>
       </div>
@@ -984,13 +983,20 @@ function renderAdminBids() {
 
     const amtEl = document.createElement('span');
     amtEl.className = 'aap-bid-amount';
-    amtEl.textContent = r.amount != null ? (r.amount === 0 ? '🤚 PASSA' : r.amount + ' cr') : '—';
-    if (r.amount === 0) amtEl.style.color = 'var(--text-s)';
+    // Importi visibili solo dopo la rivelazione (asta sealed-bid)
+    const showAmounts = (phase === 'reveal' || phase === 'assigned');
+    if (showAmounts) {
+      amtEl.textContent = r.amount != null ? (r.amount === 0 ? '🤚 PASSA' : r.amount + ' cr') : '—';
+      if (r.amount === 0) amtEl.style.color = 'var(--text-s)';
+    } else {
+      amtEl.textContent = r.submitted ? '🔒 Inviata' : '⏳';
+      amtEl.style.color = r.submitted ? 'var(--green)' : 'var(--text-s)';
+    }
 
     chip.appendChild(emojiEl);
     chip.appendChild(nameEl);
     chip.appendChild(amtEl);
-    if (r.submitted) {
+    if (r.submitted && showAmounts) {
       const tick = document.createElement('span');
       tick.style.cssText = 'color:var(--green);font-size:.7rem';
       tick.textContent = '✓';
@@ -1070,6 +1076,64 @@ function adminReveal() {
   db.ref('/game/phase').set('reveal');
   const cp = gameState.currentPlayer;
   if (cp) writeLog('reveal', { player: cp.nome, ruolo: cp.ruolo, squadra: cp.squadra });
+  // Auto-processa il risultato dopo 3s (animazione reveal)
+  setTimeout(() => autoProcessReveal(), 3000);
+}
+
+function autoProcessReveal() {
+  if (!currentUser || !currentUser.isPresident) return;
+  const phase = gameState.phase || 'waiting';
+  if (phase !== 'reveal') return; // già in tiebreaker o altro
+  const cp = gameState.currentPlayer;
+  if (!cp) return;
+  const tiebreakers = gameState.tiebreakers || null;
+  const eligible = tiebreakers ? tiebreakers : TEAMS.map(t => t.id);
+  const bids = bidsState || {};
+  // Trova le offerte valide (> 0)
+  const bidEntries = eligible
+    .map(tid => ({ tid, amount: bids[tid] || 0 }))
+    .filter(b => b.amount > 0)
+    .sort((a, b) => b.amount - a.amount);
+  if (!bidEntries.length) {
+    // Nessuno ha offerto → salta automaticamente
+    writeLog('skipped_auto', { player: cp.nome, ruolo: cp.ruolo, squadra: cp.squadra });
+    const updates = {};
+    updates['/game/phase'] = 'waiting';
+    updates['/game/currentPlayer'] = null;
+    updates['/game/timerEnd'] = null;
+    updates['/game/tiebreakers'] = null;
+    updates['/game/minBid'] = null;
+    updates['/bids'] = null;
+    updates['/bidSubmitted'] = null;
+    db.ref().update(updates);
+    toast('⏭ Nessuna offerta — giocatore saltato', 'info');
+    return;
+  }
+  const maxAmt = bidEntries[0].amount;
+  const winners = bidEntries.filter(b => b.amount === maxAmt);
+  if (winners.length === 1) {
+    // Vincitore unico → assegna automaticamente
+    const team = TEAMS.find(t => t.id === winners[0].tid);
+    adminWinner = { teamId: winners[0].tid, teamName: team ? team.name : winners[0].tid, amount: maxAmt };
+    adminAssign();
+  } else {
+    // Pareggio → avvia tiebreaker solo per le squadre in parità
+    const tiebreakerTeams = winners.map(w => w.tid);
+    const minBid = maxAmt + 1;
+    const timerEnd = Date.now() + AUCTION_DURATION * 1000;
+    autoRevealFired = false;
+    const updates = {};
+    updates['/game/phase'] = 'tiebreaker';
+    updates['/game/tiebreakers'] = tiebreakerTeams;
+    updates['/game/minBid'] = minBid;
+    updates['/game/timerEnd'] = timerEnd;
+    updates['/bids'] = null;
+    updates['/bidSubmitted'] = null;
+    db.ref().update(updates);
+    const names = tiebreakerTeams.map(tid => { const t = TEAMS.find(x => x.id === tid); return t ? t.name : tid; }).join(', ');
+    toast('⚖️ Pareggio! Spareggio tra: ' + names + ' (min ' + minBid + ' cr)', 'info');
+    writeLog('tiebreaker', { player: cp.nome, teams: tiebreakerTeams, minBid });
+  }
 }
 
 function adminAssign() {
@@ -1631,24 +1695,14 @@ function renderRevealOverlay(isAssigned) {
   } else {
     assignedEl.style.display = 'none';
   }
-  // Mostra pulsanti Assegna/Salta/ProssimaAsta nell'overlay per il presidente
+  // Mostra solo "Prossima asta" dopo assegnazione (tutto il resto è automatico)
   const presActions = document.getElementById('revealPresActions');
   if (presActions) {
     const isPresident = currentUser && currentUser.isPresident;
-    const btnAssign = document.getElementById('btnRevealAssign');
-    const btnSkip = document.getElementById('btnRevealSkip');
     const btnNext = document.getElementById('btnRevealNext');
-    if (isPresident) {
+    if (isPresident && isAssigned) {
       presActions.style.display = 'flex';
-      if (isAssigned) {
-        if (btnAssign) btnAssign.style.display = 'none';
-        if (btnSkip) btnSkip.style.display = 'none';
-        if (btnNext) btnNext.style.display = 'block';
-      } else {
-        if (btnAssign) btnAssign.style.display = '';
-        if (btnSkip) btnSkip.style.display = '';
-        if (btnNext) btnNext.style.display = 'none';
-      }
+      if (btnNext) btnNext.style.display = 'block';
     } else {
       presActions.style.display = 'none';
     }
@@ -1959,9 +2013,12 @@ function renderPresidentBids() {
     chip.className = 'aap-bid-chip' + (isWinner ? ' winner' : '');
     const em = document.createElement('span'); em.textContent = r.team ? r.team.emoji : '?';
     const nm = document.createElement('span'); nm.style.cssText = 'font-size:.75rem;color:var(--text-m)'; nm.textContent = r.team ? r.team.name : r.tid;
-    const am = document.createElement('span'); am.className = 'aap-bid-amount'; am.textContent = r.amount != null ? r.amount + ' cr' : '—';
+    const am = document.createElement('span'); am.className = 'aap-bid-amount';
+    const showAmt = (phase === 'reveal' || phase === 'assigned');
+    if (showAmt) { am.textContent = r.amount != null ? (r.amount === 0 ? '🤚 PASSA' : r.amount + ' cr') : '—'; }
+    else { am.textContent = r.submitted ? '🔒 Inviata' : '⏳'; am.style.color = r.submitted ? 'var(--green)' : 'var(--text-s)'; }
     chip.appendChild(em); chip.appendChild(nm); chip.appendChild(am);
-    if (r.submitted) { const tick = document.createElement('span'); tick.style.cssText = 'color:var(--green);font-size:.7rem'; tick.textContent = '✓'; chip.appendChild(tick); }
+    if (r.submitted && showAmt) { const tick = document.createElement('span'); tick.style.cssText = 'color:var(--green);font-size:.7rem'; tick.textContent = '✓'; chip.appendChild(tick); }
     container.appendChild(chip);
   });
 }
