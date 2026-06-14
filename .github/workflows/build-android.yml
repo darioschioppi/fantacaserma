@@ -51,36 +51,29 @@ jobs:
           cat ~/.bubblewrap/config.json
 
       - name: Bubblewrap build (TWA)
-        # Risponde "n" al prompt "regenerate project?" per usare twa-manifest.json diretto
-        run: printf 'n\n' | bubblewrap build --skipPwaValidation
-
-      - name: Locate and sign APK
+        # Risponde ai 3 prompt interattivi:
+        # 1) "regenerate project?" -> n
+        # 2) "Password for the Key Store" -> KS_STORE_PASS
+        # 3) "Password for the Key" -> KS_KEY_PASS
         run: |
-          APK_UNSIGNED=$(find . -name "app-release-unsigned.apk" 2>/dev/null | head -1)
-          if [ -z "$APK_UNSIGNED" ]; then
-            APK_UNSIGNED=$(find . -name "*.apk" 2>/dev/null | head -1)
-          fi
-          echo "APK trovato: $APK_UNSIGNED"
-
-          BUILD_TOOLS=$(ls "$ANDROID_SDK_ROOT/build-tools/" | sort -V | tail -1)
-          echo "Build tools: $BUILD_TOOLS"
-
-          "$ANDROID_SDK_ROOT/build-tools/$BUILD_TOOLS/zipalign" -v 4 "$APK_UNSIGNED" fantacaserma-aligned.apk
-
-          "$ANDROID_SDK_ROOT/build-tools/$BUILD_TOOLS/apksigner" sign \
-            --ks fantacaserma.keystore \
-            --ks-key-alias "$KS_ALIAS" \
-            --ks-pass "pass:$KS_STORE_PASS" \
-            --key-pass "pass:$KS_KEY_PASS" \
-            --out fantacaserma-signed.apk \
-            fantacaserma-aligned.apk
-
-          echo "APK firmato: fantacaserma-signed.apk"
-          ls -lh fantacaserma-signed.apk
+          printf 'n\n%s\n%s\n' "$KS_STORE_PASS" "$KS_KEY_PASS" \
+            | bubblewrap build --skipPwaValidation
         env:
-          KS_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
           KS_STORE_PASS: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
           KS_KEY_PASS: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+
+      - name: Locate signed APK
+        run: |
+          # Bubblewrap firma già il file durante il build
+          APK=$(find . -name "app-release-signed.apk" 2>/dev/null | head -1)
+          if [ -z "$APK" ]; then
+            # Fallback: cerca qualsiasi APK
+            APK=$(find . -name "*.apk" 2>/dev/null | head -1)
+          fi
+          echo "APK trovato: $APK"
+          ls -lh "$APK"
+          cp "$APK" fantacaserma-signed.apk
+          echo "APK copiato: fantacaserma-signed.apk"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
