@@ -69,24 +69,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Elimina il release "latest" precedente (se esiste)
           gh release delete latest --yes 2>/dev/null || true
           git push origin :refs/tags/latest 2>/dev/null || true
-
-          # Crea il nuovo release "latest" con l'APK allegato
-          NOTES="## FantaCaserma – Build ${{ github.run_number }}
-
-**Commit**: \`$(git rev-parse --short HEAD)\`
-
-### 📱 Installazione Android
-1. Scarica il file \`FantaCaserma.apk\`
-2. Apri il file sul telefono (abilita *Origini sconosciute* se richiesto)
-3. Installa e avvia!
-
-### 🍎 Guida iOS (iPhone/iPad)
-👉 https://darioschioppi.github.io/fantacaserma/install-ios.html"
-
+          SHORT_SHA=$(git rev-parse --short HEAD)
           gh release create latest FantaCaserma.apk \
-            --title "FantaCaserma – Ultima versione (build ${{ github.run_number }})" \
-            --notes "$NOTES" \
+            --title "FantaCaserma – Build ${{ github.run_number }} (${SHORT_SHA})" \
+            --notes "Build ${{ github.run_number }} - commit ${SHORT_SHA} - Scarica FantaCaserma.apk per installare su Android. iOS: https://darioschioppi.github.io/fantacaserma/install-ios.html" \
             --latest
