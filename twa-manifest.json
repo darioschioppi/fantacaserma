@@ -29,7 +29,7 @@
   "isChromeOSOnly": false,
   "isMetaQuest": false,
   "fullScopeUrl": "https://darioschioppi.github.io/fantacaserma/",
-  "minSdkVersion": 19,
+  "minSdkVersion": 21,
   "targetSdkVersion": 34,
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://darioschioppi.github.io/fantacaserma/manifest.json",
