@@ -51,7 +51,8 @@ jobs:
           cat ~/.bubblewrap/config.json
 
       - name: Bubblewrap build (TWA)
-        run: bubblewrap build --skipPwaValidation
+        # Risponde "n" al prompt "regenerate project?" per usare twa-manifest.json diretto
+        run: printf 'n\n' | bubblewrap build --skipPwaValidation
 
       - name: Locate and sign APK
         run: |
