@@ -11,6 +11,9 @@ on:
       - '.github/workflows/build-android.yml'
   workflow_dispatch:
 
+permissions:
+  contents: write   # necessario per creare GitHub Releases
+
 jobs:
   build-apk:
     name: Build WebView APK
@@ -47,11 +50,43 @@ jobs:
         env:
           KS_STORE_PASS: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
           KS_KEY_PASS:   ${{ secrets.KEYSTORE_KEY_PASSWORD }}
-        run: gradle assembleRelease
+        run: |
+          gradle assembleRelease \
+            -PversionCode=${{ github.run_number }} \
+            -PversionName="1.${{ github.run_number }}"
+
+      - name: Rename APK
+        run: cp android/app/build/outputs/apk/release/app-release.apk FantaCaserma.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: FantaCaserma-APK
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: FantaCaserma.apk
           retention-days: 30
+
+      - name: Publish / update GitHub Release "latest"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Elimina il release "latest" precedente (se esiste)
+          gh release delete latest --yes 2>/dev/null || true
+          git push origin :refs/tags/latest 2>/dev/null || true
+
+          # Crea il nuovo release "latest" con l'APK allegato
+          NOTES="## FantaCaserma – Build ${{ github.run_number }}
+
+**Commit**: \`$(git rev-parse --short HEAD)\`
+
+### 📱 Installazione Android
+1. Scarica il file \`FantaCaserma.apk\`
+2. Apri il file sul telefono (abilita *Origini sconosciute* se richiesto)
+3. Installa e avvia!
+
+### 🍎 Guida iOS (iPhone/iPad)
+👉 https://darioschioppi.github.io/fantacaserma/install-ios.html"
+
+          gh release create latest FantaCaserma.apk \
+            --title "FantaCaserma – Ultima versione (build ${{ github.run_number }})" \
+            --notes "$NOTES" \
+            --latest
