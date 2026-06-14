@@ -386,7 +386,35 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
       <div id="adminTeamsMobileSection">
         <div class="teams-grid" id="adminTeamsGridMobile"><div class="empty-state">Caricamento…</div></div>
       </div>
+      <!-- Assegnazioni (tab Assegn. su mobile) -->
+      <div id="adminAssignSection" style="display:none;flex-direction:column;flex:1;min-height:0;">
+        <div style="padding:10px 14px;font-size:.8rem;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);flex-shrink:0;">📝 Gestione Assegnazioni</div>
+        <div id="adm_assignListContainer" style="flex:1;overflow-y:auto;padding:8px 12px;"></div>
+        <div style="flex-shrink:0;border-top:2px solid var(--border);padding:10px 14px;background:var(--bg2);">
+          <div style="font-size:.72rem;font-weight:700;color:var(--text-s);margin-bottom:6px;text-transform:uppercase;">Assegna giocatore libero</div>
+          <input id="adm_assignFreeSearch" type="text" placeholder="🔍 Cerca giocatore libero…" oninput="renderAssignFreeResults()" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.82rem;">
+          <div id="adm_assignFreeResults" style="margin-top:4px;max-height:120px;overflow-y:auto;"></div>
+          <div id="adm_assignFreeForm" style="display:none;margin-top:8px;">
+            <div style="font-size:.75rem;color:var(--gold);font-weight:700;margin-bottom:6px;">Giocatore: <span id="adm_assignFreeSelectedName">—</span></div>
+            <select id="adm_assignFreeTeam" style="width:100%;padding:6px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.82rem;margin-bottom:6px;"></select>
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+              <input id="adm_assignFreeAmount" type="number" min="0" placeholder="Prezzo cr" style="flex:1;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.82rem;">
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button onclick="confirmAssignFree()" style="flex:1;padding:8px;border-radius:8px;border:none;background:var(--green);color:#000;font-weight:700;font-size:.8rem;cursor:pointer;">✅ Assegna</button>
+              <button onclick="cancelAssignFree()" style="flex:1;padding:8px;border-radius:8px;border:none;background:var(--bg3);color:var(--text-m);font-size:.8rem;cursor:pointer;">Annulla</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="admin-auction-panel" id="adminAuctionPanel">
+        <!-- Timer duration stepper -->
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;">
+          <span style="font-size:.72rem;color:var(--text-m);flex:1;">⏱ Durata timer:</span>
+          <button onclick="changeAuctionTimer(-5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">−</button>
+          <span id="aapTimerDuration" style="font-size:.9rem;font-weight:700;color:var(--gold);min-width:40px;text-align:center;">30s</span>
+          <button onclick="changeAuctionTimer(+5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">+</button>
+        </div>
         <div class="aap-title" id="aapPhaseLabel">⚡ Asta in corso</div>
         <div class="aap-player">
           <div class="aap-player-info"><h3 id="aapPlayerName">—</h3><p id="aapPlayerMeta">—</p></div>
@@ -403,7 +431,10 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         <div class="aap-timer-bar"><div class="aap-timer-fill" id="aapTimerFill"></div></div>
         <div class="aap-bids" id="aapBids"><div class="empty-state" style="font-size:.75rem;">In attesa di offerte…</div></div>
         <div class="aap-actions" id="aapActions">
-          <button class="btn-skip" onclick="adminSkip()">⏭ Salta giocatore</button>
+          <button class="btn-skip" onclick="adminSkip()">⏭ Salta</button>
+          <button id="aapBtnPause" onclick="adminPauseAuction()" style="padding:7px 12px;border-radius:8px;border:none;background:var(--gold);color:#000;font-weight:700;font-size:.78rem;cursor:pointer;">⏸ Pausa</button>
+          <button id="aapBtnResume" onclick="adminResumeAuction()" style="display:none;padding:7px 12px;border-radius:8px;border:none;background:var(--green);color:#000;font-weight:700;font-size:.78rem;cursor:pointer;">▶ Riprendi</button>
+          <button onclick="adminEndAuction()" style="padding:7px 12px;border-radius:8px;border:none;background:var(--red);color:#fff;font-weight:700;font-size:.78rem;cursor:pointer;">⏹ Termina</button>
         </div>
         <div id="aapPostReveal" style="display:none;margin-top:8px;">
           <div style="font-size:.8rem;color:var(--text-m);margin-bottom:8px;">
@@ -412,7 +443,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <button class="btn-assign" onclick="adminAssign()">✅ Assegna</button>
-            <button class="btn-skip" onclick="adminSkip()">⏭ Salta (non assegnare)</button>
+            <button class="btn-skip" onclick="adminSkip()">⏭ Salta</button>
           </div>
         </div>
       </div>
@@ -435,6 +466,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
     <button class="mobile-nav-btn active" onclick="adminMobileTab('search',this)"><span class="icon">🔍</span>Ricerca</button>
     <button class="mobile-nav-btn" onclick="adminMobileTab('teams',this)"><span class="icon">🏟️</span>Squadre</button>
     <button class="mobile-nav-btn" onclick="adminMobileTab('auction',this)"><span class="icon">⚡</span>Asta</button>
+    <button class="mobile-nav-btn" onclick="adminMobileTab('assign',this)"><span class="icon">📝</span>Assegn.</button>
   </div>
 </div>
 
@@ -959,6 +991,13 @@ function updateAdminPhase() {
   dot.className = 'phase-dot';
   badge.appendChild(dot);
   badge.appendChild(document.createTextNode(' ' + (labels[phase] || phase)));
+  // Aggiorna label timer e pulsanti Pausa/Riprendi anche nell'admin panel
+  const timerDurLabel = document.getElementById('aapTimerDuration');
+  if (timerDurLabel) timerDurLabel.textContent = getAuctionDuration() + 's';
+  const btnPause  = document.getElementById('aapBtnPause');
+  const btnResume = document.getElementById('aapBtnResume');
+  if (btnPause)  btnPause.style.display  = phase === 'paused' ? 'none' : '';
+  if (btnResume) btnResume.style.display = phase === 'paused' ? ''     : 'none';
 }
 
 function renderAdminAuctionPanel() {
@@ -984,10 +1023,18 @@ function renderAdminAuctionPanel() {
   panel.classList.add('visible');
   setText('aapPlayerName', cp.nome);
   setText('aapPlayerMeta', cp.squadra + ' · ' + cp.ruolo + ' · QI ' + cp.qi);
-  const phaseLabels = { bidding: '⚡ Asta in corso', reveal: '🎯 Rivelazione', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato' };
+  const phaseLabels = { bidding: '⚡ Asta in corso', reveal: '🎯 Rivelazione', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ Asta in pausa' };
   setText('aapPhaseLabel', phaseLabels[phase] || phase);
+  // Aggiorna label durata timer
+  const timerDurLabel = document.getElementById('aapTimerDuration');
+  if (timerDurLabel) timerDurLabel.textContent = getAuctionDuration() + 's';
   timerEndTs = gameState.timerEnd || null;
-  if (phase === 'bidding' || phase === 'tiebreaker') {
+  // Toggle Pausa/Riprendi
+  const btnPause  = document.getElementById('aapBtnPause');
+  const btnResume = document.getElementById('aapBtnResume');
+  if (btnPause)  btnPause.style.display  = phase === 'paused' ? 'none' : '';
+  if (btnResume) btnResume.style.display = phase === 'paused' ? ''     : 'none';
+  if (phase === 'bidding' || phase === 'tiebreaker' || phase === 'paused') {
     document.getElementById('aapActions').style.display = 'flex';
     document.getElementById('aapPostReveal').style.display = 'none';
   } else if (phase === 'reveal') {
@@ -2206,6 +2253,11 @@ function changeAuctionTimer(delta) {
   const next = Math.max(10, Math.min(120, current + delta));
   if (next === current) return;
   db.ref('/game/auctionDuration').set(next);
+  // Aggiorna entrambe le label (presidente e admin)
+  const lPres  = document.getElementById('paTimerDuration');
+  const lAdmin = document.getElementById('aapTimerDuration');
+  if (lPres)  lPres.textContent  = next + 's';
+  if (lAdmin) lAdmin.textContent = next + 's';
   toast('⏱ Durata timer: ' + next + 's', 'info');
 }
 
@@ -2238,9 +2290,24 @@ function adminEndAuction() {
 
 // ─── FEATURE 3: GESTIONE ASSEGNAZIONI ───
 let assignFreeSelected = null;
+// Scope: 'pres' = pannello presidente, 'admin' = pannello admin
+let assignScope = 'pres';
+const asgIdMap = {
+  assignListContainer:    'adm_assignListContainer',
+  assignFreeSearch:       'adm_assignFreeSearch',
+  assignFreeResults:      'adm_assignFreeResults',
+  assignFreeForm:         'adm_assignFreeForm',
+  assignFreeSelectedName: 'adm_assignFreeSelectedName',
+  assignFreeTeam:         'adm_assignFreeTeam',
+  assignFreeAmount:       'adm_assignFreeAmount',
+};
+function asgEl(id) {
+  const realId = (assignScope === 'admin') ? (asgIdMap[id] || id) : id;
+  return document.getElementById(realId);
+}
 
 function renderAssignList() {
-  const container = document.getElementById('assignListContainer');
+  const container = asgEl('assignListContainer');
   if (!container) return;
   container.textContent = '';
   const sorted = [...assignmentsState].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
@@ -2361,8 +2428,8 @@ async function confirmReassign(key, oldTeamId, oldAmount, playerName, playerRuol
 }
 
 function renderAssignFreeResults() {
-  const query = (document.getElementById('assignFreeSearch') ? document.getElementById('assignFreeSearch').value : '').toLowerCase().trim();
-  const container = document.getElementById('assignFreeResults');
+  const query = (asgEl('assignFreeSearch') ? asgEl('assignFreeSearch').value : '').toLowerCase().trim();
+  const container = asgEl('assignFreeResults');
   if (!container) return;
   container.textContent = '';
   if (!query) return;
@@ -2395,9 +2462,10 @@ function renderAssignFreeResults() {
 
 function selectAssignFreePlayer(p) {
   assignFreeSelected = p;
-  setText('assignFreeSelectedName', p.Nome);
+  const nameEl = asgEl('assignFreeSelectedName');
+  if (nameEl) nameEl.textContent = p.Nome;
   // Popola select squadra
-  const sel = document.getElementById('assignFreeTeam');
+  const sel = asgEl('assignFreeTeam');
   if (sel) {
     sel.textContent = '';
     TEAMS.forEach(t => {
@@ -2406,16 +2474,16 @@ function selectAssignFreePlayer(p) {
       sel.appendChild(opt);
     });
   }
-  const form = document.getElementById('assignFreeForm');
+  const form = asgEl('assignFreeForm');
   if (form) form.style.display = 'block';
-  const res = document.getElementById('assignFreeResults');
+  const res = asgEl('assignFreeResults');
   if (res) res.textContent = '';
 }
 
 async function confirmAssignFree() {
   if (!assignFreeSelected) return;
-  const teamId = document.getElementById('assignFreeTeam') ? document.getElementById('assignFreeTeam').value : null;
-  const amount = parseInt(document.getElementById('assignFreeAmount') ? document.getElementById('assignFreeAmount').value : NaN);
+  const teamId = asgEl('assignFreeTeam') ? asgEl('assignFreeTeam').value : null;
+  const amount = parseInt(asgEl('assignFreeAmount') ? asgEl('assignFreeAmount').value : NaN);
   if (!teamId || isNaN(amount) || amount < 0) { toast('Inserisci squadra e prezzo', 'error'); return; }
   const alreadyAssigned = assignmentsState.some(a => (a.player || '').toLowerCase() === assignFreeSelected.Nome.toLowerCase());
   if (alreadyAssigned) { toast('Giocatore già assegnato', 'error'); return; }
@@ -2435,20 +2503,20 @@ async function confirmAssignFree() {
     toTeam: teamId, toTeamName: team ? team.name : teamId, amount });
   toast((assignFreeSelected.Nome) + ' assegnato a ' + (team ? team.name : teamId) + ' (' + amount + ' cr)', 'success');
   assignFreeSelected = null;
-  const searchEl = document.getElementById('assignFreeSearch');
+  const searchEl = asgEl('assignFreeSearch');
   if (searchEl) searchEl.value = '';
-  const formEl = document.getElementById('assignFreeForm');
+  const formEl = asgEl('assignFreeForm');
   if (formEl) formEl.style.display = 'none';
   renderAssignList();
 }
 
 function cancelAssignFree() {
   assignFreeSelected = null;
-  const searchEl = document.getElementById('assignFreeSearch');
+  const searchEl = asgEl('assignFreeSearch');
   if (searchEl) searchEl.value = '';
-  const res = document.getElementById('assignFreeResults');
+  const res = asgEl('assignFreeResults');
   if (res) res.textContent = '';
-  const formEl = document.getElementById('assignFreeForm');
+  const formEl = asgEl('assignFreeForm');
   if (formEl) formEl.style.display = 'none';
 }
 
@@ -2541,20 +2609,29 @@ function adminMobileTab(tab, btn) {
   document.querySelectorAll('#adminMobileNav .mobile-nav-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 
-  const searchSection = document.getElementById('adminSearchSection');
-  const teamsSection  = document.getElementById('adminTeamsMobileSection');
-  const auctionPanel  = document.getElementById('adminAuctionPanel');
+  const searchSection  = document.getElementById('adminSearchSection');
+  const teamsSection   = document.getElementById('adminTeamsMobileSection');
+  const assignSection  = document.getElementById('adminAssignSection');
+  const auctionPanel   = document.getElementById('adminAuctionPanel');
 
-  if (searchSection) searchSection.style.display = tab === 'search' ? 'flex' : 'none';
-  if (teamsSection)  teamsSection.style.display  = tab === 'teams'  ? 'flex' : 'none';
+  if (searchSection)  searchSection.style.display  = tab === 'search'  ? 'flex'  : 'none';
+  if (teamsSection)   teamsSection.style.display   = tab === 'teams'   ? 'flex'  : 'none';
+  if (assignSection)  assignSection.style.display  = tab === 'assign'  ? 'flex'  : 'none';
 
   if (tab === 'auction') {
-    // Mostra sempre il pannello asta (anche se non c'è asta attiva)
     if (auctionPanel) auctionPanel.classList.add('visible');
-    renderAdminAuctionPanel(); // aggiorna contenuto
+    renderAdminAuctionPanel();
   } else {
-    // Rimuovi la visibilità forzata: lascia decidere a renderAdminAuctionPanel
-    if (auctionPanel && !(gameState.currentPlayer)) auctionPanel.classList.remove('visible');
+    if (auctionPanel && !gameState.currentPlayer) auctionPanel.classList.remove('visible');
+  }
+
+  // Imposta scope assegnazioni
+  if (tab === 'assign') {
+    assignScope = 'admin';
+    renderAssignList();
+  } else if (tab !== 'assign') {
+    // Ripristina scope per il pannello presidente (se in uso)
+    assignScope = 'pres';
   }
 }
 
