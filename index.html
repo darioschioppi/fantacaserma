@@ -505,6 +505,13 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
     </div>
     <!-- ASTA PANEL (solo Presidente) -->
     <div class="players-panel" id="presidentAstaPanel">
+      <!-- Timer duration stepper -->
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;">
+        <span style="font-size:.72rem;color:var(--text-m);flex:1;">⏱ Durata timer:</span>
+        <button onclick="changeAuctionTimer(-5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">−</button>
+        <span id="paTimerDuration" style="font-size:.9rem;font-weight:700;color:var(--gold);min-width:40px;text-align:center;">30s</span>
+        <button onclick="changeAuctionTimer(+5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">+</button>
+      </div>
       <div class="pp-search-bar">
         <input class="pp-search-input" id="paSearch" placeholder="🔍 Scegli giocatore da mettere all'asta…" oninput="filterAstaPlayers()">
         <select class="pp-select" id="paFilterRuolo" onchange="filterAstaPlayers()">
@@ -545,6 +552,9 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         <div class="aap-bids" id="paBidsList" style="max-height:120px;overflow-y:auto;"></div>
         <div id="paActions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
           <button class="btn-skip" onclick="adminSkip()">⏭ Salta giocatore</button>
+          <button id="paBtnPause" onclick="adminPauseAuction()" style="padding:7px 12px;border-radius:8px;border:none;background:var(--gold);color:#000;font-weight:700;font-size:.78rem;cursor:pointer;">⏸ Pausa</button>
+          <button id="paBtnResume" onclick="adminResumeAuction()" style="display:none;padding:7px 12px;border-radius:8px;border:none;background:var(--green);color:#000;font-weight:700;font-size:.78rem;cursor:pointer;">▶ Riprendi</button>
+          <button onclick="adminEndAuction()" style="padding:7px 12px;border-radius:8px;border:none;background:var(--red);color:#fff;font-weight:700;font-size:.78rem;cursor:pointer;">⏹ Termina asta</button>
         </div>
         <div id="paPostReveal" style="display:none;margin-top:8px;">
           <div style="font-size:.8rem;color:var(--text-m);margin-bottom:8px;">Vincitore: <strong id="paWinnerName" style="color:var(--gold)">—</strong> con <strong id="paWinnerBid" style="color:var(--gold)">—</strong> cr</div>
@@ -566,6 +576,29 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         <div class="bid-sent" id="paBidSent">✅ Offerta inviata!</div>
       </div>
     </div>
+    <!-- ASSIGN PANEL (solo Presidente) -->
+    <div class="players-panel" id="presidentAssignPanel" style="display:none;flex-direction:column;">
+      <div style="padding:10px 14px;font-size:.8rem;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);flex-shrink:0;">📝 Gestione Assegnazioni</div>
+      <!-- Lista assegnati -->
+      <div id="assignListContainer" style="flex:1;overflow-y:auto;padding:8px 12px;"></div>
+      <!-- Assegna giocatore libero -->
+      <div style="flex-shrink:0;border-top:2px solid var(--border);padding:10px 14px;background:var(--bg2);">
+        <div style="font-size:.72rem;font-weight:700;color:var(--text-s);margin-bottom:6px;text-transform:uppercase;">Assegna giocatore libero</div>
+        <input id="assignFreeSearch" type="text" placeholder="🔍 Cerca giocatore libero…" oninput="renderAssignFreeResults()" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.82rem;">
+        <div id="assignFreeResults" style="margin-top:4px;max-height:120px;overflow-y:auto;"></div>
+        <div id="assignFreeForm" style="display:none;margin-top:8px;">
+          <div style="font-size:.75rem;color:var(--gold);font-weight:700;margin-bottom:6px;">Giocatore: <span id="assignFreeSelectedName">—</span></div>
+          <select id="assignFreeTeam" style="width:100%;padding:6px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.82rem;margin-bottom:6px;"></select>
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+            <input id="assignFreeAmount" type="number" min="0" placeholder="Prezzo cr" style="flex:1;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.82rem;">
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button onclick="confirmAssignFree()" style="flex:1;padding:8px;border-radius:8px;border:none;background:var(--green);color:#000;font-weight:700;font-size:.8rem;cursor:pointer;">✅ Assegna</button>
+            <button onclick="cancelAssignFree()" style="flex:1;padding:8px;border-radius:8px;border:none;background:var(--bg3);color:var(--text-m);font-size:.8rem;cursor:pointer;">Annulla</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="recent-sidebar">
       <div class="recent-title">🛒 Ultimi acquisti</div>
       <div class="recent-list" id="recentList"><div class="empty-state" style="font-size:.75rem;">Nessun acquisto ancora</div></div>
@@ -576,6 +609,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
     <button class="mobile-nav-btn" onclick="participantMobileTab('players',this)"><span class="icon">📋</span>Rosa</button>
     <button class="mobile-nav-btn" onclick="participantMobileTab('recent',this)"><span class="icon">🛒</span>Acquisti</button>
     <button class="mobile-nav-btn hidden" id="tabAstaBtn" onclick="participantMobileTab('asta',this)"><span class="icon">⚡</span>Asta</button>
+    <button class="mobile-nav-btn hidden" id="tabAssignBtn" onclick="participantMobileTab('assign',this)"><span class="icon">📝</span>Assegn.</button>
   </div>
 </div>
 
@@ -607,7 +641,11 @@ const TEAMS = [
 ];
 const ADMIN_PASSWORD = 'fantacaserma2025';
 const BUDGET_START = 500;
-const AUCTION_DURATION = 30;
+let currentAuctionDuration = 30;
+function getAuctionDuration() {
+  return (gameState.auctionDuration && gameState.auctionDuration >= 10)
+    ? gameState.auctionDuration : currentAuctionDuration;
+}
 const ROSTER_MAX = { P: 3, D: 8, C: 8, A: 6 }; // max per ruolo per squadra
 
 let db = null;
@@ -825,7 +863,7 @@ function initAdminFirebase() {
   });
   db.ref('/assignments').on('value', snap => {
     const raw = snap.val();
-    assignmentsState = raw ? Object.values(raw) : [];
+    assignmentsState = raw ? Object.entries(raw).map(([key, val]) => ({ ...val, _key: key })) : [];
     updateAdminStats();
   });
 }
@@ -876,7 +914,7 @@ function updateAdminPhase() {
   const phase = gameState.phase || 'waiting';
   const badge = document.getElementById('adminPhaseBadge');
   badge.className = 'phase-badge ' + (phase === 'waiting' ? '' : phase);
-  const labels = { waiting: 'In attesa', bidding: '⚡ Asta', reveal: '🎯 Rivelazione', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato' };
+  const labels = { waiting: 'In attesa', bidding: '⚡ Asta', reveal: '🎯 Rivelazione', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ In pausa' };
   badge.textContent = '';
   const dot = document.createElement('span');
   dot.className = 'phase-dot';
@@ -1028,10 +1066,10 @@ function renderAdminBids() {
 setInterval(() => {
   if (currentUser && currentUser.type === 'admin' && timerEndTs) {
     const remaining = Math.max(0, Math.ceil((timerEndTs - Date.now()) / 1000));
-    updateTimerDisplay('adminTimerRing', 'adminTimerNum', remaining, AUCTION_DURATION);
+    updateTimerDisplay('adminTimerRing', 'adminTimerNum', remaining, getAuctionDuration());
     const fill = document.getElementById('aapTimerFill');
     if (fill) {
-      fill.style.width = (remaining / AUCTION_DURATION * 100) + '%';
+      fill.style.width = (remaining / getAuctionDuration() * 100) + '%';
       fill.style.background = remaining <= 5 ? 'var(--red)' : remaining <= 10 ? 'var(--gold)' : 'var(--green)';
     }
   }
@@ -1054,7 +1092,7 @@ function adminStartAuction(playerData) {
     return;
   }
   autoRevealFired = false;
-  const timerEnd = Date.now() + AUCTION_DURATION * 1000;
+  const timerEnd = Date.now() + getAuctionDuration() * 1000;
   db.ref('/bids').set(null);
   db.ref('/bidSubmitted').set(null);
   db.ref('/game').update({
@@ -1151,7 +1189,7 @@ function autoProcessReveal() {
     // minBid = stessa cifra (possono rilanciare a parità o di più)
     const tiebreakerTeams = winners.map(w => w.tid);
     const minBid = maxAmt; // NON +1: si può rioffrire allo stesso prezzo
-    const timerEnd = Date.now() + AUCTION_DURATION * 1000;
+    const timerEnd = Date.now() + getAuctionDuration() * 1000;
     autoRevealFired = false;
     // Salva i timestamp del round corrente per il fallback "prima offerta"
     const tiebreakerFirstBid = {};
@@ -1294,9 +1332,11 @@ function enterParticipant() {
   showScreen('screen-participant');
   const u = currentUser;
   setText('participantTeamName', u.teamEmoji + ' ' + u.teamName);
-  // Mostra tab ⚡ Asta solo per il presidente
+  // Mostra tab ⚡ Asta e 📝 Assegnazioni solo per il presidente
   const tabAstaBtn = document.getElementById('tabAstaBtn');
   if (tabAstaBtn) tabAstaBtn.classList.toggle('hidden', !u.isPresident);
+  const tabAssignBtn = document.getElementById('tabAssignBtn');
+  if (tabAssignBtn) tabAssignBtn.classList.toggle('hidden', !u.isPresident);
   buildPokerTable();
   participantMobileTab('table', document.querySelector('#participantMobileNav .mobile-nav-btn'));
   initParticipantFirebase();
@@ -1443,12 +1483,15 @@ function initParticipantFirebase() {
   db.ref('/teams').on('value', snap => { teamsState = snap.val() || {}; updateBudgetDisplay(); updateConnectedChips(); });
   db.ref('/assignments').on('value', snap => {
     const raw = snap.val();
-    assignmentsState = raw ? Object.values(raw) : [];
+    assignmentsState = raw ? Object.entries(raw).map(([key, val]) => ({ ...val, _key: key })) : [];
     renderRecentList();
     filterParticipantPlayers(); // aggiorna rosa in real-time
     // Aggiorna anche il pannello asta del presidente se visibile
     const ap = document.getElementById('presidentAstaPanel');
     if (ap && ap.style.display !== 'none') filterAstaPlayers();
+    // Aggiorna lista assegnazioni se il pannello è aperto
+    const asgn = document.getElementById('presidentAssignPanel');
+    if (asgn && asgn.style.display !== 'none') renderAssignList();
   });
   db.ref('/avatars').on('value', snap => {
     avatarsState = snap.val() || {};
@@ -1460,6 +1503,9 @@ function handleGameStateChange() {
   const phase = gameState.phase || 'waiting';
   const cp = gameState.currentPlayer;
   updateParticipantPhase(phase);
+  // Aggiorna label durata timer (Feature 1)
+  const timerLabel = document.getElementById('paTimerDuration');
+  if (timerLabel) timerLabel.textContent = getAuctionDuration() + 's';
   if (currentUser && currentUser.isPresident) renderPresidentAuction();
   updateBudgetDisplay();
   const centerMsg = document.getElementById('tableWaitingMsg');
@@ -1587,6 +1633,13 @@ function handleGameStateChange() {
       if (btnPass) btnPass.disabled = myBidSent;
     }
     startLocalTimer();
+  } else if (phase === 'paused') {
+    stopLocalTimer();
+    document.getElementById('bidInputArea').style.display = 'none';
+    document.getElementById('bidAreaWaiting').style.display = 'block';
+    setText('bidAreaWaiting', '⏸ Asta in pausa…');
+    document.getElementById('revealOverlay').classList.remove('visible');
+    document.getElementById('tiebreakerBanner').classList.remove('visible');
   } else if (phase === 'reveal') {
     stopLocalTimer();
     document.getElementById('bidInputArea').style.display = 'none';
@@ -1614,7 +1667,7 @@ function handleGameStateChange() {
 function updateParticipantPhase(phase) {
   const badge = document.getElementById('participantPhaseBadge');
   badge.className = 'phase-badge ' + (phase === 'waiting' ? '' : phase);
-  const labels = { waiting: 'In attesa', bidding: '⚡ Asta', reveal: '🎯 Rivelazione', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato' };
+  const labels = { waiting: 'In attesa', bidding: '⚡ Asta', reveal: '🎯 Rivelazione', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ In pausa' };
   badge.textContent = '';
   const dot = document.createElement('span'); dot.className = 'phase-dot'; badge.appendChild(dot);
   badge.appendChild(document.createTextNode(' ' + (labels[phase] || phase)));
@@ -1876,8 +1929,8 @@ function startLocalTimer() {
   timerInterval = setInterval(() => {
     if (!timerEndTs) return;
     const remaining = Math.max(0, Math.ceil((timerEndTs - Date.now()) / 1000));
-    updateTimerDisplay('partTimerRing', 'partTimerNum', remaining, AUCTION_DURATION);
-    updateTimerDisplay('paTimerRing', 'paTimerNum', remaining, AUCTION_DURATION);
+    updateTimerDisplay('partTimerRing', 'partTimerNum', remaining, getAuctionDuration());
+    updateTimerDisplay('paTimerRing', 'paTimerNum', remaining, getAuctionDuration());
     // Timer inline nell'header
     const ht = document.getElementById('auctionHeaderTimer');
     if (ht) {
@@ -1998,8 +2051,16 @@ function renderPresidentAuction() {
   panel.style.display = 'block';
   setText('paPlayerName', cp.nome);
   setText('paPlayerMeta', cp.squadra + ' · ' + cp.ruolo + ' · QI ' + cp.qi);
-  const phaseLabels = { bidding: '⚡ Asta in corso', reveal: '🎯 Rivelazione', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato' };
+  const phaseLabels = { bidding: '⚡ Asta in corso', reveal: '🎯 Rivelazione', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ Asta in pausa' };
   setText('paPhaseLabel', phaseLabels[phase] || phase);
+  // Aggiorna pulsanti Pausa/Riprendi
+  const btnPause = document.getElementById('paBtnPause');
+  const btnResume = document.getElementById('paBtnResume');
+  if (btnPause) btnPause.style.display = phase === 'paused' ? 'none' : '';
+  if (btnResume) btnResume.style.display = phase === 'paused' ? '' : 'none';
+  // Aggiorna label durata timer
+  const timerLabel = document.getElementById('paTimerDuration');
+  if (timerLabel) timerLabel.textContent = getAuctionDuration() + 's';
   const bidArea = document.getElementById('paBidArea');
   if (phase === 'bidding' || phase === 'tiebreaker') {
     document.getElementById('paActions').style.display = 'flex';
@@ -2022,6 +2083,10 @@ function renderPresidentAuction() {
         if (sent) mySubmitted ? sent.classList.add('visible') : sent.classList.remove('visible');
       }
     }
+  } else if (phase === 'paused') {
+    document.getElementById('paActions').style.display = 'flex';
+    document.getElementById('paPostReveal').style.display = 'none';
+    if (bidArea) bidArea.style.display = 'none';
   } else if (phase === 'reveal') {
     document.getElementById('paActions').style.display = 'none';
     document.getElementById('paPostReveal').style.display = 'block';
@@ -2071,6 +2136,258 @@ function renderPresidentBids() {
     if (r.submitted && showAmt) { const tick = document.createElement('span'); tick.style.cssText = 'color:var(--green);font-size:.7rem'; tick.textContent = '✓'; chip.appendChild(tick); }
     container.appendChild(chip);
   });
+}
+
+// ─── FEATURE 1: TIMER DURATION ───
+function changeAuctionTimer(delta) {
+  const current = getAuctionDuration();
+  const next = Math.max(10, Math.min(120, current + delta));
+  if (next === current) return;
+  db.ref('/game/auctionDuration').set(next);
+  toast('⏱ Durata timer: ' + next + 's', 'info');
+}
+
+// ─── FEATURE 2: PAUSA / FINE ASTA ───
+function adminPauseAuction() {
+  const phase = gameState.phase || 'waiting';
+  if (phase !== 'bidding' && phase !== 'tiebreaker') return;
+  db.ref('/game').update({ phase: 'paused', pausedPhase: phase });
+  toast('⏸ Asta in pausa', 'info');
+}
+
+function adminResumeAuction() {
+  if (gameState.phase !== 'paused') return;
+  const resumePhase = gameState.pausedPhase || 'bidding';
+  const timerEnd = Date.now() + getAuctionDuration() * 1000;
+  autoRevealFired = false;
+  db.ref('/game').update({ phase: resumePhase, timerEnd, pausedPhase: null });
+  toast('▶ Asta ripresa', 'success');
+}
+
+function adminEndAuction() {
+  const cp = gameState.currentPlayer;
+  if (cp) writeLog('ended_manual', { player: cp.nome, ruolo: cp.ruolo });
+  db.ref('/game').update({ phase: 'waiting', currentPlayer: null, timerEnd: null,
+    tiebreakers: null, minBid: null, tiebreakerFirstBid: null, pausedPhase: null });
+  db.ref('/bids').set(null);
+  db.ref('/bidSubmitted').set(null);
+  toast('⏹ Asta terminata', 'info');
+}
+
+// ─── FEATURE 3: GESTIONE ASSEGNAZIONI ───
+let assignFreeSelected = null;
+
+function renderAssignList() {
+  const container = document.getElementById('assignListContainer');
+  if (!container) return;
+  container.textContent = '';
+  const sorted = [...assignmentsState].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  if (!sorted.length) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.style.cssText = 'font-size:.82rem;margin:16px auto;';
+    empty.textContent = 'Nessuna assegnazione ancora.';
+    container.appendChild(empty);
+    return;
+  }
+  sorted.forEach(a => {
+    const row = document.createElement('div');
+    row.id = 'reassign-row-' + a._key;
+    row.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 4px;border-bottom:1px solid var(--border);flex-wrap:wrap;';
+    const roleChar = (a.ruolo || '').charAt(0);
+    const badge = document.createElement('span');
+    badge.className = 'role-badge role-' + roleChar;
+    badge.textContent = roleChar || '?';
+    const name = document.createElement('span');
+    name.style.cssText = 'flex:1;font-size:.82rem;font-weight:600;';
+    name.textContent = a.player || '—';
+    const team = document.createElement('span');
+    team.style.cssText = 'font-size:.72rem;color:var(--text-m);';
+    team.textContent = a.teamName || a.teamId || '—';
+    const amt = document.createElement('span');
+    amt.style.cssText = 'font-size:.78rem;color:var(--gold);font-weight:700;';
+    amt.textContent = (a.amount != null ? a.amount : '?') + ' cr';
+    const btnEdit = document.createElement('button');
+    btnEdit.textContent = '✏️';
+    btnEdit.title = 'Modifica';
+    btnEdit.style.cssText = 'padding:3px 7px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;font-size:.8rem;';
+    btnEdit.onclick = () => openReassignForm(a._key);
+    const btnRemove = document.createElement('button');
+    btnRemove.textContent = '🗑';
+    btnRemove.title = 'Rimuovi';
+    btnRemove.style.cssText = 'padding:3px 7px;border-radius:6px;border:none;background:var(--red);color:#fff;cursor:pointer;font-size:.8rem;';
+    btnRemove.onclick = () => confirmRemoveAssignment(a._key);
+    row.appendChild(badge); row.appendChild(name); row.appendChild(team);
+    row.appendChild(amt); row.appendChild(btnEdit); row.appendChild(btnRemove);
+    container.appendChild(row);
+  });
+}
+
+async function confirmRemoveAssignment(key) {
+  const a = assignmentsState.find(x => x._key === key);
+  if (!a || !confirm('Rimuovere ' + a.player + ' da ' + a.teamName + '?')) return;
+  const td = teamsState[a.teamId] || {};
+  const updates = {};
+  updates['/assignments/' + key] = null;
+  updates['/teams/' + a.teamId + '/budget'] = (td.budget != null ? td.budget : BUDGET_START) + (a.amount || 0);
+  updates['/teams/' + a.teamId + '/rosterCount'] = Math.max(0, (td.rosterCount || 0) - 1);
+  await db.ref().update(updates);
+  writeLog('admin_remove', { by: currentUser && currentUser.name || 'presidente',
+    player: a.player, ruolo: a.ruolo, fromTeam: a.teamId, amount: a.amount });
+  toast((a.player || '') + ' rimosso da ' + (a.teamName || ''), 'info');
+  renderAssignList();
+}
+
+function openReassignForm(key) {
+  // Rimuove eventuali form precedenti
+  document.querySelectorAll('.reassign-inline-form').forEach(el => el.remove());
+  const row = document.getElementById('reassign-row-' + key);
+  if (!row) return;
+  const a = assignmentsState.find(x => x._key === key);
+  if (!a) return;
+  const form = document.createElement('div');
+  form.className = 'reassign-inline-form';
+  form.style.cssText = 'width:100%;padding:8px 4px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px;';
+  const sel = document.createElement('select');
+  sel.id = 'reassignTeam_' + key;
+  sel.style.cssText = 'flex:1;min-width:120px;padding:5px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.8rem;';
+  TEAMS.forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t.id; opt.textContent = t.emoji + ' ' + t.name;
+    if (t.id === a.teamId) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  const inp = document.createElement('input');
+  inp.type = 'number'; inp.id = 'reassignAmt_' + key; inp.min = '0';
+  inp.value = a.amount != null ? a.amount : 0;
+  inp.placeholder = 'cr'; inp.style.cssText = 'width:70px;padding:5px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.8rem;';
+  const btnSave = document.createElement('button');
+  btnSave.textContent = '✅ Salva';
+  btnSave.style.cssText = 'padding:5px 10px;border-radius:8px;border:none;background:var(--green);color:#000;font-weight:700;font-size:.78rem;cursor:pointer;';
+  btnSave.onclick = () => confirmReassign(key, a.teamId, a.amount || 0, a.player, a.ruolo);
+  const btnCancel = document.createElement('button');
+  btnCancel.textContent = 'Annulla';
+  btnCancel.style.cssText = 'padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text-m);font-size:.78rem;cursor:pointer;';
+  btnCancel.onclick = () => form.remove();
+  form.appendChild(sel); form.appendChild(inp); form.appendChild(btnSave); form.appendChild(btnCancel);
+  row.parentNode.insertBefore(form, row.nextSibling);
+}
+
+async function confirmReassign(key, oldTeamId, oldAmount, playerName, playerRuolo) {
+  const newTeamId = document.getElementById('reassignTeam_' + key) ? document.getElementById('reassignTeam_' + key).value : null;
+  const newAmount = parseInt(document.getElementById('reassignAmt_' + key) ? document.getElementById('reassignAmt_' + key).value : NaN);
+  if (!newTeamId || isNaN(newAmount) || newAmount < 0) { toast('Dati non validi', 'error'); return; }
+  const oldTd = teamsState[oldTeamId] || {};
+  const newTd = teamsState[newTeamId] || {};
+  const newTeam = TEAMS.find(t => t.id === newTeamId);
+  const updates = {};
+  updates['/assignments/' + key + '/teamId']   = newTeamId;
+  updates['/assignments/' + key + '/teamName'] = newTeam ? newTeam.name : newTeamId;
+  updates['/assignments/' + key + '/amount']   = newAmount;
+  updates['/teams/' + oldTeamId + '/budget'] = (oldTd.budget != null ? oldTd.budget : BUDGET_START) + oldAmount;
+  updates['/teams/' + newTeamId + '/budget'] = (newTd.budget != null ? newTd.budget : BUDGET_START) - newAmount;
+  if (oldTeamId !== newTeamId) {
+    updates['/teams/' + oldTeamId + '/rosterCount'] = Math.max(0, (oldTd.rosterCount || 0) - 1);
+    updates['/teams/' + newTeamId + '/rosterCount'] = (newTd.rosterCount || 0) + 1;
+  }
+  await db.ref().update(updates);
+  writeLog('admin_reassign', { by: currentUser && currentUser.name || 'presidente',
+    player: playerName, ruolo: playerRuolo, fromTeam: oldTeamId, toTeam: newTeamId,
+    oldAmount, newAmount });
+  toast((playerName || '') + ' → ' + (newTeam ? newTeam.name : newTeamId) + ' (' + newAmount + ' cr)', 'success');
+  renderAssignList();
+}
+
+function renderAssignFreeResults() {
+  const query = (document.getElementById('assignFreeSearch') ? document.getElementById('assignFreeSearch').value : '').toLowerCase().trim();
+  const container = document.getElementById('assignFreeResults');
+  if (!container) return;
+  container.textContent = '';
+  if (!query) return;
+  const assignedNames = new Set(assignmentsState.map(a => (a.player || '').toLowerCase()));
+  const results = allPlayers.filter(p => {
+    const name = (p.Nome || '').toLowerCase();
+    return name.includes(query) && !assignedNames.has(name);
+  }).slice(0, 8);
+  results.forEach(p => {
+    const div = document.createElement('div');
+    div.style.cssText = 'padding:6px 8px;cursor:pointer;border-radius:6px;font-size:.8rem;display:flex;align-items:center;gap:6px;';
+    div.onmouseover = () => div.style.background = 'var(--bg3)';
+    div.onmouseout = () => div.style.background = '';
+    const badge = document.createElement('span');
+    badge.className = 'role-badge role-' + (p.Ruolo_Classic || '').charAt(0);
+    badge.textContent = (p.Ruolo_Classic || '').charAt(0) || '?';
+    const txt = document.createElement('span');
+    txt.textContent = p.Nome + ' · ' + (p.Squadra || '');
+    div.appendChild(badge); div.appendChild(txt);
+    div.onclick = () => selectAssignFreePlayer(p);
+    container.appendChild(div);
+  });
+  if (!results.length) {
+    const empty = document.createElement('div');
+    empty.style.cssText = 'font-size:.78rem;color:var(--text-s);padding:6px 8px;';
+    empty.textContent = query.length >= 2 ? 'Nessun giocatore libero trovato.' : 'Digita almeno 2 caratteri.';
+    container.appendChild(empty);
+  }
+}
+
+function selectAssignFreePlayer(p) {
+  assignFreeSelected = p;
+  setText('assignFreeSelectedName', p.Nome);
+  // Popola select squadra
+  const sel = document.getElementById('assignFreeTeam');
+  if (sel) {
+    sel.textContent = '';
+    TEAMS.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.id; opt.textContent = t.emoji + ' ' + t.name;
+      sel.appendChild(opt);
+    });
+  }
+  const form = document.getElementById('assignFreeForm');
+  if (form) form.style.display = 'block';
+  const res = document.getElementById('assignFreeResults');
+  if (res) res.textContent = '';
+}
+
+async function confirmAssignFree() {
+  if (!assignFreeSelected) return;
+  const teamId = document.getElementById('assignFreeTeam') ? document.getElementById('assignFreeTeam').value : null;
+  const amount = parseInt(document.getElementById('assignFreeAmount') ? document.getElementById('assignFreeAmount').value : NaN);
+  if (!teamId || isNaN(amount) || amount < 0) { toast('Inserisci squadra e prezzo', 'error'); return; }
+  const alreadyAssigned = assignmentsState.some(a => (a.player || '').toLowerCase() === assignFreeSelected.Nome.toLowerCase());
+  if (alreadyAssigned) { toast('Giocatore già assegnato', 'error'); return; }
+  const td = teamsState[teamId] || {};
+  const team = TEAMS.find(t => t.id === teamId);
+  const newKey = db.ref('/assignments').push().key;
+  const updates = {};
+  updates['/assignments/' + newKey] = {
+    player: assignFreeSelected.Nome, ruolo: assignFreeSelected.Ruolo_Classic,
+    teamId, teamName: team ? team.name : teamId, amount, timestamp: Date.now()
+  };
+  updates['/teams/' + teamId + '/budget']      = (td.budget != null ? td.budget : BUDGET_START) - amount;
+  updates['/teams/' + teamId + '/rosterCount'] = (td.rosterCount || 0) + 1;
+  await db.ref().update(updates);
+  writeLog('admin_assign_manual', { by: currentUser && currentUser.name || 'presidente',
+    player: assignFreeSelected.Nome, ruolo: assignFreeSelected.Ruolo_Classic,
+    toTeam: teamId, toTeamName: team ? team.name : teamId, amount });
+  toast((assignFreeSelected.Nome) + ' assegnato a ' + (team ? team.name : teamId) + ' (' + amount + ' cr)', 'success');
+  assignFreeSelected = null;
+  const searchEl = document.getElementById('assignFreeSearch');
+  if (searchEl) searchEl.value = '';
+  const formEl = document.getElementById('assignFreeForm');
+  if (formEl) formEl.style.display = 'none';
+  renderAssignList();
+}
+
+function cancelAssignFree() {
+  assignFreeSelected = null;
+  const searchEl = document.getElementById('assignFreeSearch');
+  if (searchEl) searchEl.value = '';
+  const res = document.getElementById('assignFreeResults');
+  if (res) res.textContent = '';
+  const formEl = document.getElementById('assignFreeForm');
+  if (formEl) formEl.style.display = 'none';
 }
 
 // ─── AVATAR ───
@@ -2172,11 +2489,13 @@ function participantMobileTab(tab, btn) {
   const pp = document.getElementById('playersPanel');
   const rs = document.querySelector('.recent-sidebar');
   const ap = document.getElementById('presidentAstaPanel');
+  const asgn = document.getElementById('presidentAssignPanel');
   // Reset all
   if (pa) pa.style.display = 'none';
   if (pp) pp.style.display = 'none';
   if (rs) { rs.style.display = 'none'; rs.style.width = '200px'; rs.style.borderLeft = ''; }
   if (ap) ap.style.display = 'none';
+  if (asgn) asgn.style.display = 'none';
   if (tab === 'table') {
     if (pa) pa.style.display = 'flex';
   } else if (tab === 'players') {
@@ -2185,6 +2504,8 @@ function participantMobileTab(tab, btn) {
     if (rs) { rs.style.display = 'flex'; rs.style.width = '100%'; rs.style.borderLeft = 'none'; }
   } else if (tab === 'asta') {
     if (ap) { ap.style.display = 'flex'; filterAstaPlayers(); renderPresidentAuction(); }
+  } else if (tab === 'assign') {
+    if (asgn) { asgn.style.display = 'flex'; renderAssignList(); }
   }
 }
 
