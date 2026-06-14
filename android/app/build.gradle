@@ -1,0 +1,41 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'it.fantacaserma.app'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'it.fantacaserma.app'
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName '1.0.0'
+    }
+
+    def ksFile    = new File(rootDir.parentFile, 'fantacaserma.keystore')
+    def ksStore   = System.getenv('KS_STORE_PASS') ?: ''
+    def ksKey     = System.getenv('KS_KEY_PASS')   ?: ''
+
+    signingConfigs {
+        release {
+            storeFile     ksFile
+            storePassword ksStore
+            keyAlias      'fantacaserma'
+            keyPassword   ksKey
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+}

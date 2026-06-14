@@ -7,13 +7,13 @@ on:
       - 'index.html'
       - 'manifest.json'
       - 'sw.js'
-      - 'twa-manifest.json'
+      - 'android/**'
       - '.github/workflows/build-android.yml'
   workflow_dispatch:
 
 jobs:
   build-apk:
-    name: Build TWA APK
+    name: Build WebView APK
     runs-on: ubuntu-latest
 
     steps:
@@ -26,153 +26,32 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Gradle 8.6
+        uses: gradle/actions/setup-gradle@v4
         with:
-          node-version: '20'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Bubblewrap CLI
-        run: npm install -g @bubblewrap/cli
-
-      - name: Install pexpect (per automazione prompt interattivi)
-        run: pip3 install pexpect
+          gradle-version: '8.6'
 
       - name: Restore keystore from secret
-        run: |
-          echo "$KEYSTORE_B64" | base64 -d > fantacaserma.keystore
+        run: echo "$KEYSTORE_B64" | base64 -d > fantacaserma.keystore
         env:
           KEYSTORE_B64: ${{ secrets.KEYSTORE_BASE64 }}
 
-      - name: Configure Bubblewrap paths
+      - name: Download launcher icon
         run: |
-          mkdir -p ~/.bubblewrap
-          printf '{"jdkPath":"%s","androidSdkPath":"%s"}' "$JAVA_HOME" "$ANDROID_SDK_ROOT" \
-            > ~/.bubblewrap/config.json
-          cat ~/.bubblewrap/config.json
+          mkdir -p android/app/src/main/res/mipmap-xxxhdpi
+          curl -sL https://darioschioppi.github.io/fantacaserma/icons/icon-512x512.png \
+            -o android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
 
-      - name: Bubblewrap build (TWA) via pexpect
-        # pexpect spawna bubblewrap con una pseudo-TTY reale, necessaria
-        # per rispondere ai prompt interattivi (compreso il password prompt
-        # che legge dalla TTY, non da stdin)
+      - name: Build Release APK
+        working-directory: android
         env:
           KS_STORE_PASS: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
-          KS_KEY_PASS: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
-        run: |
-          python3 << 'PYEOF'
-          import pexpect
-          import os
-          import sys
-
-          store_pass = os.environ['KS_STORE_PASS']
-          key_pass   = os.environ['KS_KEY_PASS']
-
-          print(">>> Avvio bubblewrap build via pexpect...")
-          child = pexpect.spawn(
-              'bubblewrap build --skipPwaValidation',
-              timeout=600,
-              encoding='utf-8',
-              logfile=sys.stdout,
-          )
-
-          # Prompt 1: "(Y/n)" - rispondiamo "Y" per rigenerare il progetto Android.
-          # Il repo non contiene i file Android generati (gradlew, app/, ecc.),
-          # quindi dobbiamo rigenerare per crearli. Il testo "regenerate your project"
-          # è spezzato su più righe con ANSI in mezzo; matchiamo "(Y/n)" che è
-          # sempre su una riga sola.
-          idx = child.expect([r'\(Y/n\)', pexpect.EOF, pexpect.TIMEOUT])
-          if idx == 0:
-              print('\n>>> Rispondo "Y" per rigenerare il progetto Android...')
-              child.sendline('Y')
-          elif idx == 1:
-              print('\n>>> EOF inaspettato prima del prompt regenerate')
-              sys.exit(1)
-          else:
-              print('\n>>> TIMEOUT prima del prompt regenerate')
-              sys.exit(1)
-
-          # Loop per gestire tutti i prompt della fase di rigenerazione
-          # (bubblewrap chiede versionName, versionCode, poi le password)
-          # Usiamo un loop perché non sappiamo quanti prompt intermedi ci sono.
-          print('\n>>> Gestione prompt rigenerazione...')
-          store_done = False
-          while not store_done:
-              idx = child.expect([
-                  r'versionName for the new App',   # 0
-                  r'versionCode for the new App',   # 1
-                  r'Password for the Key Store:',   # 2
-                  pexpect.EOF,                       # 3
-                  pexpect.TIMEOUT                    # 4
-              ], timeout=300)
-              if idx == 0:
-                  print('\n>>> Invio versionName (1.0.0)...')
-                  child.sendline('1.0.0')
-              elif idx == 1:
-                  print('\n>>> Invio versionCode (1)...')
-                  child.sendline('1')
-              elif idx == 2:
-                  print('\n>>> Invio store password...')
-                  child.sendline(store_pass)
-                  store_done = True
-              elif idx == 3:
-                  print('\n>>> EOF inaspettato durante rigenerazione/store password')
-                  sys.exit(1)
-              else:
-                  print('\n>>> TIMEOUT durante rigenerazione/store password')
-                  sys.exit(1)
-
-          # Prompt finale: "Password for the Key:" (solo questo, NON "Key Store:")
-          # NOTA: dopo aver inviato store_pass, il PTY ridisegna "Password for the
-          # Key Store:" con ogni * digitato. Il pattern generico 'Password for the Key'
-          # matcherebbe quel ridisegno. Usiamo 'for the Key:' che NON è sottostringa
-          # di 'for the Key Store:' (tra 'Key' e ':' c'è ' Store' nel prompt store).
-          idx = child.expect([r'for the Key:', pexpect.EOF, pexpect.TIMEOUT])
-          if idx == 0:
-              print('\n>>> Invio key password...')
-              child.sendline(key_pass)
-          elif idx == 1:
-              print('\n>>> EOF inaspettato prima del prompt key password')
-              sys.exit(1)
-          else:
-              print('\n>>> TIMEOUT prima del prompt key password')
-              sys.exit(1)
-
-          # Attendi completamento build (Gradle può richiedere diversi minuti)
-          print('\n>>> Attendo completamento build Gradle...')
-          child.expect(pexpect.EOF, timeout=600)
-          child.close()
-
-          exit_code = child.exitstatus if child.exitstatus is not None else child.signalstatus
-          print(f'\n>>> bubblewrap terminato con exit code: {exit_code}')
-          if exit_code != 0:
-              sys.exit(exit_code or 1)
-          PYEOF
-
-      - name: Locate signed APK
-        run: |
-          # Bubblewrap firma già il file durante il build
-          APK=$(find . -name "app-release-signed.apk" 2>/dev/null | head -1)
-          if [ -z "$APK" ]; then
-            APK=$(find . -name "*signed*.apk" 2>/dev/null | head -1)
-          fi
-          if [ -z "$APK" ]; then
-            APK=$(find . -name "*.apk" 2>/dev/null | head -1)
-          fi
-          if [ -z "$APK" ]; then
-            echo "ERRORE: nessun APK trovato!"
-            find . -name "*.apk" 2>/dev/null
-            exit 1
-          fi
-          echo "APK trovato: $APK"
-          ls -lh "$APK"
-          cp "$APK" fantacaserma-signed.apk
-          echo "Copiato in: fantacaserma-signed.apk"
+          KS_KEY_PASS:   ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+        run: gradle assembleRelease
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: FantaCaserma-APK
-          path: fantacaserma-signed.apk
+          path: android/app/build/outputs/apk/release/app-release.apk
           retention-days: 30
