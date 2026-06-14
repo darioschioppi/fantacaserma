@@ -661,6 +661,10 @@ function getAuctionDuration() {
   return (gameState.auctionDuration && gameState.auctionDuration >= 10)
     ? gameState.auctionDuration : currentAuctionDuration;
 }
+// Ritorna true sia per il login Admin diretto che per il Presidente-squadra
+function canManageAuction() {
+  return !!(currentUser && (currentUser.type === 'admin' || currentUser.isPresident));
+}
 const ROSTER_MAX = { P: 3, D: 8, C: 8, A: 6 }; // max per ruolo per squadra
 
 let db = null;
@@ -875,6 +879,7 @@ function initAdminFirebase() {
     bidSubmittedState = snap.val() || {};
     renderAdminBids();
     if (currentUser && currentUser.isPresident) updatePresidentBidPanel();
+    checkAutoReveal(); // auto-reveal se tutti hanno offerto (funziona anche per admin diretto)
   });
   db.ref('/assignments').on('value', snap => {
     const raw = snap.val();
@@ -1077,7 +1082,7 @@ function renderAdminBids() {
   }
 }
 
-// Admin timer display
+// Admin timer display + auto-reveal alla scadenza
 setInterval(() => {
   if (currentUser && currentUser.type === 'admin' && timerEndTs) {
     const remaining = Math.max(0, Math.ceil((timerEndTs - Date.now()) / 1000));
@@ -1086,6 +1091,14 @@ setInterval(() => {
     if (fill) {
       fill.style.width = (remaining / getAuctionDuration() * 100) + '%';
       fill.style.background = remaining <= 5 ? 'var(--red)' : remaining <= 10 ? 'var(--gold)' : 'var(--green)';
+    }
+    // Auto-reveal alla scadenza (admin diretto)
+    if (remaining === 0 && !autoRevealFired) {
+      const phase = gameState.phase || 'waiting';
+      if (phase === 'bidding' || phase === 'tiebreaker') {
+        autoRevealFired = true;
+        adminReveal();
+      }
     }
   }
 }, 500);
@@ -1100,11 +1113,11 @@ function writeLog(type, data) {
 function adminStartAuction(playerData) {
   const phase = gameState.phase || 'waiting';
   if (phase !== 'waiting' && phase !== 'assigned') { toast('Prima chiudi l\'asta corrente!', 'error'); return; }
-  // Blocca se non tutti sono connessi
+  // Avvisa se non tutti connessi, ma permette di procedere con conferma
   const notConn = TEAMS.filter(t => !((teamsState[t.id] || {}).connected));
   if (notConn.length > 0) {
-    toast('⚠️ Non tutti connessi — mancano: ' + notConn.map(t => t.name.split(' ')[0]).join(', '), 'error');
-    return;
+    const names = notConn.map(t => t.name.split(' ')[0]).join(', ');
+    if (!confirm('⚠️ Non tutti connessi — mancano: ' + names + '.\nAvviare l\'asta comunque?')) return;
   }
   autoRevealFired = false;
   const timerEnd = Date.now() + getAuctionDuration() * 1000;
@@ -1145,7 +1158,7 @@ function adminReveal() {
 }
 
 function autoProcessReveal() {
-  if (!currentUser || !currentUser.isPresident) return;
+  if (!canManageAuction()) return;
   const phase = gameState.phase || 'waiting';
   if (phase !== 'reveal') return;
   const cp = gameState.currentPlayer;
@@ -1969,7 +1982,7 @@ function startLocalTimer() {
 
 // Controlla se tutti i partecipanti hanno inviato l'offerta → auto-reveal
 function checkAutoReveal() {
-  if (!currentUser || !currentUser.isPresident || autoRevealFired) return;
+  if (!canManageAuction() || autoRevealFired) return;
   const phase = gameState.phase || 'waiting';
   if (phase !== 'bidding' && phase !== 'tiebreaker') return;
   const tiebreakers = gameState.tiebreakers || null;
