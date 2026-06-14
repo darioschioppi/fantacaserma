@@ -93,20 +93,37 @@ jobs:
               print('\n>>> TIMEOUT prima del prompt regenerate')
               sys.exit(1)
 
-          # Prompt 2: "Password for the Key Store:"
-          # La rigenerazione può richiedere tempo; timeout aumentato a 300s
-          idx = child.expect(['Password for the Key Store:', pexpect.EOF, pexpect.TIMEOUT], timeout=300)
-          if idx == 0:
-              print('\n>>> Invio store password...')
-              child.sendline(store_pass)
-          elif idx == 1:
-              print('\n>>> EOF inaspettato prima del prompt store password')
-              sys.exit(1)
-          else:
-              print('\n>>> TIMEOUT prima del prompt store password')
-              sys.exit(1)
+          # Loop per gestire tutti i prompt della fase di rigenerazione
+          # (bubblewrap chiede versionName, versionCode, poi le password)
+          # Usiamo un loop perché non sappiamo quanti prompt intermedi ci sono.
+          print('\n>>> Gestione prompt rigenerazione...')
+          store_done = False
+          while not store_done:
+              idx = child.expect([
+                  r'versionName for the new App',   # 0
+                  r'versionCode for the new App',   # 1
+                  r'Password for the Key Store:',   # 2
+                  pexpect.EOF,                       # 3
+                  pexpect.TIMEOUT                    # 4
+              ], timeout=300)
+              if idx == 0:
+                  print('\n>>> Invio versionName (1.0.0)...')
+                  child.sendline('1.0.0')
+              elif idx == 1:
+                  print('\n>>> Invio versionCode (1)...')
+                  child.sendline('1')
+              elif idx == 2:
+                  print('\n>>> Invio store password...')
+                  child.sendline(store_pass)
+                  store_done = True
+              elif idx == 3:
+                  print('\n>>> EOF inaspettato durante rigenerazione/store password')
+                  sys.exit(1)
+              else:
+                  print('\n>>> TIMEOUT durante rigenerazione/store password')
+                  sys.exit(1)
 
-          # Prompt 3: "Password for the Key:" (solo questo, NON "Key Store:")
+          # Prompt finale: "Password for the Key:" (solo questo, NON "Key Store:")
           # NOTA: dopo aver inviato store_pass, il PTY ridisegna "Password for the
           # Key Store:" con ogni * digitato. Il pattern generico 'Password for the Key'
           # matcherebbe quel ridisegno. Usiamo 'for the Key:' che NON è sottostringa
