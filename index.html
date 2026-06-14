@@ -9,6 +9,13 @@ console.firebase.google.com → Il tuo progetto → Project Settings → Your ap
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>🏆 Fantacaserma</title>
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FantaCaserma">
+<meta name="theme-color" content="#0a0f1e">
+<link rel="apple-touch-icon" href="icons/icon-192x192.png">
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
@@ -2587,6 +2594,16 @@ function renderMyRosa() {
       item.appendChild(priceEl);
       container.appendChild(item);
     });
+  });
+}
+</script>
+<script>
+// ─── SERVICE WORKER (PWA) ───
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/fantacaserma/sw.js', { scope: '/fantacaserma/' })
+      .then(reg => console.log('SW registered:', reg.scope))
+      .catch(err => console.warn('SW registration failed:', err));
   });
 }
 </script>
