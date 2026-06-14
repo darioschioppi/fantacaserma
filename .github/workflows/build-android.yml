@@ -1,0 +1,89 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'index.html'
+      - 'manifest.json'
+      - 'sw.js'
+      - 'twa-manifest.json'
+      - '.github/workflows/build-android.yml'
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    name: Build TWA APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Bubblewrap CLI
+        run: npm install -g @bubblewrap/cli
+
+      - name: Restore keystore from secret
+        run: |
+          echo "$KEYSTORE_B64" | base64 -d > fantacaserma.keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_BASE64 }}
+
+      - name: Configure Bubblewrap paths
+        run: |
+          mkdir -p ~/.bubblewrap
+          printf '{"jdkPath":"%s","androidSdkPath":"%s"}' "$JAVA_HOME" "$ANDROID_SDK_ROOT" \
+            > ~/.bubblewrap/config.json
+          cat ~/.bubblewrap/config.json
+
+      - name: Bubblewrap build (TWA)
+        run: bubblewrap build --skipPwaValidation
+
+      - name: Locate and sign APK
+        run: |
+          APK_UNSIGNED=$(find . -name "app-release-unsigned.apk" 2>/dev/null | head -1)
+          if [ -z "$APK_UNSIGNED" ]; then
+            APK_UNSIGNED=$(find . -name "*.apk" 2>/dev/null | head -1)
+          fi
+          echo "APK trovato: $APK_UNSIGNED"
+
+          BUILD_TOOLS=$(ls "$ANDROID_SDK_ROOT/build-tools/" | sort -V | tail -1)
+          echo "Build tools: $BUILD_TOOLS"
+
+          "$ANDROID_SDK_ROOT/build-tools/$BUILD_TOOLS/zipalign" -v 4 "$APK_UNSIGNED" fantacaserma-aligned.apk
+
+          "$ANDROID_SDK_ROOT/build-tools/$BUILD_TOOLS/apksigner" sign \
+            --ks fantacaserma.keystore \
+            --ks-key-alias "$KS_ALIAS" \
+            --ks-pass "pass:$KS_STORE_PASS" \
+            --key-pass "pass:$KS_KEY_PASS" \
+            --out fantacaserma-signed.apk \
+            fantacaserma-aligned.apk
+
+          echo "APK firmato: fantacaserma-signed.apk"
+          ls -lh fantacaserma-signed.apk
+        env:
+          KS_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+          KS_STORE_PASS: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
+          KS_KEY_PASS: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FantaCaserma-APK
+          path: fantacaserma-signed.apk
+          retention-days: 30
