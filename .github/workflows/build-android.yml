@@ -37,6 +37,9 @@ jobs:
       - name: Install Bubblewrap CLI
         run: npm install -g @bubblewrap/cli
 
+      - name: Install pexpect (per automazione prompt interattivi)
+        run: pip3 install pexpect
+
       - name: Restore keystore from secret
         run: |
           echo "$KEYSTORE_B64" | base64 -d > fantacaserma.keystore
@@ -50,30 +53,96 @@ jobs:
             > ~/.bubblewrap/config.json
           cat ~/.bubblewrap/config.json
 
-      - name: Bubblewrap build (TWA)
-        # Risponde ai 3 prompt interattivi:
-        # 1) "regenerate project?" -> n
-        # 2) "Password for the Key Store" -> KS_STORE_PASS
-        # 3) "Password for the Key" -> KS_KEY_PASS
-        run: |
-          printf 'n\n%s\n%s\n' "$KS_STORE_PASS" "$KS_KEY_PASS" \
-            | bubblewrap build --skipPwaValidation
+      - name: Bubblewrap build (TWA) via pexpect
+        # pexpect spawna bubblewrap con una pseudo-TTY reale, necessaria
+        # per rispondere ai prompt interattivi (compreso il password prompt
+        # che legge dalla TTY, non da stdin)
         env:
           KS_STORE_PASS: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
           KS_KEY_PASS: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+        run: |
+          python3 << 'PYEOF'
+          import pexpect
+          import os
+          import sys
+
+          store_pass = os.environ['KS_STORE_PASS']
+          key_pass   = os.environ['KS_KEY_PASS']
+
+          print(">>> Avvio bubblewrap build via pexpect...")
+          child = pexpect.spawn(
+              'bubblewrap build --skipPwaValidation',
+              timeout=600,
+              encoding='utf-8',
+              logfile=sys.stdout,
+          )
+
+          # Prompt 1: "regenerate your project? (Y/n)"
+          idx = child.expect(['regenerate your project', pexpect.EOF, pexpect.TIMEOUT])
+          if idx == 0:
+              print('\n>>> Rispondo "n" al prompt regenerate...')
+              child.sendline('n')
+          elif idx == 1:
+              print('\n>>> EOF inaspettato prima del prompt regenerate')
+              sys.exit(1)
+          else:
+              print('\n>>> TIMEOUT prima del prompt regenerate')
+              sys.exit(1)
+
+          # Prompt 2: "Password for the Key Store:"
+          idx = child.expect(['Password for the Key Store', pexpect.EOF, pexpect.TIMEOUT])
+          if idx == 0:
+              print('\n>>> Invio store password...')
+              child.sendline(store_pass)
+          elif idx == 1:
+              print('\n>>> EOF inaspettato prima del prompt store password')
+              sys.exit(1)
+          else:
+              print('\n>>> TIMEOUT prima del prompt store password')
+              sys.exit(1)
+
+          # Prompt 3: "Password for the Key:"
+          idx = child.expect(['Password for the Key', pexpect.EOF, pexpect.TIMEOUT])
+          if idx == 0:
+              print('\n>>> Invio key password...')
+              child.sendline(key_pass)
+          elif idx == 1:
+              print('\n>>> EOF inaspettato prima del prompt key password')
+              sys.exit(1)
+          else:
+              print('\n>>> TIMEOUT prima del prompt key password')
+              sys.exit(1)
+
+          # Attendi completamento build (Gradle può richiedere diversi minuti)
+          print('\n>>> Attendo completamento build Gradle...')
+          child.expect(pexpect.EOF, timeout=600)
+          child.close()
+
+          exit_code = child.exitstatus if child.exitstatus is not None else child.signalstatus
+          print(f'\n>>> bubblewrap terminato con exit code: {exit_code}')
+          if exit_code != 0:
+              sys.exit(exit_code or 1)
+          PYEOF
 
       - name: Locate signed APK
         run: |
           # Bubblewrap firma già il file durante il build
           APK=$(find . -name "app-release-signed.apk" 2>/dev/null | head -1)
           if [ -z "$APK" ]; then
-            # Fallback: cerca qualsiasi APK
+            APK=$(find . -name "*signed*.apk" 2>/dev/null | head -1)
+          fi
+          if [ -z "$APK" ]; then
             APK=$(find . -name "*.apk" 2>/dev/null | head -1)
+          fi
+          if [ -z "$APK" ]; then
+            echo "ERRORE: nessun APK trovato!"
+            find . -name "*.apk" 2>/dev/null
+            exit 1
           fi
           echo "APK trovato: $APK"
           ls -lh "$APK"
           cp "$APK" fantacaserma-signed.apk
-          echo "APK copiato: fantacaserma-signed.apk"
+          echo "Copiato in: fantacaserma-signed.apk"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
