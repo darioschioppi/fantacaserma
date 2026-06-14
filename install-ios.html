@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Installa FantaCaserma su iPhone</title>
+<meta name="theme-color" content="#0a0f1e">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0a0f1e;
+    color: #e2e8f0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 20px 48px;
+  }
+
+  .logo {
+    font-size: 3.5rem;
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #ffd700;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .subtitle {
+    font-size: .9rem;
+    color: #94a3b8;
+    text-align: center;
+    margin-bottom: 36px;
+  }
+
+  .steps {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+
+  .step {
+    background: #111d35;
+    border: 1px solid #1e3a5f;
+    border-radius: 16px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    animation: fadeUp .4s ease both;
+  }
+  .step:nth-child(1) { animation-delay: .05s; }
+  .step:nth-child(2) { animation-delay: .12s; }
+  .step:nth-child(3) { animation-delay: .19s; }
+  .step:nth-child(4) { animation-delay: .26s; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-num {
+    width: 36px;
+    height: 36px;
+    background: #ffd700;
+    color: #0a0f1e;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .step-body { flex: 1; }
+  .step-body strong {
+    display: block;
+    font-size: 1rem;
+    color: #f1f5f9;
+    margin-bottom: 4px;
+  }
+  .step-body p {
+    font-size: .88rem;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+
+  .icon-safari {
+    font-size: 1.8rem;
+    line-height: 1;
+    vertical-align: middle;
+  }
+  .badge {
+    display: inline-block;
+    background: #3b82f6;
+    color: #fff;
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-size: .82rem;
+    font-weight: 600;
+    vertical-align: middle;
+  }
+  .badge-gold {
+    background: #92400e;
+    color: #fcd34d;
+  }
+  .share-icon {
+    display: inline-block;
+    background: #1e40af;
+    border-radius: 8px;
+    padding: 3px 8px;
+    font-size: .9rem;
+    vertical-align: middle;
+  }
+
+  .arrow-down {
+    text-align: center;
+    font-size: 2rem;
+    color: #ffd700;
+    margin-bottom: 4px;
+    animation: bounce .9s infinite;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(6px); }
+  }
+
+  .cta {
+    width: 100%;
+    max-width: 420px;
+    background: #ffd700;
+    color: #0a0f1e;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    display: block;
+    transition: transform .15s, box-shadow .15s;
+    box-shadow: 0 4px 20px rgba(255,215,0,.25);
+  }
+  .cta:active { transform: scale(.97); }
+
+  .note {
+    margin-top: 20px;
+    font-size: .8rem;
+    color: #475569;
+    text-align: center;
+    max-width: 380px;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<div class="logo">🏆</div>
+<h1>Installa FantaCaserma</h1>
+<p class="subtitle">Guida rapida per iPhone e iPad</p>
+
+<div class="steps">
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-body">
+      <strong>Apri Safari <span class="icon-safari">🧭</span></strong>
+      <p>Assicurati di usare <span class="badge">Safari</span> — non Chrome, non Firefox. È l'unico browser che permette l'installazione.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-body">
+      <strong>Tocca Condividi in basso</strong>
+      <p>In fondo allo schermo trovi la barra di Safari. Tocca l'icona <span class="share-icon">⎋</span> al centro (quella con la freccia verso l'alto).</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-body">
+      <strong>Aggiungi a schermata Home</strong>
+      <p>Scorri il menu in basso e cerca <span class="badge badge-gold">+ Aggiungi a schermata Home</span>. Toccalo.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-body">
+      <strong>Conferma con "Aggiungi"</strong>
+      <p>In alto a destra compare il pulsante <span class="badge">Aggiungi</span>. Toccalo e l'icona FantaCaserma apparirà sulla tua schermata home! 🎉</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="arrow-down">↓</div>
+
+<a class="cta" href="https://darioschioppi.github.io/fantacaserma/">
+  🚀 Apri FantaCaserma in Safari
+</a>
+
+<p class="note">
+  ⓘ Una volta installata, l'app si apre in fullscreen come un'app nativa, senza la barra di Safari. Funziona anche senza connessione.
+</p>
+
+</body>
+</html>
