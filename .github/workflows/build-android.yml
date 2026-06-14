@@ -77,8 +77,10 @@ jobs:
               logfile=sys.stdout,
           )
 
-          # Prompt 1: "regenerate your project? (Y/n)"
-          idx = child.expect(['regenerate your project', pexpect.EOF, pexpect.TIMEOUT])
+          # Prompt 1: "(Y/n)" - il testo "regenerate your project" è spezzato
+          # su più righe con ANSI escape codes in mezzo, quindi matcho il
+          # prompt finale "(Y/n)" che appare sempre sulla stessa riga
+          idx = child.expect([r'\(Y/n\)', pexpect.EOF, pexpect.TIMEOUT])
           if idx == 0:
               print('\n>>> Rispondo "n" al prompt regenerate...')
               child.sendline('n')
