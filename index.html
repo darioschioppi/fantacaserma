@@ -437,7 +437,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         </div>
         <div id="auctionHeaderMeta" style="font-size:.72rem;color:var(--text-m);margin-top:1px;"></div>
       </div>
-      <div class="tiebreaker-banner" id="tiebreakerBanner">⚖️ SPAREGGIO — offerta minima: <strong id="tiebreakerMin">—</strong> cr</div>
+      <div class="tiebreaker-banner" id="tiebreakerBanner">⚖️ SPAREGGIO — rioffri ≥ <strong id="tiebreakerMin">—</strong> cr · non puoi passare</div>
       <div class="poker-table" id="pokerTable">
         <div class="table-center" id="tableCenter">
           <div class="table-waiting-msg" id="tableWaitingMsg">In attesa dell'admin…</div>
@@ -617,6 +617,18 @@ let gameState = {};
 let teamsState = {};
 let bidsState = {};
 let bidSubmittedState = {};
+// Helper: legge l'importo da bidsState (supporta sia il formato vecchio {number} che quello nuovo {amount,ts})
+function getBidAmount(tid) {
+  const b = bidsState[tid];
+  if (b === null || b === undefined) return 0;
+  if (typeof b === 'object') return b.amount != null ? b.amount : 0;
+  return typeof b === 'number' ? b : 0;
+}
+function getBidTs(tid) {
+  const b = bidsState[tid];
+  if (!b || typeof b !== 'object') return null;
+  return b.ts || null;
+}
 let avatarsState = {};
 let assignmentsState = [];
 let presenceState = {};
@@ -935,11 +947,10 @@ function updatePresidentBidPanel() {
 
 function computeAndShowWinner() {
   const tiebreakers = gameState.tiebreakers || null;
-  const bids = bidsState || {};
   const eligible = tiebreakers ? tiebreakers : TEAMS.map(t => t.id);
   let maxAmount = -1, winnerId = null;
   eligible.forEach(tid => {
-    const amount = bids[tid] || 0;
+    const amount = getBidAmount(tid);
     if (amount > maxAmount) { maxAmount = amount; winnerId = tid; }
   });
   if (!winnerId || maxAmount <= 0) { adminWinner = null; setText('aapWinnerName', '—'); setText('aapWinnerBid', '—'); return; }
@@ -965,7 +976,7 @@ function renderAdminBids() {
   }
   const rows = eligible.map(tid => {
     const team = TEAMS.find(t => t.id === tid);
-    return { tid, team, amount: bidsState[tid], submitted: bidSubmittedState[tid] };
+    return { tid, team, amount: getBidAmount(tid), submitted: bidSubmittedState[tid] };
   }).sort((a, b) => (b.amount || 0) - (a.amount || 0));
   const maxAmt = rows.length ? (rows[0].amount || 0) : 0;
   container.textContent = '';
@@ -1049,7 +1060,7 @@ function adminStartAuction(playerData) {
   db.ref('/game').update({
     phase: 'bidding',
     currentPlayer: { nome: playerData.Nome, squadra: playerData.Squadra, ruolo: playerData.Ruolo_Classic, qi: playerData.QI },
-    minBid: 1, timerEnd: timerEnd, tiebreakers: null
+    minBid: 1, timerEnd: timerEnd, tiebreakers: null, tiebreakerFirstBid: null
   });
   writeLog('auction_start', { player: playerData.Nome, ruolo: playerData.Ruolo_Classic, squadra: playerData.Squadra, qi: playerData.QI });
   toast('⚡ Asta avviata: ' + playerData.Nome, 'success');
@@ -1067,7 +1078,7 @@ function presidentSubmitBid() {
   const td = teamsState[currentUser.teamId] || {};
   const budget = td.budget != null ? td.budget : BUDGET_START;
   if (amount > budget) { toast('Budget insufficiente! Hai ' + budget + ' cr', 'error'); return; }
-  db.ref('/bids/' + currentUser.teamId).set(amount);
+  db.ref('/bids/' + currentUser.teamId).set({ amount: amount, ts: Date.now() });
   db.ref('/bidSubmitted/' + currentUser.teamId).set(true);
   toast('💰 Offerta Benfiga: ' + amount + ' cr', 'success');
 }
@@ -1083,19 +1094,37 @@ function adminReveal() {
 function autoProcessReveal() {
   if (!currentUser || !currentUser.isPresident) return;
   const phase = gameState.phase || 'waiting';
-  if (phase !== 'reveal') return; // già in tiebreaker o altro
+  if (phase !== 'reveal') return;
   const cp = gameState.currentPlayer;
   if (!cp) return;
   const tiebreakers = gameState.tiebreakers || null;
   const eligible = tiebreakers ? tiebreakers : TEAMS.map(t => t.id);
-  const bids = bidsState || {};
-  // Trova le offerte valide (> 0)
+  // Costruisce le entry con importo e timestamp (per stabilire chi ha offerto prima)
   const bidEntries = eligible
-    .map(tid => ({ tid, amount: bids[tid] || 0 }))
+    .map(tid => ({ tid, amount: getBidAmount(tid), ts: getBidTs(tid) }))
     .filter(b => b.amount > 0)
-    .sort((a, b) => b.amount - a.amount);
+    .sort((a, b) => b.amount - a.amount || (a.ts || Infinity) - (b.ts || Infinity));
+
   if (!bidEntries.length) {
-    // Nessuno ha offerto → salta automaticamente
+    // Nessuna offerta nel round corrente
+    if (tiebreakers && gameState.tiebreakerFirstBid) {
+      // SPAREGGIO senza rilanci → assegna alla squadra che aveva offerto per PRIMA al round precedente
+      const firstBidMap = gameState.tiebreakerFirstBid;
+      let firstTid = null, firstTs = Infinity;
+      Object.entries(firstBidMap).forEach(([tid, ts]) => {
+        if (ts < firstTs) { firstTs = ts; firstTid = tid; }
+      });
+      if (firstTid) {
+        const team = TEAMS.find(t => t.id === firstTid);
+        const assignAmount = gameState.minBid || 1; // importo del round di parità
+        adminWinner = { teamId: firstTid, teamName: team ? team.name : firstTid, amount: assignAmount };
+        writeLog('tiebreaker_first_bid_win', { player: cp.nome, team: firstTid, amount: assignAmount });
+        toast('⏱️ Nessun rilancio — assegnato a ' + (team ? team.name : firstTid) + ' (prima offerta)', 'info');
+        adminAssign();
+        return;
+      }
+    }
+    // Nessuna offerta e nessun tiebreaker attivo → salta il giocatore
     writeLog('skipped_auto', { player: cp.nome, ruolo: cp.ruolo, squadra: cp.squadra });
     const updates = {};
     updates['/game/phase'] = 'waiting';
@@ -1103,6 +1132,7 @@ function autoProcessReveal() {
     updates['/game/timerEnd'] = null;
     updates['/game/tiebreakers'] = null;
     updates['/game/minBid'] = null;
+    updates['/game/tiebreakerFirstBid'] = null;
     updates['/bids'] = null;
     updates['/bidSubmitted'] = null;
     db.ref().update(updates);
@@ -1117,21 +1147,26 @@ function autoProcessReveal() {
     adminWinner = { teamId: winners[0].tid, teamName: team ? team.name : winners[0].tid, amount: maxAmt };
     adminAssign();
   } else {
-    // Pareggio → avvia tiebreaker solo per le squadre in parità
+    // Pareggio → spareggio fra le squadre in parità
+    // minBid = stessa cifra (possono rilanciare a parità o di più)
     const tiebreakerTeams = winners.map(w => w.tid);
-    const minBid = maxAmt + 1;
+    const minBid = maxAmt; // NON +1: si può rioffrire allo stesso prezzo
     const timerEnd = Date.now() + AUCTION_DURATION * 1000;
     autoRevealFired = false;
+    // Salva i timestamp del round corrente per il fallback "prima offerta"
+    const tiebreakerFirstBid = {};
+    winners.forEach(w => { tiebreakerFirstBid[w.tid] = w.ts || Date.now(); });
     const updates = {};
     updates['/game/phase'] = 'tiebreaker';
     updates['/game/tiebreakers'] = tiebreakerTeams;
     updates['/game/minBid'] = minBid;
     updates['/game/timerEnd'] = timerEnd;
+    updates['/game/tiebreakerFirstBid'] = tiebreakerFirstBid;
     updates['/bids'] = null;
     updates['/bidSubmitted'] = null;
     db.ref().update(updates);
     const names = tiebreakerTeams.map(tid => { const t = TEAMS.find(x => x.id === tid); return t ? t.name : tid; }).join(', ');
-    toast('⚖️ Pareggio! Spareggio tra: ' + names + ' (min ' + minBid + ' cr)', 'info');
+    toast('⚖️ Pareggio a ' + maxAmt + ' cr! Spareggio tra: ' + names + ' — rioffri o vince chi ha offerto prima', 'info');
     writeLog('tiebreaker', { player: cp.nome, teams: tiebreakerTeams, minBid });
   }
 }
@@ -1161,7 +1196,7 @@ function adminAssign() {
 
 function adminSkip() {
   const cp = gameState.currentPlayer;
-  db.ref('/game').update({ phase: 'waiting', currentPlayer: null, timerEnd: null, tiebreakers: null });
+  db.ref('/game').update({ phase: 'waiting', currentPlayer: null, timerEnd: null, tiebreakers: null, tiebreakerFirstBid: null });
   db.ref('/bids').set(null);
   db.ref('/bidSubmitted').set(null);
   if (cp) writeLog('skipped', { player: cp.nome, ruolo: cp.ruolo, squadra: cp.squadra });
@@ -1500,14 +1535,21 @@ function handleGameStateChange() {
       tbBanner.classList.add('visible');
       setText('tiebreakerMin', minBid);
       TEAMS.forEach(t => { const s = document.getElementById('seat-' + t.id); if (s) s.classList.toggle('dimmed', !tiebreakers.includes(t.id)); });
-      if (!tiebreakers.includes(currentUser.teamId)) {
+      const isInTiebreaker = tiebreakers.includes(currentUser.teamId);
+      if (!isInTiebreaker) {
         document.getElementById('btnBid').disabled = true;
         document.getElementById('btnBid').textContent = '👀 Solo osservatore';
         document.getElementById('bidSent').classList.remove('visible');
       }
+      // Nello spareggio il pulsante "Passa" è nascosto: il giocatore va assegnato
+      const btnPass = document.getElementById('btnPass');
+      if (btnPass) btnPass.style.display = isInTiebreaker ? 'none' : '';
     } else {
       tbBanner.classList.remove('visible');
       TEAMS.forEach(t => { const s = document.getElementById('seat-' + t.id); if (s) s.classList.remove('dimmed'); });
+      // Ripristina visibilità pulsante Passa fuori dallo spareggio
+      const btnPass = document.getElementById('btnPass');
+      if (btnPass) btnPass.style.display = '';
     }
     if (!myBidSent) {
       document.getElementById('btnBid').disabled = false;
@@ -1616,7 +1658,7 @@ function updateSeatSubmitted() {
     if (btnBid && bidSentEl && bidInput) {
       if (mySubmitted) {
         btnBid.disabled = true;
-        const myBidAmount = bidsState[currentUser.teamId];
+        const myBidAmount = getBidAmount(currentUser.teamId);
         btnBid.textContent = (myBidAmount === 0) ? '🤚 Hai passato' : '✅ Offerta inviata';
         if (myBidAmount !== 0) bidSentEl.classList.add('visible');
         bidInput.disabled = true;
@@ -1647,10 +1689,9 @@ function renderRevealOverlay(isAssigned) {
   setText('revealPlayerLabel', cp.nome + ' · ' + cp.squadra);
   const tiebreakers = gameState.tiebreakers || null;
   const eligible = tiebreakers ? tiebreakers : TEAMS.map(t => t.id);
-  const bids = bidsState || {};
   const rows = eligible.map(tid => {
     const team = TEAMS.find(t => t.id === tid);
-    return { tid, team, amount: bids[tid] || 0 };
+    return { tid, team, amount: getBidAmount(tid) };
   }).sort((a, b) => b.amount - a.amount);
   const maxAmt = rows.length ? rows[0].amount : 0;
   const listEl = document.getElementById('revealBidsList');
@@ -1777,7 +1818,7 @@ function submitBid() {
   const budget = td.budget != null ? td.budget : BUDGET_START;
   if (amount > budget) { toast('Budget insufficiente! Hai ' + budget + ' cr', 'error'); return; }
   const tid = currentUser.teamId;
-  db.ref('/bids/' + tid).set(amount);
+  db.ref('/bids/' + tid).set({ amount: amount, ts: Date.now() });
   db.ref('/bidSubmitted/' + tid).set(true);
   toast('💰 Offerta inviata!', 'success');
 }
@@ -1790,6 +1831,7 @@ function presidentNextAuction() {
   updates['/game/timerEnd'] = null;
   updates['/game/tiebreakers'] = null;
   updates['/game/minBid'] = null;
+  updates['/game/tiebreakerFirstBid'] = null;
   updates['/bids'] = null;
   updates['/bidSubmitted'] = null;
   db.ref().update(updates);
@@ -1802,9 +1844,13 @@ function passAuction() {
   const phase = gameState.phase || 'waiting';
   if (phase !== 'bidding' && phase !== 'tiebreaker') return;
   const tiebreakers = gameState.tiebreakers || null;
+  // Durante lo spareggio non è possibile passare: il giocatore DEVE essere assegnato
+  if (phase === 'tiebreaker' && tiebreakers && tiebreakers.includes(currentUser.teamId)) {
+    toast('⚠️ Nello spareggio non puoi passare — devi offrire!', 'error'); return;
+  }
   if (tiebreakers && !tiebreakers.includes(currentUser.teamId)) return;
   const tid = currentUser.teamId;
-  db.ref('/bids/' + tid).set(0); // 0 = passo
+  db.ref('/bids/' + tid).set({ amount: 0, ts: Date.now() }); // 0 = passo
   db.ref('/bidSubmitted/' + tid).set(true);
   toast('🤚 Hai passato questo giro', 'info');
 }
@@ -1813,9 +1859,13 @@ function presidentPass() {
   const phase = gameState.phase || 'waiting';
   if (phase !== 'bidding' && phase !== 'tiebreaker') return;
   const tiebreakers = gameState.tiebreakers || null;
+  // Durante lo spareggio non è possibile passare
+  if (phase === 'tiebreaker' && tiebreakers && tiebreakers.includes(currentUser.teamId)) {
+    toast('⚠️ Nello spareggio non puoi passare!', 'error'); return;
+  }
   if (tiebreakers && !tiebreakers.includes(currentUser.teamId)) return;
   const tid = currentUser.teamId;
-  db.ref('/bids/' + tid).set(0);
+  db.ref('/bids/' + tid).set({ amount: 0, ts: Date.now() });
   db.ref('/bidSubmitted/' + tid).set(true);
   toast('🤚 Benfiga ha passato', 'info');
 }
@@ -2003,7 +2053,7 @@ function renderPresidentBids() {
   const phase = gameState.phase || 'waiting';
   const rows = eligible.map(tid => {
     const team = TEAMS.find(t => t.id === tid);
-    return { tid, team, amount: bidsState[tid], submitted: bidSubmittedState[tid] };
+    return { tid, team, amount: getBidAmount(tid), submitted: bidSubmittedState[tid] };
   }).sort((a, b) => (b.amount || 0) - (a.amount || 0));
   const maxAmt = rows.length ? (rows[0].amount || 0) : 0;
   container.textContent = '';
