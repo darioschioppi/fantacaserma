@@ -24,27 +24,6 @@ Segui la [guida illustrata](https://darioschioppi.github.io/fantacaserma/install
 
 ---
 
-## 🔑 Credenziali
-
-**Admin:** password `fantacaserma2025`
-
-> Il presidente ha accesso alle stesse funzionalità admin (gestione asta, timer, pausa, assegnazioni)
-
-| Squadra | Password |
-|---------|----------|
-| 🦁 La Caserma FC | caserma1 |
-| ⚡ Fulmine FC | caserma1 |
-| 🔥 Drago Rosso | caserma1 |
-| ⭐ Stella Alpina | caserma1 |
-| 🐺 Lupo Grigio | caserma1 |
-| 🦅 Aquila FC | caserma1 |
-| 🏆 Golden Boys | caserma1 |
-| 🌊 Onda FC | caserma1 |
-| 🎯 Freccia Rossa | caserma1 |
-| 🌟 Supernova | caserma1 |
-
----
-
 ## ⚙️ Funzionalità
 
 ### Partecipanti (squadre)
