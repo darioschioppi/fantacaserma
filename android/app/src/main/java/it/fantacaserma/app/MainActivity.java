@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);       // localStorage (Firebase auth)
         settings.setDatabaseEnabled(true);          // WebSQL compat
-        settings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE); // sempre versione aggiornata
 
         // Keep all navigation inside the WebView (no external browser)
         mWebView.setWebViewClient(new WebViewClient() {
@@ -58,6 +58,7 @@ public class MainActivity extends Activity {
         if (savedInstanceState != null) {
             mWebView.restoreState(savedInstanceState);
         } else {
+            mWebView.clearCache(true); // svuota cache ad ogni avvio per contenuto fresco
             mWebView.loadUrl(APP_URL);
         }
     }
