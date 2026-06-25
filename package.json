@@ -4,7 +4,10 @@
   "description": "Fantacaserma - Asta a Busta Chiusa",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "npx playwright test",
+    "test:sim": "npx playwright test tests/e2e/08-auction-simulation.spec.js --headed",
+    "test:sim:ci": "npx playwright test tests/e2e/08-auction-simulation.spec.js"
   },
   "engines": {
     "node": ">=18"
