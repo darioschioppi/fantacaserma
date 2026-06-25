@@ -317,20 +317,11 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
   <div class="login-title">FANTACASERMA</div>
   <div class="login-sub">Asta alla cieca · 10 squadre · 663 giocatori</div>
   <div class="login-box">
-    <div class="login-tabs">
-      <button class="login-tab active" id="tabSquadra" onclick="switchLoginTab('squadra')">🎽 Squadra</button>
-      <button class="login-tab" id="tabAdmin" onclick="switchLoginTab('admin')">👑 Admin</button>
-    </div>
     <div class="login-form" id="formSquadra">
       <div><label>Seleziona la tua squadra</label><select id="teamSelect"><option value="">— scegli —</option></select></div>
       <div><label>Password</label><input type="password" id="teamPassword" placeholder="••••••••" autocomplete="off"></div>
       <div class="login-error" id="teamError">Password errata. Riprova.</div>
       <button class="btn-login" onclick="loginTeam()">Entra →</button>
-    </div>
-    <div class="login-form hidden" id="formAdmin">
-      <div><label>Password Admin</label><input type="password" id="adminPassword" placeholder="••••••••" autocomplete="off"></div>
-      <div class="login-error" id="adminError">Password admin errata.</div>
-      <button class="btn-login" onclick="loginAdmin()">Entra come Admin →</button>
     </div>
   </div>
 </div>
@@ -687,6 +678,14 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         <button onclick="adminResetSeason()" style="width:100%;padding:9px;border-radius:8px;border:1px solid var(--red);background:transparent;color:var(--red);font-weight:700;font-size:.82rem;cursor:pointer;">♻️ Reset Stagione</button>
       </div>
     </div>
+    <!-- STORICO PANEL (solo Presidente) -->
+    <div class="players-panel" id="presidentStorPanel" style="display:none;flex-direction:column;">
+      <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;">
+        <span style="font-size:.8rem;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:1px;">📋 Storico operazioni</span>
+        <span id="presStorCount" style="font-size:.72rem;color:var(--text-s);"></span>
+      </div>
+      <div id="presStorList" style="flex:1;overflow-y:auto;padding:8px 12px;"></div>
+    </div>
     <div class="recent-sidebar">
       <div class="recent-title">🛒 Ultimi acquisti</div>
       <div class="recent-list" id="recentList"><div class="empty-state" style="font-size:.75rem;">Nessun acquisto ancora</div></div>
@@ -699,6 +698,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
     <button class="mobile-nav-btn hidden" id="tabAstaBtn" onclick="participantMobileTab('asta',this)"><span class="icon">⚡</span>Asta</button>
     <button class="mobile-nav-btn hidden" id="tabAssignBtn" onclick="participantMobileTab('assign',this)"><span class="icon">📝</span>Assegn.</button>
     <button class="mobile-nav-btn hidden" id="tabRosaBtn" onclick="participantMobileTab('rosa',this)"><span class="icon">🏅</span>Rosa</button>
+    <button class="mobile-nav-btn hidden" id="tabStorBtn" onclick="participantMobileTab('stor',this)"><span class="icon">📋</span>Storico</button>
   </div>
 </div>
 
@@ -728,7 +728,6 @@ const TEAMS = [
   { id: 't9',  name: 'Vincan',           emoji: '🍷', password: 'caserma1' },
   { id: 't10', name: 'giomammo',         emoji: '🎮', password: 'caserma1' }
 ];
-const ADMIN_PASSWORD = 'fantacaserma2025';
 const BUDGET_START = 500;
 let currentAuctionDuration = 30;
 function getAuctionDuration() {
@@ -821,7 +820,6 @@ function playAuctionStartSound() {
 document.addEventListener('DOMContentLoaded', () => {
   populateTeamSelect();
   document.getElementById('teamPassword').addEventListener('keydown', e => { if (e.key === 'Enter') loginTeam(); });
-  document.getElementById('adminPassword').addEventListener('keydown', e => { if (e.key === 'Enter') loginAdmin(); });
   document.getElementById('bidInput').addEventListener('keydown', e => { if (e.key === 'Enter') submitBid(); });
   initFirebase();
 });
@@ -897,13 +895,6 @@ function populateTeamSelect() {
   });
 }
 
-function switchLoginTab(tab) {
-  const isAdmin = tab === 'admin';
-  document.getElementById('tabSquadra').classList.toggle('active', !isAdmin);
-  document.getElementById('tabAdmin').classList.toggle('active', isAdmin);
-  document.getElementById('formSquadra').classList.toggle('hidden', isAdmin);
-  document.getElementById('formAdmin').classList.toggle('hidden', !isAdmin);
-}
 
 function loginTeam() {
   const teamId = document.getElementById('teamSelect').value;
@@ -918,15 +909,6 @@ function loginTeam() {
   enterParticipant();
 }
 
-function loginAdmin() {
-  const pwd = document.getElementById('adminPassword').value;
-  const errEl = document.getElementById('adminError');
-  errEl.classList.remove('visible');
-  if (pwd !== ADMIN_PASSWORD) { errEl.classList.add('visible'); return; }
-  currentUser = { type: 'admin' };
-  sessionStorage.setItem('fcUser', JSON.stringify(currentUser));
-  enterAdmin();
-}
 
 function logout() {
   if (currentUser && db && (currentUser.type === 'team' || currentUser.isPresident) && currentUser.teamId) {
@@ -1563,6 +1545,8 @@ function enterParticipant() {
   if (tabAssignBtn) tabAssignBtn.classList.toggle('hidden', !u.isPresident);
   const tabRosaBtn = document.getElementById('tabRosaBtn');
   if (tabRosaBtn) tabRosaBtn.classList.toggle('hidden', !u.isPresident);
+  const tabStorBtn = document.getElementById('tabStorBtn');
+  if (tabStorBtn) tabStorBtn.classList.toggle('hidden', !u.isPresident);
   buildPokerTable();
   participantMobileTab('table', document.querySelector('#participantMobileNav .mobile-nav-btn'));
   initParticipantFirebase();
@@ -1723,6 +1707,14 @@ function initParticipantFirebase() {
     avatarsState = snap.val() || {};
     TEAMS.forEach(t => applyAvatarToChip(t.id));
   });
+  // Storico operazioni — solo per il presidente
+  if (currentUser && currentUser.isPresident) {
+    db.ref('/log').limitToLast(100).on('value', snap => {
+      logState = snap.val() || {};
+      const sp = document.getElementById('presidentStorPanel');
+      if (sp && sp.style.display !== 'none') renderHistoryPanel('presStorList', 'presStorCount');
+    });
+  }
 }
 
 function handleGameStateChange() {
@@ -2599,9 +2591,9 @@ function renderRosaPanel(containerId, updateTsId) {
  * Renderizza il pannello Storico leggendo logState (aggiornato dal listener /log).
  * Mostra max 100 eventi, ordinati dal più recente.
  */
-function renderHistoryPanel() {
-  const container = document.getElementById('adminHistoryList');
-  const countEl   = document.getElementById('historyCount');
+function renderHistoryPanel(containerId, countId) {
+  const container = document.getElementById(containerId || 'adminHistoryList');
+  const countEl   = document.getElementById(countId || 'historyCount');
   if (!container) return;
   container.textContent = '';
   const entries = Object.values(logState).sort((a, b) => (b.ts || 0) - (a.ts || 0));
@@ -3055,6 +3047,7 @@ function participantMobileTab(tab, btn) {
   const ap = document.getElementById('presidentAstaPanel');
   const asgn = document.getElementById('presidentAssignPanel');
   const rp = document.getElementById('presidentRosaPanel');
+  const sp = document.getElementById('presidentStorPanel');
   // Reset all
   if (pa) pa.style.display = 'none';
   if (pp) pp.style.display = 'none';
@@ -3062,6 +3055,7 @@ function participantMobileTab(tab, btn) {
   if (ap) ap.style.display = 'none';
   if (asgn) asgn.style.display = 'none';
   if (rp) rp.style.display = 'none';
+  if (sp) sp.style.display = 'none';
   if (tab === 'table') {
     if (pa) pa.style.display = 'flex';
   } else if (tab === 'players') {
@@ -3074,6 +3068,8 @@ function participantMobileTab(tab, btn) {
     if (asgn) { asgn.style.display = 'flex'; renderAssignList(); }
   } else if (tab === 'rosa') {
     if (rp) { rp.style.display = 'flex'; renderRosaPanel('presRosaList', 'presRosaLastUpdate'); }
+  } else if (tab === 'stor') {
+    if (sp) { sp.style.display = 'flex'; renderHistoryPanel('presStorList', 'presStorCount'); }
   }
 }
 

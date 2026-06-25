@@ -4,7 +4,6 @@
 
 const BASE_URL = 'https://darioschioppi.github.io/fantacaserma/';
 const TEAM_PASSWORD = 'caserma1';
-const ADMIN_PASSWORD = 'fantacaserma2025';
 const LOADER_TIMEOUT = 15_000;
 const SCREEN_TIMEOUT = 12_000;
 
@@ -65,7 +64,6 @@ async function gotoAndLogin(page, teamId, password = TEAM_PASSWORD) {
 module.exports = {
   BASE_URL,
   TEAM_PASSWORD,
-  ADMIN_PASSWORD,
   waitForLoginScreen,
   loginAsTeam,
   waitForParticipantScreen,
