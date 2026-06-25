@@ -422,11 +422,6 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <span id="historyCount" style="font-size:.72rem;color:var(--text-s);"></span>
         </div>
         <div id="adminHistoryList" style="flex:1;overflow-y:auto;padding:8px 12px;"></div>
-        <!-- Reset Stagione — azione pericolosa in fondo al pannello -->
-        <div style="flex-shrink:0;border-top:2px solid rgba(239,68,68,.25);padding:12px 14px;background:rgba(239,68,68,.04);">
-          <div style="font-size:.72rem;color:var(--text-s);margin-bottom:8px;">⚠️ Irreversibile: cancella assegnazioni, budget, rosa e log.</div>
-          <button onclick="adminResetSeason()" style="width:100%;padding:9px;border-radius:8px;border:1px solid var(--red);background:transparent;color:var(--red);font-weight:700;font-size:.82rem;cursor:pointer;">♻️ Reset Stagione</button>
-        </div>
       </div>
       <div class="admin-auction-panel" id="adminAuctionPanel">
         <!-- Timer duration stepper -->
@@ -686,6 +681,11 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         <span id="presRosaLastUpdate" style="font-size:.72rem;color:var(--text-s);"></span>
       </div>
       <div id="presRosaList" style="flex:1;overflow-y:auto;padding:8px 12px;"></div>
+      <!-- Reset Stagione — solo Benfiga, azione irreversibile -->
+      <div style="flex-shrink:0;border-top:2px solid rgba(239,68,68,.25);padding:12px 14px;background:rgba(239,68,68,.04);">
+        <div style="font-size:.72rem;color:var(--text-s);margin-bottom:8px;">⚠️ Irreversibile: cancella tutte le assegnazioni, ripristina i budget e azzera il log.</div>
+        <button onclick="adminResetSeason()" style="width:100%;padding:9px;border-radius:8px;border:1px solid var(--red);background:transparent;color:var(--red);font-weight:700;font-size:.82rem;cursor:pointer;">♻️ Reset Stagione</button>
+      </div>
     </div>
     <div class="recent-sidebar">
       <div class="recent-title">🛒 Ultimi acquisti</div>
@@ -2666,6 +2666,8 @@ function renderHistoryPanel() {
  * Richiede doppia conferma esplicita (operazione irreversibile).
  */
 async function adminResetSeason() {
+  // Solo il presidente (Benfiga) può eseguire il reset
+  if (!currentUser || !currentUser.isPresident) { toast('⛔ Solo Benfiga può eseguire il reset stagione', 'error'); return; }
   if (!confirm('⚠️ RESET STAGIONE\n\nQuesta operazione cancellerà TUTTO:\n• Tutte le assegnazioni\n• Budget e rosa di ogni squadra\n• Log storico\n\nSicuro di voler procedere?')) return;
   if (!confirm('Ultima conferma: questa operazione è IRREVERSIBILE.\n\nProcedere con il reset?')) return;
   const updates = {};
