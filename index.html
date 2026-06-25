@@ -407,6 +407,14 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           </div>
         </div>
       </div>
+      <!-- Rosa Squadre (tab Rosa su mobile) -->
+      <div id="adminRosaSection" style="display:none;flex-direction:column;flex:1;min-height:0;">
+        <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;">
+          <span style="font-size:.8rem;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:1px;">🏅 Rosa Squadre</span>
+          <span id="rosaLastUpdate" style="font-size:.72rem;color:var(--text-s);"></span>
+        </div>
+        <div id="adminRosaList" style="flex:1;overflow-y:auto;padding:8px 12px;"></div>
+      </div>
       <!-- Storico operazioni (tab Storico su mobile) -->
       <div id="adminHistorySection" style="display:none;flex-direction:column;flex:1;min-height:0;">
         <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;">
@@ -454,9 +462,9 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <div style="font-size:.8rem;color:var(--text-m);margin-bottom:8px;">
             Vincitore: <strong id="aapWinnerName" style="color:var(--gold)">—</strong>
             con <strong id="aapWinnerBid" style="color:var(--gold)">—</strong> cr
+            <span style="font-size:.72rem;color:var(--text-s);margin-left:6px;">(assegnazione automatica…)</span>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn-assign" onclick="adminAssign()">✅ Assegna</button>
             <button class="btn-skip" onclick="adminSkip()">⏭ Salta</button>
           </div>
         </div>
@@ -482,6 +490,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
     <button class="mobile-nav-btn" onclick="adminMobileTab('auction',this)"><span class="icon">⚡</span>Asta</button>
     <button class="mobile-nav-btn" onclick="adminMobileTab('assign',this)"><span class="icon">📝</span>Assegn.</button>
     <button class="mobile-nav-btn" onclick="adminMobileTab('history',this)"><span class="icon">📋</span>Storico</button>
+    <button class="mobile-nav-btn" onclick="adminMobileTab('rosa',this)"><span class="icon">🏅</span>Rosa</button>
   </div>
 </div>
 
@@ -629,9 +638,8 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <button onclick="adminSimulateBids()" style="padding:7px 12px;border-radius:8px;border:none;background:#5a3e8a;color:#fff;font-weight:700;font-size:.78rem;cursor:pointer;">🎲 Simula</button>
         </div>
         <div id="paPostReveal" style="display:none;margin-top:8px;">
-          <div style="font-size:.8rem;color:var(--text-m);margin-bottom:8px;">Vincitore: <strong id="paWinnerName" style="color:var(--gold)">—</strong> con <strong id="paWinnerBid" style="color:var(--gold)">—</strong> cr</div>
+          <div style="font-size:.8rem;color:var(--text-m);margin-bottom:8px;">Vincitore: <strong id="paWinnerName" style="color:var(--gold)">—</strong> con <strong id="paWinnerBid" style="color:var(--gold)">—</strong> cr <span style="font-size:.72rem;color:var(--text-s);">(assegnazione automatica…)</span></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn-assign" onclick="adminAssign()">✅ Assegna</button>
             <button class="btn-skip" onclick="adminSkip()">⏭ Salta</button>
           </div>
         </div>
@@ -671,6 +679,14 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         </div>
       </div>
     </div>
+    <!-- Panel rosa squadre (solo presidente) -->
+    <div class="players-panel" id="presidentRosaPanel" style="display:none;flex-direction:column;">
+      <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;">
+        <span style="font-size:.8rem;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:1px;">🏅 Rosa Squadre</span>
+        <span id="presRosaLastUpdate" style="font-size:.72rem;color:var(--text-s);"></span>
+      </div>
+      <div id="presRosaList" style="flex:1;overflow-y:auto;padding:8px 12px;"></div>
+    </div>
     <div class="recent-sidebar">
       <div class="recent-title">🛒 Ultimi acquisti</div>
       <div class="recent-list" id="recentList"><div class="empty-state" style="font-size:.75rem;">Nessun acquisto ancora</div></div>
@@ -682,6 +698,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
     <button class="mobile-nav-btn" onclick="participantMobileTab('recent',this)"><span class="icon">🛒</span>Acquisti</button>
     <button class="mobile-nav-btn hidden" id="tabAstaBtn" onclick="participantMobileTab('asta',this)"><span class="icon">⚡</span>Asta</button>
     <button class="mobile-nav-btn hidden" id="tabAssignBtn" onclick="participantMobileTab('assign',this)"><span class="icon">📝</span>Assegn.</button>
+    <button class="mobile-nav-btn hidden" id="tabRosaBtn" onclick="participantMobileTab('rosa',this)"><span class="icon">🏅</span>Rosa</button>
   </div>
 </div>
 
@@ -1396,6 +1413,21 @@ function adminAssign() {
     toast('✅ ' + cp.nome + ' → ' + adminWinner.teamName + ' (' + adminWinner.amount + ' cr)', 'success');
     const winnerTeam = TEAMS.find(t => t.id === adminWinner.teamId);
     writeLog('assigned', { player: cp.nome, ruolo: cp.ruolo, squadra: cp.squadra, teamId: adminWinner.teamId, teamName: adminWinner.teamName, teamEmoji: winnerTeam ? winnerTeam.emoji : '', price: adminWinner.amount });
+    // Auto-avanza a 'waiting' dopo 3.5s (il partecipante vede l'overlay di assegnazione)
+    setTimeout(() => {
+      if (gameState.phase !== 'assigned') return;
+      db.ref().update({
+        '/game/phase': 'waiting',
+        '/game/currentPlayer': null,
+        '/game/timerEnd': null,
+        '/game/tiebreakers': null,
+        '/game/minBid': null,
+        '/game/tiebreakerFirstBid': null,
+        '/game/pausedAt': null,
+        '/bids': null,
+        '/bidSubmitted': null,
+      });
+    }, 3500);
   });
 }
 
@@ -1504,6 +1536,8 @@ function enterParticipant() {
   if (tabAstaBtn) tabAstaBtn.classList.toggle('hidden', !u.isPresident);
   const tabAssignBtn = document.getElementById('tabAssignBtn');
   if (tabAssignBtn) tabAssignBtn.classList.toggle('hidden', !u.isPresident);
+  const tabRosaBtn = document.getElementById('tabRosaBtn');
+  if (tabRosaBtn) tabRosaBtn.classList.toggle('hidden', !u.isPresident);
   buildPokerTable();
   participantMobileTab('table', document.querySelector('#participantMobileNav .mobile-nav-btn'));
   initParticipantFirebase();
@@ -2375,17 +2409,154 @@ function adminSimulateBids() {
   const pending = eligible.filter(t => !bidSubmittedState[t.id]);
   if (!pending.length) { toast('Tutti i team hanno già offerto', 'info'); return; }
   const minBid = gameState.minBid || 1;
+  const ruolo = (gameState.currentPlayer && gameState.currentPlayer.ruolo) || '';
   const updates = {};
   let count = 0;
   pending.forEach(t => {
-    const pass = Math.random() < 0.3;
-    const amount = pass ? 0 : minBid + Math.floor(Math.random() * 51);
+    const td = teamsState[t.id] || {};
+    const budget = td.budget != null ? td.budget : BUDGET_START;
+    // Forza il passaggio se il budget è insufficiente o la rosa è piena per questo ruolo
+    const mustPass = budget < minBid || (ruolo && isRosterFull(t.id, ruolo));
+    const pass = mustPass || Math.random() < 0.3;
+    const amount = pass ? 0 : Math.min(budget, minBid + Math.floor(Math.random() * 51));
     updates['/bids/' + t.id] = amount;
     updates['/bidSubmitted/' + t.id] = true;
     count++;
   });
   db.ref().update(updates);
   toast('🎲 Simulate ' + count + ' offerte', 'success');
+}
+
+// ─── PANNELLO ROSA SQUADRE ───
+/**
+ * Renderizza il pannello Rosa Squadre nel contenitore specificato.
+ * Mostra per ogni team: budget residuo, contatori per ruolo (usati/max),
+ * lista giocatori acquistati ordinata per ruolo poi alfabetica.
+ * @param {string} containerId  - id del div contenitore (#adminRosaList o #presRosaList)
+ * @param {string} [updateTsId] - id del label timestamp (opzionale)
+ */
+function renderRosaPanel(containerId, updateTsId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.textContent = '';
+  const ROLE_ICONS = { P: '🧤', D: '🛡️', C: '⚙️', A: '⚽' };
+  const ROLE_ORDER = { P: 0, D: 1, C: 2, A: 3 };
+  const TOTAL_MAX = Object.values(ROSTER_MAX).reduce((a, b) => a + b, 0); // 25
+
+  TEAMS.forEach(team => {
+    const td = teamsState[team.id] || {};
+    const budget = td.budget != null ? td.budget : BUDGET_START;
+    const teamAssigns = assignmentsState.filter(a => a.teamId === team.id);
+    const counts = getRosterCounts(team.id);
+    const totalPlayers = teamAssigns.length;
+
+    // ── Card wrapper ──────────────────────────────────────────────────────────
+    const card = document.createElement('div');
+    card.style.cssText = 'background:var(--bg2);border-radius:10px;border:1px solid var(--border);margin-bottom:10px;overflow:hidden;';
+
+    // ── Header ────────────────────────────────────────────────────────────────
+    const header = document.createElement('div');
+    header.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg3);';
+
+    const emojiEl = document.createElement('span');
+    emojiEl.style.fontSize = '1.1rem';
+    emojiEl.textContent = team.emoji;
+
+    const nameEl = document.createElement('span');
+    nameEl.style.cssText = 'font-weight:700;font-size:.85rem;flex:1;';
+    nameEl.textContent = team.name;
+
+    const budgetEl = document.createElement('span');
+    budgetEl.style.cssText = 'font-size:.78rem;color:var(--gold);font-weight:600;';
+    budgetEl.textContent = '💰 ' + budget + ' cr';
+
+    const totalEl = document.createElement('span');
+    totalEl.style.cssText = 'font-size:.72rem;color:var(--text-s);margin-left:8px;background:var(--bg);padding:2px 6px;border-radius:4px;';
+    totalEl.textContent = totalPlayers + '/' + TOTAL_MAX;
+
+    header.appendChild(emojiEl);
+    header.appendChild(nameEl);
+    header.appendChild(budgetEl);
+    header.appendChild(totalEl);
+    card.appendChild(header);
+
+    // ── Slot ruolo ────────────────────────────────────────────────────────────
+    const slotsRow = document.createElement('div');
+    slotsRow.style.cssText = 'display:flex;gap:5px;padding:6px 12px;' +
+      (teamAssigns.length ? 'border-bottom:1px solid var(--border);' : '');
+
+    ['P', 'D', 'C', 'A'].forEach(r => {
+      const used = counts[r] || 0;
+      const max = ROSTER_MAX[r];
+      const full = used >= max;
+      const badge = document.createElement('span');
+      badge.style.cssText = 'font-size:.72rem;padding:2px 7px;border-radius:4px;white-space:nowrap;' +
+        'background:' + (full ? 'rgba(239,68,68,.18)' : 'rgba(255,255,255,.06)') + ';' +
+        'color:' + (full ? 'var(--red)' : 'var(--text-m)') + ';';
+      badge.textContent = ROLE_ICONS[r] + ' ' + used + '/' + max;
+      slotsRow.appendChild(badge);
+
+      // Slot disponibili rimanenti
+      const rem = max - used;
+      if (rem > 0) {
+        const remEl = document.createElement('span');
+        remEl.style.cssText = 'font-size:.62rem;color:var(--text-s);align-self:center;';
+        remEl.textContent = '–' + rem;
+        slotsRow.appendChild(remEl);
+      }
+    });
+    card.appendChild(slotsRow);
+
+    // ── Lista giocatori ───────────────────────────────────────────────────────
+    if (teamAssigns.length) {
+      const list = document.createElement('div');
+      list.style.cssText = 'padding:4px 12px 6px;';
+
+      const sorted = [...teamAssigns].sort((a, b) => {
+        const ro = ROLE_ORDER;
+        const ra = ro[(a.ruolo || '').charAt(0)]; const rb = ro[(b.ruolo || '').charAt(0)];
+        return (ra != null ? ra : 99) - (rb != null ? rb : 99) ||
+          (a.player || '').localeCompare(b.player || '');
+      });
+
+      sorted.forEach(a => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);';
+
+        const r = (a.ruolo || '').charAt(0);
+        const rBadge = document.createElement('span');
+        rBadge.className = 'role-badge role-' + r;
+        rBadge.style.cssText += 'flex-shrink:0;font-size:.62rem;padding:1px 4px;';
+        rBadge.textContent = r || '?';
+
+        const pName = document.createElement('span');
+        pName.style.cssText = 'flex:1;font-size:.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+        pName.textContent = a.player || '—';
+
+        const pAmt = document.createElement('span');
+        pAmt.style.cssText = 'font-size:.72rem;color:var(--gold);flex-shrink:0;';
+        pAmt.textContent = a.amount + ' cr';
+
+        row.appendChild(rBadge);
+        row.appendChild(pName);
+        row.appendChild(pAmt);
+        list.appendChild(row);
+      });
+      card.appendChild(list);
+    } else {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'padding:6px 12px;font-size:.75rem;color:var(--text-s);font-style:italic;';
+      empty.textContent = 'Nessun giocatore acquistato';
+      card.appendChild(empty);
+    }
+
+    container.appendChild(card);
+  });
+
+  // Aggiorna timestamp
+  const now = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  const tsEl = document.getElementById(updateTsId || 'rosaLastUpdate');
+  if (tsEl) tsEl.textContent = 'aggiornato ' + now;
 }
 
 // ─── FEATURE 5: STORICO OPERAZIONI ───
@@ -2805,12 +2976,14 @@ function adminMobileTab(tab, btn) {
   const teamsSection   = document.getElementById('adminTeamsMobileSection');
   const assignSection  = document.getElementById('adminAssignSection');
   const historySection = document.getElementById('adminHistorySection');
+  const rosaSection    = document.getElementById('adminRosaSection');
   const auctionPanel   = document.getElementById('adminAuctionPanel');
 
   if (searchSection)  searchSection.style.display  = tab === 'search'  ? 'flex'  : 'none';
   if (teamsSection)   teamsSection.style.display   = tab === 'teams'   ? 'flex'  : 'none';
   if (assignSection)  assignSection.style.display  = tab === 'assign'  ? 'flex'  : 'none';
   if (historySection) historySection.style.display = tab === 'history' ? 'flex'  : 'none';
+  if (rosaSection)    rosaSection.style.display    = tab === 'rosa'    ? 'flex'  : 'none';
 
   if (tab === 'auction') {
     if (auctionPanel) auctionPanel.classList.add('visible');
@@ -2826,6 +2999,8 @@ function adminMobileTab(tab, btn) {
   } else if (tab === 'history') {
     renderHistoryPanel();
     assignScope = 'pres';
+  } else if (tab === 'rosa') {
+    renderRosaPanel('adminRosaList', 'rosaLastUpdate');
   } else {
     // Ripristina scope per il pannello presidente (se in uso)
     assignScope = 'pres';
@@ -2842,12 +3017,14 @@ function participantMobileTab(tab, btn) {
   const rs = document.querySelector('.recent-sidebar');
   const ap = document.getElementById('presidentAstaPanel');
   const asgn = document.getElementById('presidentAssignPanel');
+  const rp = document.getElementById('presidentRosaPanel');
   // Reset all
   if (pa) pa.style.display = 'none';
   if (pp) pp.style.display = 'none';
   if (rs) { rs.style.display = 'none'; rs.style.width = '200px'; rs.style.borderLeft = ''; }
   if (ap) ap.style.display = 'none';
   if (asgn) asgn.style.display = 'none';
+  if (rp) rp.style.display = 'none';
   if (tab === 'table') {
     if (pa) pa.style.display = 'flex';
   } else if (tab === 'players') {
@@ -2858,6 +3035,8 @@ function participantMobileTab(tab, btn) {
     if (ap) { ap.style.display = 'flex'; filterAstaPlayers(); renderPresidentAuction(); }
   } else if (tab === 'assign') {
     if (asgn) { asgn.style.display = 'flex'; renderAssignList(); }
+  } else if (tab === 'rosa') {
+    if (rp) { rp.style.display = 'flex'; renderRosaPanel('presRosaList', 'presRosaLastUpdate'); }
   }
 }
 

@@ -716,15 +716,19 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
       // Tutti e 10 i team devono aver offerto (t1 reale + 9 simulati)
       expect(submittedTeams.length).toBe(10);
 
-      // t1 deve avere il suo bid originale intatto (adminSimulateBids salta i già sottomessi)
-      expect(bidsRaw['t1']).toBe(42);
+      // t1 deve avere il suo bid originale intatto (adminSimulateBids salta i già sottomessi).
+      // simulateBid() REST scrive {amount, ts} mentre adminSimulateBids() scrive numero diretto:
+      // usiamo un helper per normalizzare entrambi i formati.
+      const getBidAmount = (raw) => (raw !== null && typeof raw === 'object') ? raw.amount : raw;
+      expect(getBidAmount(bidsRaw['t1'])).toBe(42);
 
       // Gli altri 9 devono avere bid >= 0 (0 = passa, >0 = offerta)
       const simulatedTeams = ['t2','t3','t4','t5','t6','t7','t8','t9','t10'];
       for (const tid of simulatedTeams) {
         expect(submittedRaw[tid]).toBe(true);
-        expect(typeof bidsRaw[tid]).toBe('number');
-        expect(bidsRaw[tid]).toBeGreaterThanOrEqual(0);
+        const amt = getBidAmount(bidsRaw[tid]);
+        expect(typeof amt).toBe('number');
+        expect(amt).toBeGreaterThanOrEqual(0);
       }
     } else {
       // Funzione non ancora deployata: smoke test minimo
