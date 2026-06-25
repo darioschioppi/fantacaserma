@@ -1060,7 +1060,7 @@ function updateAdminPhase() {
   const phase = gameState.phase || 'waiting';
   const badge = document.getElementById('adminPhaseBadge');
   badge.className = 'phase-badge ' + (phase === 'waiting' ? '' : phase);
-  const labels = { waiting: 'In attesa', bidding: '⚡ Asta', reveal: '🎯 Rivelazione', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ In pausa' };
+  const labels = { waiting: 'In attesa', bidding: '⚡ Asta', reveal: '🎯 Esito', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ In pausa' };
   badge.textContent = '';
   const dot = document.createElement('span');
   dot.className = 'phase-dot';
@@ -1098,7 +1098,7 @@ function renderAdminAuctionPanel() {
   panel.classList.add('visible');
   setText('aapPlayerName', cp.nome);
   setText('aapPlayerMeta', cp.squadra + ' · ' + cp.ruolo + ' · QI ' + cp.qi);
-  const phaseLabels = { bidding: '⚡ Asta in corso', reveal: '🎯 Rivelazione', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ Asta in pausa' };
+  const phaseLabels = { bidding: '⚡ Asta in corso', reveal: '🎯 Esito', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ Asta in pausa' };
   setText('aapPhaseLabel', phaseLabels[phase] || phase);
   // Aggiorna label durata timer
   const timerDurLabel = document.getElementById('aapTimerDuration');
@@ -1877,7 +1877,7 @@ function handleGameStateChange() {
     stopLocalTimer();
     document.getElementById('bidInputArea').style.display = 'none';
     document.getElementById('bidAreaWaiting').style.display = 'block';
-    setText('bidAreaWaiting', 'Rivelazione in corso…');
+    setText('bidAreaWaiting', 'Esito in corso…');
     renderRevealOverlay(false);
   } else if (phase === 'assigned') {
     stopLocalTimer();
@@ -1900,7 +1900,7 @@ function handleGameStateChange() {
 function updateParticipantPhase(phase) {
   const badge = document.getElementById('participantPhaseBadge');
   badge.className = 'phase-badge ' + (phase === 'waiting' ? '' : phase);
-  const labels = { waiting: 'In attesa', bidding: '⚡ Asta', reveal: '🎯 Rivelazione', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ In pausa' };
+  const labels = { waiting: 'In attesa', bidding: '⚡ Asta', reveal: '🎯 Esito', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ In pausa' };
   badge.textContent = '';
   const dot = document.createElement('span'); dot.className = 'phase-dot'; badge.appendChild(dot);
   badge.appendChild(document.createTextNode(' ' + (labels[phase] || phase)));
@@ -2284,7 +2284,7 @@ function renderPresidentAuction() {
   panel.style.display = 'block';
   setText('paPlayerName', cp.nome);
   setText('paPlayerMeta', cp.squadra + ' · ' + cp.ruolo + ' · QI ' + cp.qi);
-  const phaseLabels = { bidding: '⚡ Asta in corso', reveal: '🎯 Rivelazione', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ Asta in pausa' };
+  const phaseLabels = { bidding: '⚡ Asta in corso', reveal: '🎯 Esito', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ Asta in pausa' };
   setText('paPhaseLabel', phaseLabels[phase] || phase);
   // Aggiorna pulsanti Pausa/Riprendi
   const btnPause = document.getElementById('paBtnPause');
@@ -2624,7 +2624,7 @@ function renderHistoryPanel() {
     admin_remove:             { icon: '🗑', color: 'var(--red)',    label: 'Rimosso' },
     admin_reassign:           { icon: '✏️', color: 'var(--blue)',   label: 'Riassegnato' },
     admin_assign_manual:      { icon: '📝', color: 'var(--blue)',   label: 'Assegn. manuale' },
-    reveal:                   { icon: '🎯', color: 'var(--text-m)', label: 'Rivelazione' },
+    reveal:                   { icon: '🎯', color: 'var(--text-m)', label: 'Esito' },
   };
   entries.forEach(e => {
     const ti = typeInfo[e.type] || { icon: '•', color: 'var(--text-s)', label: e.type || '?' };
