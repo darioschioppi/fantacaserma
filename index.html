@@ -407,6 +407,19 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           </div>
         </div>
       </div>
+      <!-- Storico operazioni (tab Storico su mobile) -->
+      <div id="adminHistorySection" style="display:none;flex-direction:column;flex:1;min-height:0;">
+        <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;">
+          <span style="font-size:.8rem;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:1px;">📋 Storico operazioni</span>
+          <span id="historyCount" style="font-size:.72rem;color:var(--text-s);"></span>
+        </div>
+        <div id="adminHistoryList" style="flex:1;overflow-y:auto;padding:8px 12px;"></div>
+        <!-- Reset Stagione — azione pericolosa in fondo al pannello -->
+        <div style="flex-shrink:0;border-top:2px solid rgba(239,68,68,.25);padding:12px 14px;background:rgba(239,68,68,.04);">
+          <div style="font-size:.72rem;color:var(--text-s);margin-bottom:8px;">⚠️ Irreversibile: cancella assegnazioni, budget, rosa e log.</div>
+          <button onclick="adminResetSeason()" style="width:100%;padding:9px;border-radius:8px;border:1px solid var(--red);background:transparent;color:var(--red);font-weight:700;font-size:.82rem;cursor:pointer;">♻️ Reset Stagione</button>
+        </div>
+      </div>
       <div class="admin-auction-panel" id="adminAuctionPanel">
         <!-- Timer duration stepper -->
         <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;">
@@ -467,6 +480,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
     <button class="mobile-nav-btn" onclick="adminMobileTab('teams',this)"><span class="icon">🏟️</span>Squadre</button>
     <button class="mobile-nav-btn" onclick="adminMobileTab('auction',this)"><span class="icon">⚡</span>Asta</button>
     <button class="mobile-nav-btn" onclick="adminMobileTab('assign',this)"><span class="icon">📝</span>Assegn.</button>
+    <button class="mobile-nav-btn" onclick="adminMobileTab('history',this)"><span class="icon">📋</span>Storico</button>
   </div>
 </div>
 
@@ -730,6 +744,7 @@ function getBidTs(tid) {
 let avatarsState = {};
 let assignmentsState = [];
 let presenceState = {};
+let logState = {}; // cache locale del nodo /log per il pannello Storico
 let timerInterval = null;
 let timerEndTs = null;
 let myBidSent = false;
@@ -964,6 +979,12 @@ function initAdminFirebase() {
     const raw = snap.val();
     assignmentsState = raw ? Object.entries(raw).map(([key, val]) => ({ ...val, _key: key })) : [];
     updateAdminStats();
+  });
+  // Ultimi 100 eventi dal log — aggiorna pannello Storico se aperto
+  db.ref('/log').limitToLast(100).on('value', snap => {
+    logState = snap.val() || {};
+    const hs = document.getElementById('adminHistorySection');
+    if (hs && hs.style.display !== 'none') renderHistoryPanel();
   });
 }
 
@@ -2336,6 +2357,98 @@ function adminEndAuction() {
   toast('⏹ Asta terminata', 'info');
 }
 
+// ─── FEATURE 5: STORICO OPERAZIONI ───
+/**
+ * Renderizza il pannello Storico leggendo logState (aggiornato dal listener /log).
+ * Mostra max 100 eventi, ordinati dal più recente.
+ */
+function renderHistoryPanel() {
+  const container = document.getElementById('adminHistoryList');
+  const countEl   = document.getElementById('historyCount');
+  if (!container) return;
+  container.textContent = '';
+  const entries = Object.values(logState).sort((a, b) => (b.ts || 0) - (a.ts || 0));
+  if (countEl) countEl.textContent = entries.length + ' eventi';
+  if (!entries.length) {
+    const empty = document.createElement('div');
+    empty.className = 'empty-state';
+    empty.textContent = 'Nessuna operazione registrata.';
+    container.appendChild(empty);
+    return;
+  }
+  const typeInfo = {
+    auction_start:            { icon: '▶️', color: 'var(--green)',  label: 'Avvio asta' },
+    assigned:                 { icon: '✅', color: 'var(--green)',  label: 'Assegnato' },
+    skipped:                  { icon: '⏭', color: 'var(--text-m)', label: 'Saltato' },
+    skipped_auto:             { icon: '⏭', color: 'var(--text-m)', label: 'Saltato (auto)' },
+    tiebreaker:               { icon: '⚖️', color: 'var(--gold)',   label: 'Spareggio' },
+    tiebreaker_first_bid_win: { icon: '⚖️', color: 'var(--gold)',   label: 'Spareggio 1ª offerta' },
+    ended_manual:             { icon: '⏹', color: 'var(--red)',    label: 'Terminato manuale' },
+    admin_remove:             { icon: '🗑', color: 'var(--red)',    label: 'Rimosso' },
+    admin_reassign:           { icon: '✏️', color: 'var(--blue)',   label: 'Riassegnato' },
+    admin_assign_manual:      { icon: '📝', color: 'var(--blue)',   label: 'Assegn. manuale' },
+    reveal:                   { icon: '🎯', color: 'var(--text-m)', label: 'Rivelazione' },
+  };
+  entries.forEach(e => {
+    const ti = typeInfo[e.type] || { icon: '•', color: 'var(--text-s)', label: e.type || '?' };
+    const row = document.createElement('div');
+    row.style.cssText = 'padding:6px 4px;border-bottom:1px solid rgba(255,255,255,.04);display:flex;gap:8px;align-items:flex-start;';
+    const iconEl = document.createElement('span');
+    iconEl.style.cssText = 'font-size:.85rem;flex-shrink:0;width:22px;text-align:center;line-height:1.4;';
+    iconEl.textContent = ti.icon;
+    const bodyEl = document.createElement('div');
+    bodyEl.style.cssText = 'flex:1;min-width:0;';
+    const labelEl = document.createElement('div');
+    labelEl.style.cssText = 'font-size:.68rem;font-weight:700;text-transform:uppercase;color:' + ti.color + ';letter-spacing:.5px;';
+    labelEl.textContent = ti.label;
+    const descEl = document.createElement('div');
+    descEl.style.cssText = 'font-size:.82rem;color:var(--text);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
+    let desc = e.player ? escHtml(e.player) : '';
+    if (e.type === 'assigned' && e.teamName)           desc += ' → ' + escHtml(e.teamName) + ' (' + (e.price || '?') + ' cr)';
+    if (e.type === 'tiebreaker' && e.teams)            desc += ' | ' + (e.teams || []).map(tid => { const t = TEAMS.find(x => x.id === tid); return t ? t.name : tid; }).join(', ');
+    if (e.type === 'admin_remove' && e.fromTeam)       desc += ' rimosso da ' + e.fromTeam;
+    if (e.type === 'admin_reassign' && e.toTeam)       desc += ' → ' + e.toTeam + ' (' + (e.newAmount != null ? e.newAmount : '?') + ' cr)';
+    if (e.type === 'admin_assign_manual' && e.toTeamName) desc += ' → ' + escHtml(e.toTeamName) + ' (' + (e.amount != null ? e.amount : '?') + ' cr)';
+    descEl.textContent = desc;
+    const timeEl = document.createElement('div');
+    timeEl.style.cssText = 'font-size:.68rem;color:var(--text-s);margin-top:2px;';
+    timeEl.textContent = e.ts ? new Date(e.ts).toLocaleTimeString('it-IT') : '';
+    bodyEl.appendChild(labelEl);
+    bodyEl.appendChild(descEl);
+    bodyEl.appendChild(timeEl);
+    row.appendChild(iconEl);
+    row.appendChild(bodyEl);
+    container.appendChild(row);
+  });
+}
+
+// ─── FEATURE 8: RESET STAGIONE ───
+/**
+ * Reset completo della stagione: cancella assegnazioni, ripristina budget,
+ * azzera il gioco e svuota il log.
+ * Richiede doppia conferma esplicita (operazione irreversibile).
+ */
+async function adminResetSeason() {
+  if (!confirm('⚠️ RESET STAGIONE\n\nQuesta operazione cancellerà TUTTO:\n• Tutte le assegnazioni\n• Budget e rosa di ogni squadra\n• Log storico\n\nSicuro di voler procedere?')) return;
+  if (!confirm('Ultima conferma: questa operazione è IRREVERSIBILE.\n\nProcedere con il reset?')) return;
+  const updates = {};
+  // Ripristina tutte le squadre
+  TEAMS.forEach(t => {
+    updates['/teams/' + t.id] = { name: t.name, emoji: t.emoji, budget: BUDGET_START, connected: false, rosterCount: 0 };
+  });
+  // Reset partita
+  updates['/game'] = { phase: 'waiting', round: 1, minBid: 1 };
+  // Cancella dati asta e storico
+  updates['/assignments']  = null;
+  updates['/bids']         = null;
+  updates['/bidSubmitted'] = null;
+  updates['/log']          = null;
+  await db.ref().update(updates);
+  logState = {};
+  toast('♻️ Stagione resettata — tutti i dati cancellati', 'success');
+  renderHistoryPanel();
+}
+
 // ─── FEATURE 3: GESTIONE ASSEGNAZIONI ───
 let assignFreeSelected = null;
 // Scope: 'pres' = pannello presidente, 'admin' = pannello admin
@@ -2660,11 +2773,13 @@ function adminMobileTab(tab, btn) {
   const searchSection  = document.getElementById('adminSearchSection');
   const teamsSection   = document.getElementById('adminTeamsMobileSection');
   const assignSection  = document.getElementById('adminAssignSection');
+  const historySection = document.getElementById('adminHistorySection');
   const auctionPanel   = document.getElementById('adminAuctionPanel');
 
   if (searchSection)  searchSection.style.display  = tab === 'search'  ? 'flex'  : 'none';
   if (teamsSection)   teamsSection.style.display   = tab === 'teams'   ? 'flex'  : 'none';
   if (assignSection)  assignSection.style.display  = tab === 'assign'  ? 'flex'  : 'none';
+  if (historySection) historySection.style.display = tab === 'history' ? 'flex'  : 'none';
 
   if (tab === 'auction') {
     if (auctionPanel) auctionPanel.classList.add('visible');
@@ -2673,11 +2788,14 @@ function adminMobileTab(tab, btn) {
     if (auctionPanel && !gameState.currentPlayer) auctionPanel.classList.remove('visible');
   }
 
-  // Imposta scope assegnazioni
+  // Imposta scope assegnazioni / carica dati sezione
   if (tab === 'assign') {
     assignScope = 'admin';
     renderAssignList();
-  } else if (tab !== 'assign') {
+  } else if (tab === 'history') {
+    renderHistoryPanel();
+    assignScope = 'pres';
+  } else {
     // Ripristina scope per il pannello presidente (se in uso)
     assignScope = 'pres';
   }

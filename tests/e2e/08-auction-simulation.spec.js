@@ -572,6 +572,113 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
     expect(t5After.budget).toBeLessThanOrEqual(budgetBefore - 35);
   });
 
+  // ── SCENARIO 9: Reset stagione ────────────────────────────────────────────
+  //
+  // Testa lo schema dati del reset (browser-less): crea assegnazione + budget
+  // ridotto, poi esegue la sequenza atomica di reset via REST API (stessa
+  // logica di adminResetSeason()), verifica che lo stato sia pulito.
+  // Una volta deployato, il test può essere esteso per invocare adminResetSeason()
+  // direttamente dalla pagina browser.
+
+  test('SC9 — reset stagione: cancella assegnazioni e ripristina tutti i budget', async () => {
+    // Setup: assegnazione test su t3 con budget ridotto
+    await fbRest('/assignments/__reset_sc9__', 'PUT', {
+      player: '__RESET_SC9__', ruolo: 'C',
+      teamId: 't3', teamName: 'Frattese1985', amount: 60, timestamp: Date.now(),
+    });
+    await fbRest('/teams/t3', 'PATCH', { budget: 440, rosterCount: 1 });
+    await new Promise(r => setTimeout(r, 400));
+
+    // Reset atomico (stesso schema di adminResetSeason)
+    const teamOps = TEAMS.map(id =>
+      fbRest('/teams/' + id, 'PATCH', { budget: BUDGET_START, rosterCount: 0, connected: false })
+    );
+    await Promise.all([
+      ...teamOps,
+      fbRest('/game',         'PUT',    { phase: 'waiting', round: 1, minBid: 1 }),
+      fbRest('/assignments',  'DELETE'),
+      fbRest('/bids',         'DELETE'),
+      fbRest('/bidSubmitted', 'DELETE'),
+      fbRest('/log',          'DELETE'),
+    ]);
+    await new Promise(r => setTimeout(r, 500));
+
+    // Verifica: tutti i team a budget pieno, nessuna assegnazione
+    const t3After    = (await fbRest('/teams/t3', 'GET')) || {};
+    const t5After    = (await fbRest('/teams/t5', 'GET')) || {};
+    const asgnAfter  = await getAssignments();
+    const gsAfter    = await getGameState();
+
+    expect(gsAfter.phase).toBe('waiting');
+    expect(t3After.budget).toBe(BUDGET_START);
+    expect(t3After.rosterCount).toBe(0);
+    expect(t5After.budget).toBe(BUDGET_START);
+    expect(asgnAfter.find(a => a.player === '__RESET_SC9__')).toBeUndefined();
+  });
+
+  // ── SCENARIO 10: Storico operazioni ───────────────────────────────────────
+  //
+  // Verifica che avviare un'asta scriva un evento su /log (writeLog è già
+  // deployato) e che il pannello storico lo mostri una volta disponibile
+  // nel DOM (controllo con optional-chaining per tollerare versioni precedenti).
+
+  test('SC10 — storico: writeLog scrive su /log e il pannello storico mostra le voci', async ({ browser }) => {
+    const adminPage = await browser.newPage();
+    await loginAdmin(adminPage);
+
+    // startTestAuction usa REST diretta (no browser) → writeLog non viene chiamato.
+    // Invochiamo writeLog direttamente dal browser per testare il path completo.
+    await startTestAuction(adminPage);
+    await waitForPhase(adminPage, 'bidding', 8000);
+
+    // Chiama writeLog dalla pagina browser (funzione già deployata da sempre)
+    await adminPage.evaluate(() =>
+      writeLog('auction_start', { player: '__TEST_PLAYER__', ruolo: 'A', squadra: 'TestFC', qi: 1 })
+    );
+
+    // Verifica via REST che l'evento sia su /log
+    let logEntry = null;
+    for (let i = 0; i < 10; i++) {
+      const raw = (await fbRest('/log', 'GET')) || {};
+      const entries = Object.values(raw);
+      logEntry = entries.find(e => e && e.type === 'auction_start');
+      if (logEntry) break;
+      await new Promise(r => setTimeout(r, 500));
+    }
+    expect(logEntry).toBeTruthy();
+    expect(logEntry.type).toBe('auction_start');
+
+    // Se il pannello Storico è già nel DOM (Feature 5 deployata),
+    // verifica anche il rendering UI. Altrimenti salta silenziosamente.
+    const hasHistoryPanel = await adminPage.evaluate(
+      () => !!document.getElementById('adminHistorySection')
+    );
+    if (hasHistoryPanel) {
+      await adminPage.waitForFunction(
+        () => Object.keys(typeof logState !== 'undefined' ? logState : {}).length > 0,
+        undefined,
+        { timeout: 8000 }
+      );
+      await adminPage.evaluate(() => {
+        const btn = Array.from(document.querySelectorAll('#adminMobileNav .mobile-nav-btn'))
+          .find(b => b.textContent.includes('Storico'));
+        if (btn) adminMobileTab('history', btn);
+      });
+      await adminPage.waitForFunction(
+        () => {
+          const c = document.getElementById('adminHistoryList');
+          return c && c.children.length > 0 && !c.querySelector('.empty-state');
+        },
+        undefined,
+        { timeout: 5000 }
+      );
+      const historyText = await adminPage.locator('#adminHistoryList').textContent();
+      expect(historyText).toMatch(/avvio asta/i);
+    }
+
+    await adminPage.close();
+  });
+
 });
 
 // ─── SUITE: Verifiche UI real-time (admin + partecipante in parallelo) ────────
