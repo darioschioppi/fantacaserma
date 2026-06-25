@@ -317,11 +317,20 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
   <div class="login-title">FANTACASERMA</div>
   <div class="login-sub">Asta alla cieca · 10 squadre · 663 giocatori</div>
   <div class="login-box">
+    <div class="login-tabs">
+      <button class="login-tab active" id="tabSquadra" onclick="switchLoginTab('squadra')">🎽 Squadra</button>
+      <button class="login-tab" id="tabAdmin" onclick="switchLoginTab('admin')">👑 Admin</button>
+    </div>
     <div class="login-form" id="formSquadra">
       <div><label>Seleziona la tua squadra</label><select id="teamSelect"><option value="">— scegli —</option></select></div>
       <div><label>Password</label><input type="password" id="teamPassword" placeholder="••••••••" autocomplete="off"></div>
       <div class="login-error" id="teamError">Password errata. Riprova.</div>
       <button class="btn-login" onclick="loginTeam()">Entra →</button>
+    </div>
+    <div class="login-form hidden" id="formAdmin">
+      <div><label>Password Admin</label><input type="password" id="adminPassword" placeholder="••••••••" autocomplete="off"></div>
+      <div class="login-error" id="adminError">Password admin errata.</div>
+      <button class="btn-login" onclick="loginAdmin()">Entra come Admin →</button>
     </div>
   </div>
 </div>
@@ -719,6 +728,7 @@ const TEAMS = [
   { id: 't9',  name: 'Vincan',           emoji: '🍷', password: 'caserma1' },
   { id: 't10', name: 'giomammo',         emoji: '🎮', password: 'caserma1' }
 ];
+const ADMIN_PASSWORD = 'fantacaserma2025';
 const BUDGET_START = 500;
 let currentAuctionDuration = 30;
 function getAuctionDuration() {
@@ -811,6 +821,7 @@ function playAuctionStartSound() {
 document.addEventListener('DOMContentLoaded', () => {
   populateTeamSelect();
   document.getElementById('teamPassword').addEventListener('keydown', e => { if (e.key === 'Enter') loginTeam(); });
+  document.getElementById('adminPassword').addEventListener('keydown', e => { if (e.key === 'Enter') loginAdmin(); });
   document.getElementById('bidInput').addEventListener('keydown', e => { if (e.key === 'Enter') submitBid(); });
   initFirebase();
 });
@@ -886,6 +897,13 @@ function populateTeamSelect() {
   });
 }
 
+function switchLoginTab(tab) {
+  const isAdmin = tab === 'admin';
+  document.getElementById('tabSquadra').classList.toggle('active', !isAdmin);
+  document.getElementById('tabAdmin').classList.toggle('active', isAdmin);
+  document.getElementById('formSquadra').classList.toggle('hidden', isAdmin);
+  document.getElementById('formAdmin').classList.toggle('hidden', !isAdmin);
+}
 
 function loginTeam() {
   const teamId = document.getElementById('teamSelect').value;
@@ -895,18 +913,20 @@ function loginTeam() {
   if (!teamId) { errEl.textContent = 'Seleziona una squadra.'; errEl.classList.add('visible'); return; }
   const team = TEAMS.find(t => t.id === teamId);
   if (!team || team.password !== pwd) { errEl.classList.add('visible'); return; }
-  if (team.isPresident) {
-    // Benfiga → schermata admin con tutti i privilegi
-    currentUser = { type: 'admin', teamId: team.id, teamName: team.name, teamEmoji: team.emoji, isPresident: true };
-    sessionStorage.setItem('fcUser', JSON.stringify(currentUser));
-    enterAdmin();
-  } else {
-    currentUser = { type: 'team', teamId: team.id, teamName: team.name, teamEmoji: team.emoji, isPresident: false };
-    sessionStorage.setItem('fcUser', JSON.stringify(currentUser));
-    enterParticipant();
-  }
+  currentUser = { type: 'team', teamId: team.id, teamName: team.name, teamEmoji: team.emoji, isPresident: !!team.isPresident };
+  sessionStorage.setItem('fcUser', JSON.stringify(currentUser));
+  enterParticipant();
 }
 
+function loginAdmin() {
+  const pwd = document.getElementById('adminPassword').value;
+  const errEl = document.getElementById('adminError');
+  errEl.classList.remove('visible');
+  if (pwd !== ADMIN_PASSWORD) { errEl.classList.add('visible'); return; }
+  currentUser = { type: 'admin' };
+  sessionStorage.setItem('fcUser', JSON.stringify(currentUser));
+  enterAdmin();
+}
 
 function logout() {
   if (currentUser && db && (currentUser.type === 'team' || currentUser.isPresident) && currentUser.teamId) {
@@ -936,16 +956,6 @@ function enterAdmin() {
     if (budgetEl) budgetEl.classList.remove('hidden');
     const pp = document.getElementById('presidentePanel');
     if (pp) pp.style.display = 'block';
-    // Presenza Firebase: Benfiga è anche una squadra → aggiorna dot connessione
-    if (db && currentUser.teamId) {
-      const connRef = db.ref('/teams/' + currentUser.teamId + '/connected');
-      db.ref('.info/connected').on('value', snap => {
-        if (snap.val() === true) {
-          connRef.onDisconnect().set(false);
-          connRef.set(true);
-        }
-      });
-    }
   }
   initAdminFirebase();
 }

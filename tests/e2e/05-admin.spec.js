@@ -3,19 +3,14 @@
  * Testa la schermata admin: accesso, ricerca giocatori, visualizzazione squadre.
  */
 const { test, expect } = require('@playwright/test');
-const { BASE_URL, TEAM_PASSWORD, waitForLoginScreen } = require('./helpers');
+const { BASE_URL, ADMIN_PASSWORD, waitForLoginScreen } = require('./helpers');
 
-/**
- * Login come Admin (Benfiga, t2).
- * Non esiste più un tab Admin separato: Benfiga usa il login squadra
- * e viene instradata automaticamente allo screen-admin.
- */
 async function loginAsAdmin(page) {
   await page.goto(BASE_URL);
   await waitForLoginScreen(page);
-  await page.selectOption('#teamSelect', 't2');
-  await page.fill('#teamPassword', TEAM_PASSWORD);
-  await page.click('button:has-text("Entra →")');
+  await page.click('#tabAdmin');
+  await page.fill('#adminPassword', ADMIN_PASSWORD);
+  await page.click('button:has-text("Entra come Admin →")');
   await page.locator('#screen-admin.active').waitFor({ state: 'attached', timeout: 10_000 });
 }
 

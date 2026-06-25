@@ -15,7 +15,7 @@
  */
 
 const { test, expect } = require('@playwright/test');
-const { BASE_URL, TEAM_PASSWORD } = require('./helpers');
+const { BASE_URL, ADMIN_PASSWORD, TEAM_PASSWORD } = require('./helpers');
 
 // ─── COSTANTI ────────────────────────────────────────────────────────────────
 
@@ -227,9 +227,7 @@ async function waitForDb(page) {
 }
 
 /**
- * Login come Admin (Benfiga, t2) e attende che la schermata sia pronta.
- * Non esiste più un tab Admin separato: Benfiga accede con le credenziali
- * squadra e viene instradata automaticamente allo screen-admin.
+ * Login come Admin e attende che la schermata sia pronta.
  */
 async function loginAdmin(page) {
   await page.goto(BASE_URL);
@@ -240,9 +238,9 @@ async function loginAdmin(page) {
   // CRITICO: aspetta auth PRIMA di cliccare login, così enterAdmin() registra
   // i listener con auth già valida → nessun PERMISSION_DENIED iniziale.
   await waitForAuth(page);
-  await page.selectOption('#teamSelect', 't2');
-  await page.fill('#teamPassword', TEAM_PASSWORD);
-  await page.click('button:has-text("Entra →")');
+  await page.click('#tabAdmin');
+  await page.fill('#adminPassword', ADMIN_PASSWORD);
+  await page.click('button:has-text("Entra come Admin →")');
   await page.locator('#screen-admin.active').waitFor({ timeout: 10000 });
   await waitForDb(page);
 }
@@ -804,11 +802,11 @@ test.describe.serial('Simulazione UI Real-time', () => {
 
   test('UI — partecipante in spareggio vede il banner tiebreaker', async ({ browser }) => {
     const adminPage       = await browser.newPage();
-    const participantPage = await browser.newPage(); // t4 — partecipante normale in spareggio
+    const participantPage = await browser.newPage(); // t2 = Benfiga
 
     await Promise.all([
       loginAdmin(adminPage),
-      loginTeam(participantPage, 't4'),
+      loginTeam(participantPage, 't2'),
     ]);
 
     await startTestAuction(adminPage);

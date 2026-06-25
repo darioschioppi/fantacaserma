@@ -3,7 +3,7 @@
  * Testa la schermata di login: rendering, selezione squadra, validazione, tab admin.
  */
 const { test, expect } = require('@playwright/test');
-const { BASE_URL, TEAM_PASSWORD, waitForLoginScreen, waitForParticipantScreen } = require('./helpers');
+const { BASE_URL, TEAM_PASSWORD, ADMIN_PASSWORD, waitForLoginScreen, waitForParticipantScreen } = require('./helpers');
 
 test.describe('Login Screen', () => {
   test.beforeEach(async ({ page }) => {
@@ -119,17 +119,43 @@ test.describe('Login Screen', () => {
     await waitForParticipantScreen(page);
   });
 
-  test('login come Benfiga (t2, presidente) → schermata admin', async ({ page }) => {
+  test('login come presidente (Benfiga t2) funziona correttamente', async ({ page }) => {
     await page.selectOption('#teamSelect', 't2');
     await page.fill('#teamPassword', TEAM_PASSWORD);
     await page.click('button:has-text("Entra →")');
-    // Benfiga è presidente: viene instradata allo screen-admin
-    await page.locator('#screen-admin.active').waitFor({ state: 'attached', timeout: 10_000 });
-    await expect(page.locator('#screen-participant.active')).toHaveCount(0);
+    await waitForParticipantScreen(page);
   });
 
-  test('non esiste più il tab Admin separato nella login', async ({ page }) => {
-    await expect(page.locator('#tabAdmin')).toHaveCount(0);
-    await expect(page.locator('#formAdmin')).toHaveCount(0);
+  // ── Tab Admin ────────────────────────────────────────────────────────────────
+
+  test('la tab Admin è visibile', async ({ page }) => {
+    await expect(page.locator('#tabAdmin')).toBeVisible();
+    await expect(page.locator('#tabAdmin')).toContainText('Admin');
+  });
+
+  test('clic sulla tab Admin mostra il form admin e nasconde quello squadra', async ({ page }) => {
+    await page.click('#tabAdmin');
+    await expect(page.locator('#formAdmin')).toBeVisible();
+    await expect(page.locator('#adminPassword')).toBeVisible();
+    await expect(page.locator('#formSquadra')).toBeHidden();
+  });
+
+  test('il form admin ha il pulsante Entra come Admin', async ({ page }) => {
+    await page.click('#tabAdmin');
+    await expect(page.locator('button:has-text("Entra come Admin →")')).toBeVisible();
+  });
+
+  test('login admin con password corretta → schermata admin', async ({ page }) => {
+    await page.click('#tabAdmin');
+    await page.fill('#adminPassword', ADMIN_PASSWORD);
+    await page.click('button:has-text("Entra come Admin →")');
+    await page.locator('#screen-admin.active').waitFor({ state: 'attached', timeout: 10_000 });
+  });
+
+  test('login admin con password sbagliata → mostra errore', async ({ page }) => {
+    await page.click('#tabAdmin');
+    await page.fill('#adminPassword', 'wrong');
+    await page.click('button:has-text("Entra come Admin →")');
+    await expect(page.locator('#adminError')).toBeVisible();
   });
 });
