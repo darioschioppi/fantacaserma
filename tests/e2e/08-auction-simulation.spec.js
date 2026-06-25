@@ -191,38 +191,38 @@ async function cleanupTestAssignments() {
  * Quando once() riesce, aggiorniamo manualmente gameState come side-effect
  * (gameState è 'let' in script globale → accessibile/assegnabile da Playwright).
  */
-async function waitForDb(page) {
-  // Step 1: db inizializzato (sincrono dopo DOMContentLoaded + initFirebase)
-  // NOTA CRITICA su waitForFunction:
-  //   page.waitForFunction(fn, arg?, options?)
-  //   Se si passa { timeout: X } come 2° arg senza `undefined` prima,
-  //   viene trattato come ARG della funzione, NON come options!
-  //   Usare SEMPRE la forma (fn, undefined, { timeout: X }) per le fn senza argomenti.
+/**
+ * Attende che signInAnonymously() sia completato.
+ * CHIAMARE PRIMA di cliccare il bottone login: quando enterAdmin() / loginTeam() (app)
+ * registrano db.ref('/game').on('value', ...), l'auth deve essere GIÀ valida.
+ * Se si registra il listener prima che auth sia pronta, Firebase SDK
+ * restituisce PERMISSION_DENIED e NON ri-registra automaticamente il listener.
+ */
+async function waitForAuth(page) {
   await page.waitForFunction(
-    () => typeof db !== 'undefined' && db !== null,
-    undefined,
-    { timeout: 15000 }
-  );
-
-  // Step 2: active probe — poll ogni 1s finché RTDB accetta letture.
-  // once('value') lancia PermissionDenied se auth non è ancora propagato;
-  // quando riesce, aggiorniamo gameState manualmente e ritorniamo true.
-  await page.waitForFunction(
-    async () => {
-      try {
-        const snap = await db.ref('/game').once('value');
-        if (snap) {
-          // Forza aggiornamento di gameState: il listener .on() potrebbe non aver sparato ancora.
-          // gameState è 'let' nel lexical scope globale del page → assegnabile da eval CDP.
-          gameState = snap.val() || {};
-        }
-        return typeof gameState.phase !== 'undefined';
-      } catch (e) {
-        return false; // PERMISSION_DENIED o rete non pronta → riprova
-      }
+    () => {
+      try { return firebase.auth().currentUser !== null; }
+      catch (e) { return false; }
     },
     undefined,
-    { timeout: 30000, polling: 1000 }
+    { timeout: 20000 }
+  );
+}
+
+/**
+ * Attende che db sia pronto E che il listener /game abbia già ricevuto dati.
+ * Da chiamare DOPO loginAdmin/loginTeam (che a loro volta aspettano waitForAuth).
+ * Con auth già pronta, il listener si registra correttamente e fire entro 1-2s.
+ */
+async function waitForDb(page) {
+  // db !== null (sincrono dopo initFirebase) + gameState.phase definito (listener .on() ha sparato)
+  // NOTA: waitForFunction(fn, arg?, options?) — { timeout } come 2° arg = ARG non options!
+  //       Usare sempre (fn, undefined, { timeout: X }) per fn senza argomenti.
+  await page.waitForFunction(
+    () => typeof db !== 'undefined' && db !== null &&
+          typeof gameState !== 'undefined' && typeof gameState.phase !== 'undefined',
+    undefined,
+    { timeout: 15000 }
   );
 }
 
@@ -235,6 +235,9 @@ async function loginAdmin(page) {
     () => document.getElementById('screen-login')?.classList.contains('active'),
     { timeout: 15000 }
   );
+  // CRITICO: aspetta auth PRIMA di cliccare login, così enterAdmin() registra
+  // i listener con auth già valida → nessun PERMISSION_DENIED iniziale.
+  await waitForAuth(page);
   await page.click('#tabAdmin');
   await page.fill('#adminPassword', ADMIN_PASSWORD);
   await page.click('button:has-text("Entra come Admin →")');
@@ -251,6 +254,8 @@ async function loginTeam(page, teamId) {
     () => document.getElementById('screen-login')?.classList.contains('active'),
     { timeout: 15000 }
   );
+  // Stesso fix: aspetta auth prima di entrare come squadra
+  await waitForAuth(page);
   await page.selectOption('#teamSelect', teamId);
   await page.fill('#teamPassword', TEAM_PASSWORD);
   await page.click('button:has-text("Entra →")');
@@ -342,8 +347,10 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
     await simulateBid('t6', 70);
     await Promise.all(['t1','t3','t4','t5','t7','t8','t9','t10'].map(t => simulatePass(t)));
 
-    // Deve scattare il tiebreaker
-    await waitForPhase(adminPage, 'tiebreaker', 10000);
+    // Deve scattare il tiebreaker.
+    // Senza team connessi, checkAutoReveal() ritorna subito (eligible=[]).
+    // L'auto-reveal avviene SOLO allo scadere del timer (10s) + autoProcessReveal (3s) = ~13s.
+    await waitForPhase(adminPage, 'tiebreaker', 20000);
 
     const gs = await getGameState();
     expect(gs.phase).toBe('tiebreaker');
@@ -378,8 +385,9 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
     // Tutti passano (in parallelo per velocità)
     await Promise.all(TEAMS.map(t => simulatePass(t)));
 
-    // Auto-reveal → nessuna offerta → waiting (skip)
-    await waitForPhase(adminPage, 'waiting', 10000);
+    // Auto-reveal → nessuna offerta → waiting (skip).
+    // Senza team connessi, l'auto-reveal avviene solo allo scadere del timer (10s) + autoProcessReveal (3s).
+    await waitForPhase(adminPage, 'waiting', 20000);
 
     // Nessuna assegnazione creata
     const assignments = await getAssignments();
