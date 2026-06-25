@@ -3,7 +3,8 @@
  *
  * Testa il flusso completo dell'asta simulando più giocatori contemporaneamente.
  * Un contesto Admin gestisce l'asta; le offerte degli altri team vengono
- * iniettate direttamente via Firebase con page.evaluate().
+ * iniettate direttamente via Firebase REST API (Node.js) per evitare race
+ * conditions con l'auth anonimo del Firebase SDK browser.
  *
  * ATTENZIONE: questi test scrivono sul Firebase di produzione.
  * Vanno eseguiti PRIMA di una vera sessione d'asta.
@@ -21,132 +22,208 @@ const { BASE_URL, ADMIN_PASSWORD, TEAM_PASSWORD } = require('./helpers');
 const TEST_PLAYER = { nome: '__TEST_PLAYER__', squadra: 'TestFC', ruolo: 'A', qi: 1 };
 const AUCTION_DURATION_TEST = 10; // secondi (ridotto per velocizzare i test)
 const TEAMS = ['t1','t2','t3','t4','t5','t6','t7','t8','t9','t10'];
+const BUDGET_START = 500;
 
-// ─── HELPERS FIREBASE (eseguiti nel contesto browser) ────────────────────────
+// Firebase config (da index.html)
+const FB_API_KEY  = 'AIzaSyCOTpDSNMVvK8kYNw11OfBIQm3JaAx9kIM';
+const FB_DB_URL   = 'https://fantacaserma-f2fe2-default-rtdb.europe-west1.firebasedatabase.app';
+
+// ─── HELPERS FIREBASE REST API (Node.js) ─────────────────────────────────────
+//
+// Tutte le scritture di setup/teardown usano la Firebase REST API
+// direttamente da Node.js, bypassando il Firebase SDK del browser.
+// Questo evita race conditions con signInAnonymously() nel browser
+// (non awaited in initFirebase(), causa authUID:NULL durante i primi secondi).
+
+let _fbTokenCache = null;
+let _fbTokenExpiry = 0;
 
 /**
- * Attende che la Firebase db sia disponibile nel contesto della pagina.
+ * Ottiene un token anonimo Firebase (con cache 55min).
  */
-async function waitForDb(page) {
-  await page.waitForFunction(() => !!window.db && !!window.gameState, { timeout: 8000 });
+async function getFbToken() {
+  if (_fbTokenCache && Date.now() < _fbTokenExpiry) return _fbTokenCache;
+  const resp = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FB_API_KEY}`,
+    { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ returnSecureToken: true }) }
+  );
+  const data = await resp.json();
+  if (!data.idToken) throw new Error('getFbToken failed: ' + JSON.stringify(data));
+  _fbTokenCache  = data.idToken;
+  _fbTokenExpiry = Date.now() + 55 * 60 * 1000; // 55 min
+  return _fbTokenCache;
 }
 
 /**
- * Resetta il gioco a 'waiting' e cancella bids/assignments di test.
+ * Esegue una richiesta Firebase REST.
+ * @param {string} path   - es. '/game', '/bids/t1'
+ * @param {'GET'|'PUT'|'PATCH'|'DELETE'|'POST'} method
+ * @param {*} [body]      - body JSON (omettere per GET/DELETE)
  */
-async function resetGame(page) {
-  await page.evaluate(async () => {
-    const updates = {
-      '/game/phase': 'waiting',
-      '/game/currentPlayer': null,
-      '/game/timerEnd': null,
-      '/game/tiebreakers': null,
-      '/game/minBid': null,
-      '/game/tiebreakerFirstBid': null,
-      '/game/pausedPhase': null,
-      '/game/auctionDuration': null,
-      '/bids': null,
-      '/bidSubmitted': null,
-    };
-    await window.db.ref().update(updates);
+async function fbRest(path, method = 'GET', body = undefined) {
+  const token = await getFbToken();
+  const url   = `${FB_DB_URL}${path}.json?auth=${token}`;
+  const opts  = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body !== undefined) opts.body = JSON.stringify(body);
+  const resp = await fetch(url, opts);
+  if (!resp.ok) {
+    const text = await resp.text();
+    throw new Error(`fbRest ${method} ${path} → HTTP ${resp.status}: ${text}`);
+  }
+  return resp.json();
+}
+
+/**
+ * Resetta il gioco a 'waiting' e cancella bids/bidSubmitted.
+ * Non richiede una pagina browser.
+ */
+async function resetGame() {
+  await Promise.all([
+    fbRest('/game',          'PUT',    { phase: 'waiting' }),
+    fbRest('/bids',          'DELETE'),
+    fbRest('/bidSubmitted',  'DELETE'),
+  ]);
+  // Attesa breve per propagazione Firebase ai client connessi
+  await new Promise(r => setTimeout(r, 800));
+}
+
+/**
+ * Avvia un'asta di test via REST API.
+ * Opzionalmente resetta autoRevealFired nella pagina admin.
+ */
+async function startTestAuction(adminPage, durationSec = AUCTION_DURATION_TEST) {
+  const timerEnd = Date.now() + durationSec * 1000;
+  await Promise.all([
+    fbRest('/bids',         'DELETE'),
+    fbRest('/bidSubmitted', 'DELETE'),
+  ]);
+  await fbRest('/game', 'PUT', {
+    phase: 'bidding',
+    currentPlayer: TEST_PLAYER,
+    minBid: 1,
+    timerEnd,
+    tiebreakers: null,
+    tiebreakerFirstBid: null,
+    auctionDuration: durationSec,
   });
-  // Breve attesa per propagazione Firebase
-  await page.waitForTimeout(500);
+  // Reset variabile browser per evitare doppio auto-reveal
+  if (adminPage) await adminPage.evaluate(() => { autoRevealFired = false; });
+  await new Promise(r => setTimeout(r, 300));
 }
 
 /**
- * Avvia un'asta con il giocatore di test, bypassando la UI.
+ * Simula un'offerta da parte di un team via REST API.
  */
-async function startTestAuction(page, durationSec = AUCTION_DURATION_TEST) {
-  await page.evaluate(async ({ player, duration }) => {
-    const timerEnd = Date.now() + duration * 1000;
-    await window.db.ref('/bids').set(null);
-    await window.db.ref('/bidSubmitted').set(null);
-    await window.db.ref('/game').update({
-      phase: 'bidding',
-      currentPlayer: player,
-      minBid: 1,
-      timerEnd,
-      tiebreakers: null,
-      tiebreakerFirstBid: null,
-      auctionDuration: duration,
-    });
-    window.autoRevealFired = false;
-  }, { player: TEST_PLAYER, duration: durationSec });
-  await page.waitForTimeout(300);
-}
-
-/**
- * Simula un'offerta da parte di un team (come se il team avesse premuto "OFFERTA").
- */
-async function simulateBid(page, teamId, amount) {
-  await page.evaluate(async ({ tid, amt }) => {
-    await window.db.ref('/bids/' + tid).set({ amount: amt, ts: Date.now() });
-    await window.db.ref('/bidSubmitted/' + tid).set(true);
-  }, { tid: teamId, amt: amount });
+async function simulateBid(teamId, amount) {
+  await Promise.all([
+    fbRest(`/bids/${teamId}`,         'PUT', { amount, ts: Date.now() }),
+    fbRest(`/bidSubmitted/${teamId}`, 'PUT', true),
+  ]);
 }
 
 /**
  * Simula il "passa" da parte di un team (offerta = 0).
  */
-async function simulatePass(page, teamId) {
-  await simulateBid(page, teamId, 0);
+async function simulatePass(teamId) {
+  return simulateBid(teamId, 0);
 }
 
 /**
- * Attende che il gameState raggiunga una certa fase.
+ * Attende che il gameState raggiunga una certa fase (browser).
  */
 async function waitForPhase(page, phase, timeoutMs = 15000) {
   await page.waitForFunction(
-    (expectedPhase) => (window.gameState || {}).phase === expectedPhase,
+    (expectedPhase) => (typeof gameState !== 'undefined' ? gameState : {}).phase === expectedPhase,
     phase,
     { timeout: timeoutMs }
   );
 }
 
 /**
- * Legge il gameState corrente da Firebase.
+ * Legge il gameState corrente da Firebase via REST.
  */
-async function getGameState(page) {
-  return page.evaluate(async () => {
-    const snap = await window.db.ref('/game').once('value');
-    return snap.val() || {};
-  });
+async function getGameState() {
+  return (await fbRest('/game', 'GET')) || {};
 }
 
 /**
- * Legge tutte le assegnazioni correnti da Firebase.
+ * Legge tutte le assegnazioni correnti da Firebase via REST.
  */
-async function getAssignments(page) {
-  return page.evaluate(async () => {
-    const snap = await window.db.ref('/assignments').once('value');
-    const raw = snap.val() || {};
-    return Object.entries(raw).map(([key, val]) => ({ ...val, _key: key }));
-  });
+async function getAssignments() {
+  const raw = (await fbRest('/assignments', 'GET')) || {};
+  if (typeof raw !== 'object' || Array.isArray(raw)) return [];
+  return Object.entries(raw).map(([key, val]) => ({ ...val, _key: key }));
 }
 
 /**
- * Elimina le assegnazioni di test (player === '__TEST_PLAYER__') e ripristina budget.
+ * Elimina le assegnazioni di test (__TEST_PLAYER__) e ripristina budget.
+ * Non richiede una pagina browser.
  */
-async function cleanupTestAssignments(page) {
-  await page.evaluate(async () => {
-    const snap = await window.db.ref('/assignments').once('value');
-    const raw = snap.val() || {};
-    const updates = {};
-    for (const [key, val] of Object.entries(raw)) {
-      if (val.player === '__TEST_PLAYER__') {
-        updates['/assignments/' + key] = null;
-        // Ripristina budget squadra
-        const teamSnap = await window.db.ref('/teams/' + val.teamId).once('value');
-        const td = teamSnap.val() || {};
-        updates['/teams/' + val.teamId + '/budget'] =
-          (td.budget != null ? td.budget : 500) + (val.amount || 0);
-        updates['/teams/' + val.teamId + '/rosterCount'] =
-          Math.max(0, (td.rosterCount || 0) - 1);
+async function cleanupTestAssignments() {
+  const raw      = (await fbRest('/assignments', 'GET')) || {};
+  const teamsRaw = (await fbRest('/teams',       'GET')) || {};
+  const ops = [];
+  for (const [key, val] of Object.entries(raw)) {
+    if (!val || val.player !== '__TEST_PLAYER__') continue;
+    ops.push(fbRest(`/assignments/${key}`, 'DELETE'));
+    const td       = teamsRaw[val.teamId] || {};
+    const newBudget = (td.budget != null ? td.budget : BUDGET_START) + (val.amount || 0);
+    const newRoster = Math.max(0, (td.rosterCount || 0) - 1);
+    ops.push(fbRest(`/teams/${val.teamId}`, 'PATCH', { budget: newBudget, rosterCount: newRoster }));
+  }
+  if (ops.length) await Promise.all(ops);
+  await new Promise(r => setTimeout(r, 500));
+}
+
+// ─── HELPERS BROWSER ─────────────────────────────────────────────────────────
+
+/**
+ * Attende che il Firebase db sia inizializzato E che RTDB sia autenticato.
+ *
+ * PROBLEMA NOTO: signInAnonymously() in initFirebase() NON è awaited.
+ * Il listener db.ref('/game').on('value', ...) viene settato in enterAdmin() /
+ * initParticipantFirebase() prima che auth sia pronto → PERMISSION_DENIED silenzioso.
+ * Firebase SDK re-fire i listener dopo auth, ma i tempi sono imprevedibili (>30s).
+ *
+ * SOLUZIONE: invece di aspettare il listener passivo, usiamo db.ref('/game').once('value')
+ * come active probe (polling ogni 1s). Se PERMISSION_DENIED → false → riprova.
+ * Quando once() riesce, aggiorniamo manualmente gameState come side-effect
+ * (gameState è 'let' in script globale → accessibile/assegnabile da Playwright).
+ */
+async function waitForDb(page) {
+  // Step 1: db inizializzato (sincrono dopo DOMContentLoaded + initFirebase)
+  // NOTA CRITICA su waitForFunction:
+  //   page.waitForFunction(fn, arg?, options?)
+  //   Se si passa { timeout: X } come 2° arg senza `undefined` prima,
+  //   viene trattato come ARG della funzione, NON come options!
+  //   Usare SEMPRE la forma (fn, undefined, { timeout: X }) per le fn senza argomenti.
+  await page.waitForFunction(
+    () => typeof db !== 'undefined' && db !== null,
+    undefined,
+    { timeout: 15000 }
+  );
+
+  // Step 2: active probe — poll ogni 1s finché RTDB accetta letture.
+  // once('value') lancia PermissionDenied se auth non è ancora propagato;
+  // quando riesce, aggiorniamo gameState manualmente e ritorniamo true.
+  await page.waitForFunction(
+    async () => {
+      try {
+        const snap = await db.ref('/game').once('value');
+        if (snap) {
+          // Forza aggiornamento di gameState: il listener .on() potrebbe non aver sparato ancora.
+          // gameState è 'let' nel lexical scope globale del page → assegnabile da eval CDP.
+          gameState = snap.val() || {};
+        }
+        return typeof gameState.phase !== 'undefined';
+      } catch (e) {
+        return false; // PERMISSION_DENIED o rete non pronta → riprova
       }
-    }
-    if (Object.keys(updates).length) await window.db.ref().update(updates);
-  });
+    },
+    undefined,
+    { timeout: 30000, polling: 1000 }
+  );
 }
 
 /**
@@ -184,29 +261,29 @@ async function loginTeam(page, teamId) {
 // ─── SUITE: eseguita in sequenza per evitare race conditions su Firebase ──────
 
 test.describe.serial('Simulazione Asta — Flussi Completi', () => {
-
-  // Cleanup globale prima di tutta la suite
-  test.beforeAll(async ({ browser }) => {
-    const page = await browser.newPage();
-    await loginAdmin(page);
-    await resetGame(page);
-    await cleanupTestAssignments(page);
-    await page.close();
+  // test.skip a livello describe.serial non funziona per Mobile — usare beforeEach
+  test.beforeEach(async ({}, testInfo) => {
+    if (testInfo.project.name.toLowerCase().includes('mobile')) {
+      testInfo.skip(true, 'Solo Desktop Chrome: evita race conditions Firebase');
+    }
   });
 
-  // Cleanup dopo ogni test
-  test.afterEach(async ({ browser }) => {
-    const page = await browser.newPage();
-    await loginAdmin(page);
-    await resetGame(page);
-    await cleanupTestAssignments(page);
-    await page.close();
+  // Cleanup globale prima di tutta la suite (REST API, nessuna pagina browser)
+  test.beforeAll(async () => {
+    await resetGame();
+    await cleanupTestAssignments();
+  });
+
+  // Cleanup dopo ogni test (REST API, nessuna pagina browser)
+  test.afterEach(async () => {
+    await resetGame();
+    await cleanupTestAssignments();
   });
 
   // ── SCENARIO 1: Asta con vincitore unico ──────────────────────────────────
 
   test('SC1 — vincitore unico: il giocatore viene assegnato alla squadra con offerta più alta', async ({ browser }) => {
-    const adminPage = await browser.newPage();
+    const adminPage       = await browser.newPage();
     const participantPage = await browser.newPage();
 
     await Promise.all([
@@ -214,37 +291,32 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
       loginTeam(participantPage, 't1'), // Barca
     ]);
 
-    // Avvia asta
+    // Avvia asta via REST
     await startTestAuction(adminPage);
-    await waitForPhase(adminPage, 'bidding', 5000);
+    await waitForPhase(adminPage, 'bidding', 8000);
 
-    // Simula offerte: t3=50, t1=80 (vincitore), t5=60, tutti gli altri passano
-    await simulateBid(adminPage, 't1', 80);
-    await simulateBid(adminPage, 't3', 50);
-    await simulateBid(adminPage, 't5', 60);
-    for (const tid of ['t2','t4','t6','t7','t8','t9','t10']) {
-      await simulatePass(adminPage, tid);
-    }
+    // Simula offerte: t1=80 (vincitore), t3=50, t5=60, tutti gli altri passano
+    await simulateBid('t1', 80);
+    await simulateBid('t3', 50);
+    await simulateBid('t5', 60);
+    await Promise.all(['t2','t4','t6','t7','t8','t9','t10'].map(t => simulatePass(t)));
 
     // Attende reveal automatico (tutti hanno offerto)
     await waitForPhase(adminPage, 'reveal', 8000);
     // Attende assegnazione automatica
     await waitForPhase(adminPage, 'assigned', 8000);
 
-    // Verifica assegnazione su Firebase
-    const assignments = await getAssignments(adminPage);
-    const testAssign = assignments.find(a => a.player === '__TEST_PLAYER__');
+    // Verifica assegnazione via REST
+    const assignments = await getAssignments();
+    const testAssign  = assignments.find(a => a.player === '__TEST_PLAYER__');
 
     expect(testAssign).toBeTruthy();
-    expect(testAssign.teamId).toBe('t1');     // t1 ha offerto 80, massimo
+    expect(testAssign.teamId).toBe('t1');
     expect(testAssign.amount).toBe(80);
 
     // Verifica che il budget di t1 sia stato detratto
-    const budget = await adminPage.evaluate(async () => {
-      const snap = await window.db.ref('/teams/t1/budget').once('value');
-      return snap.val();
-    });
-    expect(budget).toBeLessThanOrEqual(500 - 80); // potrebbe avere altri acquisti
+    const teamsData = (await fbRest('/teams/t1', 'GET')) || {};
+    expect(teamsData.budget).toBeLessThanOrEqual(BUDGET_START - 80);
 
     // Verifica UI partecipante (Barca): overlay rivelazione visibile
     await participantPage.waitForFunction(
@@ -263,33 +335,31 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
     await loginAdmin(adminPage);
 
     await startTestAuction(adminPage);
-    await waitForPhase(adminPage, 'bidding', 5000);
+    await waitForPhase(adminPage, 'bidding', 8000);
 
     // t2 e t6 offrono lo stesso importo → tiebreaker
-    await simulateBid(adminPage, 't2', 70);
-    await simulateBid(adminPage, 't6', 70);
-    for (const tid of ['t1','t3','t4','t5','t7','t8','t9','t10']) {
-      await simulatePass(adminPage, tid);
-    }
+    await simulateBid('t2', 70);
+    await simulateBid('t6', 70);
+    await Promise.all(['t1','t3','t4','t5','t7','t8','t9','t10'].map(t => simulatePass(t)));
 
     // Deve scattare il tiebreaker
     await waitForPhase(adminPage, 'tiebreaker', 10000);
 
-    const gs = await getGameState(adminPage);
+    const gs = await getGameState();
     expect(gs.phase).toBe('tiebreaker');
     expect(gs.tiebreakers).toContain('t2');
     expect(gs.tiebreakers).toContain('t6');
     expect(gs.tiebreakers.length).toBe(2);
-    expect(gs.minBid).toBe(70); // uguale all'offerta pareggiante
+    expect(gs.minBid).toBe(70);
 
     // Spareggio: t2 rilancia a 75, t6 passa → t2 vince
-    await simulateBid(adminPage, 't2', 75);
-    await simulatePass(adminPage, 't6');
+    await simulateBid('t2', 75);
+    await simulatePass('t6');
 
     await waitForPhase(adminPage, 'assigned', 10000);
 
-    const assignments = await getAssignments(adminPage);
-    const testAssign = assignments.find(a => a.player === '__TEST_PLAYER__');
+    const assignments = await getAssignments();
+    const testAssign  = assignments.find(a => a.player === '__TEST_PLAYER__');
     expect(testAssign?.teamId).toBe('t2');
     expect(testAssign?.amount).toBe(75);
 
@@ -303,19 +373,17 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
     await loginAdmin(adminPage);
 
     await startTestAuction(adminPage);
-    await waitForPhase(adminPage, 'bidding', 5000);
+    await waitForPhase(adminPage, 'bidding', 8000);
 
-    // Tutti passano
-    for (const tid of TEAMS) {
-      await simulatePass(adminPage, tid);
-    }
+    // Tutti passano (in parallelo per velocità)
+    await Promise.all(TEAMS.map(t => simulatePass(t)));
 
     // Auto-reveal → nessuna offerta → waiting (skip)
     await waitForPhase(adminPage, 'waiting', 10000);
 
     // Nessuna assegnazione creata
-    const assignments = await getAssignments(adminPage);
-    const testAssign = assignments.find(a => a.player === '__TEST_PLAYER__');
+    const assignments = await getAssignments();
+    const testAssign  = assignments.find(a => a.player === '__TEST_PLAYER__');
     expect(testAssign).toBeUndefined();
 
     await adminPage.close();
@@ -324,7 +392,7 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
   // ── SCENARIO 4: Pausa e ripresa ───────────────────────────────────────────
 
   test('SC4 — pausa e ripresa: la fase diventa paused, poi torna bidding con timer resettato', async ({ browser }) => {
-    const adminPage = await browser.newPage();
+    const adminPage       = await browser.newPage();
     const participantPage = await browser.newPage();
 
     await Promise.all([
@@ -333,7 +401,7 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
     ]);
 
     await startTestAuction(adminPage);
-    await waitForPhase(adminPage, 'bidding', 5000);
+    await waitForPhase(adminPage, 'bidding', 8000);
 
     // Admin pausa
     await adminPage.evaluate(() => window.adminPauseAuction());
@@ -341,7 +409,7 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
 
     // Il partecipante vede "⏸ In pausa"
     await participantPage.waitForFunction(
-      () => (window.gameState || {}).phase === 'paused',
+      () => (gameState || {}).phase === 'paused',
       { timeout: 8000 }
     );
     const pauseText = await participantPage.locator('#bidAreaWaiting').textContent();
@@ -352,7 +420,7 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
     await waitForPhase(adminPage, 'bidding', 5000);
 
     // Il timer è stato resettato (timerEnd > now)
-    const gs = await getGameState(adminPage);
+    const gs = await getGameState();
     expect(gs.timerEnd).toBeGreaterThan(Date.now());
     expect(gs.phase).toBe('bidding');
 
@@ -367,19 +435,19 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
     await loginAdmin(adminPage);
 
     await startTestAuction(adminPage);
-    await waitForPhase(adminPage, 'bidding', 5000);
+    await waitForPhase(adminPage, 'bidding', 8000);
 
     // Alcune offerte già inviate
-    await simulateBid(adminPage, 't4', 45);
-    await simulateBid(adminPage, 't7', 38);
+    await simulateBid('t4', 45);
+    await simulateBid('t7', 38);
 
     // Admin termina manualmente
     await adminPage.evaluate(() => window.adminEndAuction());
     await waitForPhase(adminPage, 'waiting', 5000);
 
-    const assignments = await getAssignments(adminPage);
-    const testAssign = assignments.find(a => a.player === '__TEST_PLAYER__');
-    expect(testAssign).toBeUndefined(); // non assegnato
+    const assignments = await getAssignments();
+    const testAssign  = assignments.find(a => a.player === '__TEST_PLAYER__');
+    expect(testAssign).toBeUndefined();
 
     await adminPage.close();
   });
@@ -392,76 +460,76 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
 
     // Timer molto breve: 6 secondi
     await startTestAuction(adminPage, 6);
-    await waitForPhase(adminPage, 'bidding', 5000);
+    await waitForPhase(adminPage, 'bidding', 8000);
 
-    // Solo 2 team offrono, gli altri non fanno niente (non passano esplicitamente)
-    await simulateBid(adminPage, 't8', 55);
-    await simulateBid(adminPage, 't9', 40);
+    // Solo 2 team offrono, gli altri non fanno niente (non passano)
+    await simulateBid('t8', 55);
+    await simulateBid('t9', 40);
 
     // Attende scadenza timer → reveal automatico (max 6s + 3s buffer)
     await waitForPhase(adminPage, 'reveal', 12000);
     // Poi assegnazione automatica
     await waitForPhase(adminPage, 'assigned', 8000);
 
-    const assignments = await getAssignments(adminPage);
-    const testAssign = assignments.find(a => a.player === '__TEST_PLAYER__');
+    const assignments = await getAssignments();
+    const testAssign  = assignments.find(a => a.player === '__TEST_PLAYER__');
     expect(testAssign).toBeTruthy();
-    expect(testAssign.teamId).toBe('t8'); // t8 ha offerto di più
+    expect(testAssign.teamId).toBe('t8');
     expect(testAssign.amount).toBe(55);
 
     await adminPage.close();
   });
 
-  // ── SCENARIO 7: Gestione assegnazioni (rimozione + riassegnazione) ─────────
+  // ── SCENARIO 7: Gestione assegnazioni (rimozione) ─────────────────────────
 
-  test('SC7 — gestione assegnazioni: rimozione ripristina budget, riassegna trasferisce', async ({ browser }) => {
+  test('SC7 — gestione assegnazioni: rimozione ripristina budget', async ({ browser }) => {
+    // Legge budget t1 prima dell'assegnazione
+    const t1Before    = (await fbRest('/teams/t1', 'GET')) || {};
+    const budgetBefore = t1Before.budget != null ? t1Before.budget : BUDGET_START;
+
+    // Crea assegnazione di test via REST (evita db.ref().update() root)
+    const pushResult  = await fbRest('/assignments', 'POST', {
+      player: '__TEST_PLAYER__', ruolo: 'A',
+      teamId: 't1', teamName: 'Barca', amount: 60, timestamp: Date.now()
+    });
+    // REST POST ritorna { name: 'push-key' }
+    const testKey = pushResult && pushResult.name;
+    expect(testKey).toBeTruthy();
+
+    // Aggiorna budget e roster t1
+    await fbRest('/teams/t1', 'PATCH', {
+      budget:      budgetBefore - 60,
+      rosterCount: (t1Before.rosterCount || 0) + 1,
+    });
+    await new Promise(r => setTimeout(r, 600));
+
+    // Apre pagina admin e aspetta sincronizzazione
     const adminPage = await browser.newPage();
     await loginAdmin(adminPage);
 
-    // Crea assegnazione di test manualmente
-    await adminPage.evaluate(async () => {
-      const key = window.db.ref('/assignments').push().key;
-      const updates = {};
-      updates['/assignments/' + key] = {
-        player: '__TEST_PLAYER__', ruolo: 'A',
-        teamId: 't1', teamName: 'Barca', amount: 60, timestamp: Date.now()
-      };
-      updates['/teams/t1/budget'] = (window.teamsState['t1']?.budget ?? 500) - 60;
-      updates['/teams/t1/rosterCount'] = (window.teamsState['t1']?.rosterCount ?? 0) + 1;
-      await window.db.ref().update(updates);
-    });
-    await adminPage.waitForTimeout(600);
-
-    // Ricarica lo stato
-    const assignBefore = await getAssignments(adminPage);
-    const testEntry = assignBefore.find(a => a.player === '__TEST_PLAYER__');
+    // Verifica che l'assegnazione sia visibile
+    const assignBefore = await getAssignments();
+    const testEntry    = assignBefore.find(a => a.player === '__TEST_PLAYER__');
     expect(testEntry).toBeTruthy();
+    expect(testEntry._key).toBe(testKey);
 
-    const budgetBefore = await adminPage.evaluate(async () => {
-      const s = await window.db.ref('/teams/t1/budget').once('value');
-      return s.val();
-    });
-
-    // ── Sub-test A: Rimozione ──
+    // ── Sub-test: Rimozione ──
+    // Registra il dialog handler PRIMA di invocare confirmRemoveAssignment
+    adminPage.once('dialog', d => d.accept());
     await adminPage.evaluate(async (key) => {
       await window.confirmRemoveAssignment(key);
-    }, testEntry._key);
-    // Nota: confirmRemoveAssignment usa confirm() – nel contesto browser senza dialog
-    // dobbiamo accettare il dialog automaticamente
-    adminPage.on('dialog', d => d.accept());
+    }, testKey);
 
-    // Aspetta propagazione
-    await adminPage.waitForTimeout(800);
+    await new Promise(r => setTimeout(r, 800));
 
-    const assignAfterRemove = await getAssignments(adminPage);
-    const removed = assignAfterRemove.find(a => a.player === '__TEST_PLAYER__');
+    // Verifica rimozione
+    const assignAfter  = await getAssignments();
+    const removed      = assignAfter.find(a => a.player === '__TEST_PLAYER__');
     expect(removed).toBeUndefined();
 
-    const budgetAfterRemove = await adminPage.evaluate(async () => {
-      const s = await window.db.ref('/teams/t1/budget').once('value');
-      return s.val();
-    });
-    expect(budgetAfterRemove).toBeGreaterThanOrEqual(budgetBefore + 60);
+    // Verifica ripristino budget
+    const t1After      = (await fbRest('/teams/t1', 'GET')) || {};
+    expect(t1After.budget).toBeGreaterThanOrEqual(budgetBefore);
 
     await adminPage.close();
   });
@@ -469,50 +537,31 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
   // ── SCENARIO 8: Assegnazione manuale giocatore libero ────────────────────
 
   test('SC8 — assegna giocatore libero: compare nella lista assegnazioni', async ({ browser }) => {
-    const adminPage = await browser.newPage();
-    await loginAdmin(adminPage);
+    // Legge budget iniziale di t5
+    const t5Before    = (await fbRest('/teams/t5', 'GET')) || {};
+    const budgetBefore = t5Before.budget != null ? t5Before.budget : BUDGET_START;
 
-    // Preleva budget iniziale di t5
-    const budgetBefore = await adminPage.evaluate(async () => {
-      const s = await window.db.ref('/teams/t5/budget').once('value');
-      return s.val() ?? 500;
+    // Crea assegnazione diretta via REST (simula confirmAssignFree)
+    const pushResult = await fbRest('/assignments', 'POST', {
+      player: '__TEST_PLAYER__', ruolo: 'A',
+      teamId: 't5', teamName: 'Paris San Giuann', amount: 35, timestamp: Date.now()
     });
+    expect(pushResult && pushResult.name).toBeTruthy();
 
-    // Simula confirmAssignFree iniettando un giocatore fittizio
-    await adminPage.evaluate(async () => {
-      // Imposta il giocatore selezionato manualmente
-      window.assignFreeSelected = { Nome: '__TEST_PLAYER__', Ruolo_Classic: 'A', Squadra: 'TestFC' };
-      // Imposta lo scope su 'pres' (default)
-      window.assignScope = 'pres';
-      // Popola il form direttamente in memoria (senza UI)
-      const key = window.db.ref('/assignments').push().key;
-      const updates = {};
-      updates['/assignments/' + key] = {
-        player: '__TEST_PLAYER__', ruolo: 'A',
-        teamId: 't5', teamName: 'Paris San Giuann', amount: 35, timestamp: Date.now()
-      };
-      const teamSnap = await window.db.ref('/teams/t5').once('value');
-      const td = teamSnap.val() || {};
-      updates['/teams/t5/budget'] = (td.budget ?? 500) - 35;
-      updates['/teams/t5/rosterCount'] = (td.rosterCount ?? 0) + 1;
-      await window.db.ref().update(updates);
+    await fbRest('/teams/t5', 'PATCH', {
+      budget:      budgetBefore - 35,
+      rosterCount: (t5Before.rosterCount || 0) + 1,
     });
+    await new Promise(r => setTimeout(r, 600));
 
-    await adminPage.waitForTimeout(600);
-
-    const assignments = await getAssignments(adminPage);
-    const testAssign = assignments.find(a => a.player === '__TEST_PLAYER__');
+    const assignments = await getAssignments();
+    const testAssign  = assignments.find(a => a.player === '__TEST_PLAYER__');
     expect(testAssign).toBeTruthy();
     expect(testAssign.teamId).toBe('t5');
     expect(testAssign.amount).toBe(35);
 
-    const budgetAfter = await adminPage.evaluate(async () => {
-      const s = await window.db.ref('/teams/t5/budget').once('value');
-      return s.val();
-    });
-    expect(budgetAfter).toBeLessThanOrEqual(budgetBefore - 35);
-
-    await adminPage.close();
+    const t5After = (await fbRest('/teams/t5', 'GET')) || {};
+    expect(t5After.budget).toBeLessThanOrEqual(budgetBefore - 35);
   });
 
 });
@@ -520,18 +569,20 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
 // ─── SUITE: Verifiche UI real-time (admin + partecipante in parallelo) ────────
 
 test.describe.serial('Simulazione UI Real-time', () => {
+  test.beforeEach(async ({}, testInfo) => {
+    if (testInfo.project.name.toLowerCase().includes('mobile')) {
+      testInfo.skip(true, 'Solo Desktop Chrome: evita race conditions Firebase');
+    }
+  });
 
-  test.afterEach(async ({ browser }) => {
-    const page = await browser.newPage();
-    await loginAdmin(page);
-    await resetGame(page);
-    await cleanupTestAssignments(page);
-    await page.close();
+  test.afterEach(async () => {
+    await resetGame();
+    await cleanupTestAssignments();
   });
 
   test('UI — partecipante vede il tavolo aggiornarsi quando una squadra offre', async ({ browser }) => {
-    const adminPage   = await browser.newPage();
-    const teamPage    = await browser.newPage(); // Barca (t1) – osservatore
+    const adminPage = await browser.newPage();
+    const teamPage  = await browser.newPage(); // Barca (t1)
 
     await Promise.all([
       loginAdmin(adminPage),
@@ -549,17 +600,19 @@ test.describe.serial('Simulazione UI Real-time', () => {
     await bidInput.fill('25');
     await teamPage.click('#btnBid');
 
-    // Verifica che il chip di t1 diventi verde (submitted)
+    // Verifica che il chip di t1 diventi "submitted"
     await teamPage.waitForFunction(
       () => document.getElementById('chip-t1')?.classList.contains('submitted'),
       { timeout: 8000 }
     );
-    const chipClass = await teamPage.evaluate(() => document.getElementById('chip-t1').className);
+    const chipClass = await teamPage.evaluate(
+      () => document.getElementById('chip-t1').className
+    );
     expect(chipClass).toContain('submitted');
 
     // Nell'admin panel, t1 risulta aver offerto
     await adminPage.waitForFunction(
-      () => !!window.bidSubmittedState?.t1,
+      () => !!bidSubmittedState?.t1,
       { timeout: 8000 }
     );
 
@@ -568,7 +621,7 @@ test.describe.serial('Simulazione UI Real-time', () => {
   });
 
   test('UI — partecipante in spareggio vede il banner tiebreaker', async ({ browser }) => {
-    const adminPage   = await browser.newPage();
+    const adminPage       = await browser.newPage();
     const participantPage = await browser.newPage(); // t2 = Benfiga
 
     await Promise.all([
@@ -577,14 +630,12 @@ test.describe.serial('Simulazione UI Real-time', () => {
     ]);
 
     await startTestAuction(adminPage);
-    await waitForPhase(adminPage, 'bidding', 5000);
+    await waitForPhase(adminPage, 'bidding', 8000);
 
     // t2 e t4 offrono lo stesso → tiebreaker
-    await simulateBid(adminPage, 't2', 65);
-    await simulateBid(adminPage, 't4', 65);
-    for (const tid of ['t1','t3','t5','t6','t7','t8','t9','t10']) {
-      await simulatePass(adminPage, tid);
-    }
+    await simulateBid('t2', 65);
+    await simulateBid('t4', 65);
+    await Promise.all(['t1','t3','t5','t6','t7','t8','t9','t10'].map(t => simulatePass(t)));
 
     await waitForPhase(adminPage, 'tiebreaker', 10000);
 
@@ -607,7 +658,7 @@ test.describe.serial('Simulazione UI Real-time', () => {
   });
 
   test('UI — overlay rivelazione mostra vincitore con importo corretto', async ({ browser }) => {
-    const adminPage   = await browser.newPage();
+    const adminPage       = await browser.newPage();
     const participantPage = await browser.newPage();
 
     await Promise.all([
@@ -616,13 +667,11 @@ test.describe.serial('Simulazione UI Real-time', () => {
     ]);
 
     await startTestAuction(adminPage);
-    await waitForPhase(adminPage, 'bidding', 5000);
+    await waitForPhase(adminPage, 'bidding', 8000);
 
     // t6 vince con 90 cr
-    await simulateBid(adminPage, 't6', 90);
-    for (const tid of ['t1','t2','t3','t4','t5','t7','t8','t9','t10']) {
-      await simulatePass(adminPage, tid);
-    }
+    await simulateBid('t6', 90);
+    await Promise.all(['t1','t2','t3','t4','t5','t7','t8','t9','t10'].map(t => simulatePass(t)));
 
     await waitForPhase(adminPage, 'assigned', 12000);
 

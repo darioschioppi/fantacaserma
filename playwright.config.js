@@ -14,8 +14,8 @@ module.exports = defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'off',
-    actionTimeout: 10_000,
-    navigationTimeout: 20_000,
+    actionTimeout: 15_000,   // alzato da 10s: waitForFunction usa questo come default
+    navigationTimeout: 25_000,
   },
 
   projects: [
@@ -38,5 +38,5 @@ module.exports = defineConfig({
     },
   ],
 
-  timeout: 30_000,
+  timeout: 90_000, // test singoli: 90s (login Firebase ~15-20s + azioni asta ~30-40s)
 });
