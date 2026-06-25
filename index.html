@@ -1145,8 +1145,16 @@ function updatePresidentBidPanel() {
     const mySubmitted = !!bidSubmittedState[currentUser.teamId];
     const btn = document.getElementById('presidentBidBtn');
     const sent = document.getElementById('presidentBidSent');
-    if (btn) btn.disabled = mySubmitted;
-    if (inp) inp.disabled = mySubmitted;
+    // Controllo rosa piena (pannello admin-screen)
+    const cpPres = gameState.currentPlayer;
+    const presRosterFull = cpPres ? isRosterFull(currentUser.teamId, cpPres.ruolo) : false;
+    if (mySubmitted || presRosterFull) {
+      if (btn) { btn.disabled = true; if (presRosterFull && !mySubmitted) btn.textContent = '🚫 Rosa piena'; }
+      if (inp) inp.disabled = true;
+    } else {
+      if (btn) { btn.disabled = false; btn.textContent = '💰 OFFERTA'; }
+      if (inp) inp.disabled = false;
+    }
     if (sent) mySubmitted ? sent.classList.add('visible') : sent.classList.remove('visible');
   } else if (phase === 'tiebreaker' && !inTiebreaker) {
     waiting.style.display = 'block';
@@ -1293,6 +1301,11 @@ function presidentSubmitBid() {
   if (phase !== 'bidding' && phase !== 'tiebreaker') return;
   const tiebreakers = gameState.tiebreakers || null;
   if (tiebreakers && !tiebreakers.includes(currentUser.teamId)) { toast('Sei fuori dallo spareggio', 'info'); return; }
+  // Controllo rosa piena (stesso check di submitBid per i partecipanti normali)
+  const cp = gameState.currentPlayer;
+  if (cp && isRosterFull(currentUser.teamId, cp.ruolo)) {
+    toast('🚫 Rosa completa per ' + cp.ruolo + ' — devi passare!', 'error'); return;
+  }
   const minBid = gameState.minBid || 1;
   const inp = document.getElementById('paBidInput');
   const amount = parseInt(inp ? inp.value : 0);
@@ -1321,10 +1334,11 @@ function autoProcessReveal() {
   if (!cp) return;
   const tiebreakers = gameState.tiebreakers || null;
   const eligible = tiebreakers ? tiebreakers : TEAMS.map(t => t.id);
-  // Costruisce le entry con importo e timestamp (per stabilire chi ha offerto prima)
+  // Costruisce le entry con importo e timestamp (per stabilire chi ha offerto prima).
+  // Esclude i team con rosa già piena per questo ruolo (offerta non valida anche se inviata).
   const bidEntries = eligible
     .map(tid => ({ tid, amount: getBidAmount(tid), ts: getBidTs(tid) }))
-    .filter(b => b.amount > 0)
+    .filter(b => b.amount > 0 && !isRosterFull(b.tid, cp.ruolo))
     .sort((a, b) => b.amount - a.amount || (a.ts || Infinity) - (b.ts || Infinity));
 
   if (!bidEntries.length) {
@@ -1397,6 +1411,17 @@ function adminAssign() {
   if (!adminWinner) { toast('Nessun vincitore trovato', 'error'); return; }
   const cp = gameState.currentPlayer;
   if (!cp) return;
+  // Gate finale: se il vincitore ha già la rosa piena per questo ruolo → salta
+  if (isRosterFull(adminWinner.teamId, cp.ruolo)) {
+    toast('⛔ ' + adminWinner.teamName + ' ha la rosa piena per ' + cp.ruolo + ' — giocatore saltato', 'error');
+    writeLog('skipped_roster_full', { player: cp.nome, ruolo: cp.ruolo, teamId: adminWinner.teamId, teamName: adminWinner.teamName });
+    db.ref().update({
+      '/game/phase': 'waiting', '/game/currentPlayer': null, '/game/timerEnd': null,
+      '/game/tiebreakers': null, '/game/minBid': null, '/game/tiebreakerFirstBid': null,
+      '/bids': null, '/bidSubmitted': null,
+    });
+    return;
+  }
   const td = teamsState[adminWinner.teamId] || {};
   const newBudget = (td.budget != null ? td.budget : BUDGET_START) - adminWinner.amount;
   const newRosterCount = (td.rosterCount || 0) + 1;
@@ -2286,8 +2311,18 @@ function renderPresidentAuction() {
         const mySubmitted = !!bidSubmittedState[currentUser.teamId];
         const btn = document.getElementById('paBidBtn');
         const sent = document.getElementById('paBidSent');
-        if (btn) btn.disabled = mySubmitted;
-        if (inp) inp.disabled = mySubmitted;
+        // Controllo rosa piena per Benfiga
+        const cpR = gameState.currentPlayer;
+        const rosterFull = cpR ? isRosterFull(currentUser.teamId, cpR.ruolo) : false;
+        const paRfMsg = document.getElementById('paRosterFullMsg');
+        if (paRfMsg) paRfMsg.style.display = rosterFull ? 'block' : 'none';
+        if (mySubmitted || rosterFull) {
+          if (btn) { btn.disabled = true; if (rosterFull && !mySubmitted) btn.textContent = '🚫 Rosa piena'; }
+          if (inp) inp.disabled = true;
+        } else {
+          if (btn) { btn.disabled = false; btn.textContent = '💰 OFFERTA'; }
+          if (inp) inp.disabled = false;
+        }
         if (sent) mySubmitted ? sent.classList.add('visible') : sent.classList.remove('visible');
       }
     }
