@@ -804,11 +804,11 @@ test.describe.serial('Simulazione UI Real-time', () => {
 
   test('UI — partecipante in spareggio vede il banner tiebreaker', async ({ browser }) => {
     const adminPage       = await browser.newPage();
-    const participantPage = await browser.newPage(); // t2 = Benfiga
+    const participantPage = await browser.newPage(); // t4 — partecipante normale in spareggio
 
     await Promise.all([
       loginAdmin(adminPage),
-      loginTeam(participantPage, 't2'),
+      loginTeam(participantPage, 't4'),
     ]);
 
     await startTestAuction(adminPage);
