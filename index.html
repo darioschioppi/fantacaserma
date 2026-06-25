@@ -735,6 +735,7 @@ let timerEndTs = null;
 let myBidSent = false;
 let adminWinner = null;
 let autoRevealFired = false;
+let prevPhase = null; // traccia la phase precedente per il trigger notifica audio
 
 // ─── SAFE DOM HELPERS ───
 function setText(id, val) {
@@ -754,6 +755,34 @@ function escHtml(s) {
     .replace(/"/g, '&quot;');
 }
 
+// ─── NOTIFICHE AUDIO / VIBRAZIONE ───
+/**
+ * Suona un doppio beep ascendente (440→880 Hz) e vibra il dispositivo.
+ * Chiamato quando la phase transisce a 'bidding' o 'tiebreaker'.
+ * Usa Web Audio API (no dipendenze esterne). Silenziosa se non supportata.
+ */
+function playAuctionStartSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const gain = ctx.createGain();
+    gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.35, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.65);
+    // Due toni: primo 440 Hz (0ms), secondo 880 Hz (160ms)
+    [440, 880].forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      osc.connect(gain);
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const t0 = ctx.currentTime + i * 0.16;
+      osc.start(t0);
+      osc.stop(t0 + 0.18);
+    });
+  } catch(e) { /* AudioContext non supportato o bloccato dal browser */ }
+  // Vibrazione mobile (ignorata su desktop)
+  if (navigator.vibrate) navigator.vibrate([100, 60, 220]);
+}
+
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded', () => {
   populateTeamSelect();
@@ -767,15 +796,21 @@ function initFirebase() {
   try {
     firebase.initializeApp(firebaseConfig);
     db = firebase.database();
-    // Sign-in anonimo: necessario per soddisfare le regole Firebase (auth != null)
+    // Sign-in anonimo: ATTENDERE la risoluzione prima di caricare i giocatori.
+    // In questo modo i listener Firebase vengono registrati con auth già valida
+    // → nessun PERMISSION_DENIED iniziale sui nodi protetti.
     // Vai su Firebase Console → Authentication → Sign-in method → Anonymous → Abilita
     firebase.auth().signInAnonymously()
-      .catch(e => console.warn('FC: anonymous auth failed (abilita Anonymous in Firebase Console):', e.message));
+      .then(() => { loadPlayers(); })
+      .catch(e => {
+        console.warn('FC: anonymous auth failed (abilita Anonymous in Firebase Console):', e.message);
+        loadPlayers(); // fallback: carica comunque, le regole Firebase potrebbero bloccare i listener
+      });
   } catch(e) {
     console.warn('Firebase init error:', e);
     db = null;
+    loadPlayers();
   }
-  loadPlayers();
   // Fallback: se dopo 5 secondi siamo ancora sul loader, mostra il login comunque
   setTimeout(() => {
     const loader = document.getElementById('loader');
@@ -1610,6 +1645,13 @@ function initParticipantFirebase() {
 
 function handleGameStateChange() {
   const phase = gameState.phase || 'waiting';
+  // Notifica audio + vibrazione quando l'asta inizia (bidding) o parte uno spareggio (tiebreaker).
+  // prevPhase === null = caricamento iniziale → non suonare.
+  if (prevPhase !== null && prevPhase !== phase &&
+      (phase === 'bidding' || phase === 'tiebreaker')) {
+    playAuctionStartSound();
+  }
+  prevPhase = phase;
   const cp = gameState.currentPlayer;
   updateParticipantPhase(phase);
   // Aggiorna label durata timer (Feature 1)
@@ -2265,17 +2307,23 @@ function changeAuctionTimer(delta) {
 function adminPauseAuction() {
   const phase = gameState.phase || 'waiting';
   if (phase !== 'bidding' && phase !== 'tiebreaker') return;
-  db.ref('/game').update({ phase: 'paused', pausedPhase: phase });
+  // Salva pausedAt per calcolare il tempo rimanente al resume
+  db.ref('/game').update({ phase: 'paused', pausedPhase: phase, pausedAt: Date.now() });
   toast('⏸ Asta in pausa', 'info');
 }
 
 function adminResumeAuction() {
   if (gameState.phase !== 'paused') return;
   const resumePhase = gameState.pausedPhase || 'bidding';
-  const timerEnd = Date.now() + getAuctionDuration() * 1000;
+  // Calcola tempo rimanente al momento della pausa, così il timer riparte da
+  // dove si era fermato invece di ricominciare dall'intera durata.
+  const pausedAt  = gameState.pausedAt  || Date.now();
+  const frozenEnd = gameState.timerEnd  || (pausedAt + getAuctionDuration() * 1000);
+  const remaining = Math.max(5000, frozenEnd - pausedAt); // almeno 5s al resume
+  const timerEnd  = Date.now() + remaining;
   autoRevealFired = false;
-  db.ref('/game').update({ phase: resumePhase, timerEnd, pausedPhase: null });
-  toast('▶ Asta ripresa', 'success');
+  db.ref('/game').update({ phase: resumePhase, timerEnd, pausedPhase: null, pausedAt: null });
+  toast('▶ Asta ripresa (' + Math.round(remaining / 1000) + 's rimasti)', 'success');
 }
 
 function adminEndAuction() {
