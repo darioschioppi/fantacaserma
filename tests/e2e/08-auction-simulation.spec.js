@@ -679,6 +679,67 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
     await adminPage.close();
   });
 
+  // ── SCENARIO SIM: 🎲 Simula offerte ─────────────────────────────────────────
+  //
+  // Verifica che adminSimulateBids() inietti offerte casuali per tutti i team
+  // che non hanno ancora offerto. Usa optional-check: se la funzione non è ancora
+  // deployata (live site non aggiornato), il test verifica solo che l'asta parta
+  // e poi pulisce; non fa asserzioni sul comportamento di simulazione.
+
+  test('SC-SIM — simula offerte: inietta bids casuali per team senza risposta', async ({ browser }) => {
+    const adminPage = await browser.newPage();
+    await loginAdmin(adminPage);
+
+    await startTestAuction(adminPage);
+    await waitForPhase(adminPage, 'bidding', 8000);
+
+    // Optional-check: la funzione esiste solo dopo il deploy
+    const hasSimulate = await adminPage.evaluate(
+      () => typeof adminSimulateBids === 'function'
+    );
+
+    if (hasSimulate) {
+      // Inietta bid reale per t1 prima di simulare (per verificare che t1 non venga riscritto)
+      await simulateBid('t1', 42);
+      await new Promise(r => setTimeout(r, 300));
+
+      // Chiama adminSimulateBids() dal browser
+      await adminPage.evaluate(() => adminSimulateBids());
+      await new Promise(r => setTimeout(r, 1000));
+
+      // Verifica via REST che i bids siano stati creati
+      const bidsRaw     = (await fbRest('/bids',         'GET')) || {};
+      const submittedRaw = (await fbRest('/bidSubmitted', 'GET')) || {};
+
+      const submittedTeams = Object.keys(submittedRaw).filter(k => submittedRaw[k] === true);
+
+      // Tutti e 10 i team devono aver offerto (t1 reale + 9 simulati)
+      expect(submittedTeams.length).toBe(10);
+
+      // t1 deve avere il suo bid originale intatto (adminSimulateBids salta i già sottomessi)
+      expect(bidsRaw['t1']).toBe(42);
+
+      // Gli altri 9 devono avere bid >= 0 (0 = passa, >0 = offerta)
+      const simulatedTeams = ['t2','t3','t4','t5','t6','t7','t8','t9','t10'];
+      for (const tid of simulatedTeams) {
+        expect(submittedRaw[tid]).toBe(true);
+        expect(typeof bidsRaw[tid]).toBe('number');
+        expect(bidsRaw[tid]).toBeGreaterThanOrEqual(0);
+      }
+    } else {
+      // Funzione non ancora deployata: smoke test minimo
+      // Verifica che l'asta sia partita e il gioco sia in bidding
+      const gs = await getGameState();
+      expect(gs.phase).toBe('bidding');
+      test.info().annotations.push({
+        type: 'skip-reason',
+        description: 'adminSimulateBids() non disponibile sul live site — test completo rinviato a dopo il deploy',
+      });
+    }
+
+    await adminPage.close();
+  });
+
 });
 
 // ─── SUITE: Verifiche UI real-time (admin + partecipante in parallelo) ────────

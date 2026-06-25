@@ -448,6 +448,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <button id="aapBtnPause" onclick="adminPauseAuction()" style="padding:7px 12px;border-radius:8px;border:none;background:var(--gold);color:#000;font-weight:700;font-size:.78rem;cursor:pointer;">⏸ Pausa</button>
           <button id="aapBtnResume" onclick="adminResumeAuction()" style="display:none;padding:7px 12px;border-radius:8px;border:none;background:var(--green);color:#000;font-weight:700;font-size:.78rem;cursor:pointer;">▶ Riprendi</button>
           <button onclick="adminEndAuction()" style="padding:7px 12px;border-radius:8px;border:none;background:var(--red);color:#fff;font-weight:700;font-size:.78rem;cursor:pointer;">⏹ Termina</button>
+          <button onclick="adminSimulateBids()" style="padding:7px 12px;border-radius:8px;border:none;background:#5a3e8a;color:#fff;font-weight:700;font-size:.78rem;cursor:pointer;">🎲 Simula</button>
         </div>
         <div id="aapPostReveal" style="display:none;margin-top:8px;">
           <div style="font-size:.8rem;color:var(--text-m);margin-bottom:8px;">
@@ -625,6 +626,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <button id="paBtnPause" onclick="adminPauseAuction()" style="padding:7px 12px;border-radius:8px;border:none;background:var(--gold);color:#000;font-weight:700;font-size:.78rem;cursor:pointer;">⏸ Pausa</button>
           <button id="paBtnResume" onclick="adminResumeAuction()" style="display:none;padding:7px 12px;border-radius:8px;border:none;background:var(--green);color:#000;font-weight:700;font-size:.78rem;cursor:pointer;">▶ Riprendi</button>
           <button onclick="adminEndAuction()" style="padding:7px 12px;border-radius:8px;border:none;background:var(--red);color:#fff;font-weight:700;font-size:.78rem;cursor:pointer;">⏹ Termina asta</button>
+          <button onclick="adminSimulateBids()" style="padding:7px 12px;border-radius:8px;border:none;background:#5a3e8a;color:#fff;font-weight:700;font-size:.78rem;cursor:pointer;">🎲 Simula</button>
         </div>
         <div id="paPostReveal" style="display:none;margin-top:8px;">
           <div style="font-size:.8rem;color:var(--text-m);margin-bottom:8px;">Vincitore: <strong id="paWinnerName" style="color:var(--gold)">—</strong> con <strong id="paWinnerBid" style="color:var(--gold)">—</strong> cr</div>
@@ -2355,6 +2357,35 @@ function adminEndAuction() {
   db.ref('/bids').set(null);
   db.ref('/bidSubmitted').set(null);
   toast('⏹ Asta terminata', 'info');
+}
+
+// ─── 🎲 SIMULA OFFERTE (test helper) ───
+/**
+ * Auto-inietta offerte casuali per tutti i team che non hanno ancora risposto.
+ * 30% probabilità di passare (amount=0), 70% di offrire minBid + random[0-50].
+ * Utile per testare reveal, tiebreaker e assign senza aprire 10 tab.
+ */
+function adminSimulateBids() {
+  const phase = gameState.phase;
+  if (phase !== 'bidding' && phase !== 'tiebreaker') {
+    toast('Nessuna asta attiva', 'error'); return;
+  }
+  const tiebreakers = gameState.tiebreakers || null;
+  const eligible = tiebreakers ? TEAMS.filter(t => tiebreakers.includes(t.id)) : [...TEAMS];
+  const pending = eligible.filter(t => !bidSubmittedState[t.id]);
+  if (!pending.length) { toast('Tutti i team hanno già offerto', 'info'); return; }
+  const minBid = gameState.minBid || 1;
+  const updates = {};
+  let count = 0;
+  pending.forEach(t => {
+    const pass = Math.random() < 0.3;
+    const amount = pass ? 0 : minBid + Math.floor(Math.random() * 51);
+    updates['/bids/' + t.id] = amount;
+    updates['/bidSubmitted/' + t.id] = true;
+    count++;
+  });
+  db.ref().update(updates);
+  toast('🎲 Simulate ' + count + ' offerte', 'success');
 }
 
 // ─── FEATURE 5: STORICO OPERAZIONI ───
