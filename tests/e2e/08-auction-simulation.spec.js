@@ -748,6 +748,109 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
 
 });
 
+// ─── SUITE: Multi-client bid transaction ─────────────────────────────────────
+
+test.describe.serial('Multi-client — Transaction Offerte', () => {
+  test.beforeEach(async ({}, testInfo) => {
+    if (testInfo.project.name.toLowerCase().includes('mobile')) {
+      testInfo.skip(true, 'Solo Desktop Chrome');
+    }
+  });
+
+  test.afterEach(async () => {
+    await resetGame();
+    await cleanupTestAssignments();
+  });
+
+  /**
+   * MC1 — il client con offerta più alta vince (A=100, B=120 → vince 120)
+   */
+  test('MC1 — due client stessa squadra: vince offerta più alta (100 vs 120)', async ({ browser }) => {
+    const adminPage = await browser.newPage();
+    const teamA     = await browser.newPage(); // t10 primo dispositivo
+    const teamB     = await browser.newPage(); // t10 secondo dispositivo
+
+    await Promise.all([
+      loginAdmin(adminPage),
+      loginTeam(teamA, 't10'),
+      loginTeam(teamB, 't10'),
+    ]);
+
+    await startTestAuction(adminPage);
+    await waitForPhase(adminPage, 'bidding', 8000);
+    // Attende che entrambi i client t10 vedano la fase bidding
+    await waitForPhase(teamA, 'bidding', 5000);
+    await waitForPhase(teamB, 'bidding', 5000);
+
+    // Client A offre 100 via browser (usa la transaction)
+    await teamA.evaluate(() => {
+      document.getElementById('bidInput').value = 100;
+      submitBid();
+    });
+    // Lascia che la transaction di A si completi prima di B
+    await new Promise(r => setTimeout(r, 400));
+
+    // Client B offre 120 via browser (transaction deve sovrascrivere 100)
+    await teamB.evaluate(() => {
+      document.getElementById('bidInput').value = 120;
+      submitBid();
+    });
+    await new Promise(r => setTimeout(r, 600));
+
+    // Verifica via REST: /bids/t10 deve essere 120, non 100
+    const bidsRaw = await fbRest('/bids', 'GET');
+    const getBidAmount = (raw) => (raw !== null && typeof raw === 'object') ? raw.amount : raw;
+    expect(getBidAmount(bidsRaw['t10'])).toBe(120);
+
+    await adminPage.close();
+    await teamA.close();
+    await teamB.close();
+  });
+
+  /**
+   * MC2 — il client con offerta più bassa NON sovrascrive quella più alta (A=120, B=50)
+   */
+  test('MC2 — due client stessa squadra: offerta più bassa non sovrascrive (120 vs 50)', async ({ browser }) => {
+    const adminPage = await browser.newPage();
+    const teamA     = await browser.newPage(); // t10 primo dispositivo
+    const teamB     = await browser.newPage(); // t10 secondo dispositivo
+
+    await Promise.all([
+      loginAdmin(adminPage),
+      loginTeam(teamA, 't10'),
+      loginTeam(teamB, 't10'),
+    ]);
+
+    await startTestAuction(adminPage);
+    await waitForPhase(adminPage, 'bidding', 8000);
+    await waitForPhase(teamA, 'bidding', 5000);
+    await waitForPhase(teamB, 'bidding', 5000);
+
+    // Client A offre 120 per primo
+    await teamA.evaluate(() => {
+      document.getElementById('bidInput').value = 120;
+      submitBid();
+    });
+    await new Promise(r => setTimeout(r, 400));
+
+    // Client B tenta di offrire 50 (inferiore): transaction deve rifiutare
+    await teamB.evaluate(() => {
+      document.getElementById('bidInput').value = 50;
+      submitBid();
+    });
+    await new Promise(r => setTimeout(r, 600));
+
+    // Verifica via REST: /bids/t10 deve rimanere 120
+    const bidsRaw = await fbRest('/bids', 'GET');
+    const getBidAmount = (raw) => (raw !== null && typeof raw === 'object') ? raw.amount : raw;
+    expect(getBidAmount(bidsRaw['t10'])).toBe(120);
+
+    await adminPage.close();
+    await teamA.close();
+    await teamB.close();
+  });
+});
+
 // ─── SUITE: Verifiche UI real-time (admin + partecipante in parallelo) ────────
 
 test.describe.serial('Simulazione UI Real-time', () => {
