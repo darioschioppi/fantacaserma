@@ -1295,9 +1295,19 @@ function presidentSubmitBid() {
   const td = teamsState[currentUser.teamId] || {};
   const budget = td.budget != null ? td.budget : BUDGET_START;
   if (amount > budget) { toast('Budget insufficiente! Hai ' + budget + ' cr', 'error'); return; }
-  db.ref('/bids/' + currentUser.teamId).set({ amount: amount, ts: Date.now() });
-  db.ref('/bidSubmitted/' + currentUser.teamId).set(true);
-  toast('💰 Offerta Benfiga: ' + amount + ' cr', 'success');
+  // Transaction: vince sempre l'offerta più alta tra client concorrenti
+  const tid = currentUser.teamId;
+  db.ref('/bids/' + tid).transaction(current => {
+    const existingAmt = current && typeof current === 'object' ? (current.amount || 0) : (current || 0);
+    if (current === null || amount > existingAmt) return { amount: amount, ts: Date.now() };
+    return; // abort: mantieni offerta più alta già presente
+  }, (err, committed) => {
+    if (!err) {
+      db.ref('/bidSubmitted/' + tid).set(true);
+      if (committed) toast('💰 Offerta Benfiga: ' + amount + ' cr', 'success');
+      else toast('ℹ️ Offerta non aggiornata: altro client ha già offerto di più', 'info');
+    }
+  });
 }
 
 function adminReveal() {
@@ -2096,9 +2106,18 @@ function submitBid() {
   const budget = td.budget != null ? td.budget : BUDGET_START;
   if (amount > budget) { toast('Budget insufficiente! Hai ' + budget + ' cr', 'error'); return; }
   const tid = currentUser.teamId;
-  db.ref('/bids/' + tid).set({ amount: amount, ts: Date.now() });
-  db.ref('/bidSubmitted/' + tid).set(true);
-  toast('💰 Offerta inviata!', 'success');
+  // Transaction: vince sempre l'offerta più alta tra client concorrenti
+  db.ref('/bids/' + tid).transaction(current => {
+    const existingAmt = current && typeof current === 'object' ? (current.amount || 0) : (current || 0);
+    if (current === null || amount > existingAmt) return { amount: amount, ts: Date.now() };
+    return; // abort: mantieni offerta più alta già presente
+  }, (err, committed) => {
+    if (!err) {
+      db.ref('/bidSubmitted/' + tid).set(true);
+      if (committed) toast('💰 Offerta inviata!', 'success');
+      else toast('ℹ️ Offerta non aggiornata: altro client ha già offerto di più', 'info');
+    }
+  });
 }
 
 function presidentNextAuction() {
