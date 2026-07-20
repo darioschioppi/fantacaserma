@@ -1714,8 +1714,14 @@ function buildPokerTable() {
   const ry = isMobile ? 43 : 42;
   TEAMS.forEach((t, i) => {
     const angle = (i / TEAMS.length) * 2 * Math.PI - Math.PI / 2;
+    // I posti vicini al lato destro/sinistro dell'ellisse (|cos| alto) finiscono
+    // quasi sulla stessa X con poco spazio verticale tra loro (es. Frattese1985
+    // e Morpheus si sovrapponevano nome/avatar). Allarghiamo lo scarto verticale
+    // proporzionalmente a |cos(angle)|^3, così i posti centrali (sopra/sotto,
+    // dove cos≈0) restano invariati mentre quelli laterali si separano di più.
+    const ryEffective = ry * (1 + 0.35 * Math.pow(Math.abs(Math.cos(angle)), 3));
     const leftPct = 50 + rx * Math.cos(angle);
-    const topPct = 50 + ry * Math.sin(angle);
+    const topPct = 50 + ryEffective * Math.sin(angle);
     const isMe = currentUser && currentUser.type === 'team' && currentUser.teamId === t.id;
 
     const seat = document.createElement('div');
