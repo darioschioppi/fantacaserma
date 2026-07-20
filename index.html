@@ -134,6 +134,27 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
   /* Riduce margini tavola per guadagnare spazio verticale */
   .poker-table{margin-top:16px;margin-bottom:16px;}
 }
+/* SMARTPHONE IN LANDSCAPE: la larghezza resta ampia ma l'altezza è ridotta,
+   quindi le regole basate solo su max-width non scattano. Qui comprimiamo
+   topbar/banner e rendiamo scrollabile l'area centrale così il tavolo e i
+   controlli d'asta restano sempre accessibili senza essere tagliati. */
+@media(max-height:500px) and (orientation:landscape){
+  .topbar{height:40px;padding:0 8px;gap:5px;}
+  .topbar-brand{font-size:.82rem;gap:4px;}
+  .topbar-budget{font-size:.7rem;padding:3px 8px;}
+  .phase-badge{font-size:.68rem;padding:2px 7px;}
+  #impersonateSelect{font-size:.65rem;padding:3px 4px;max-width:78px;}
+  #btnStopImpersonate{font-size:.65rem;padding:3px 6px;}
+  .btn-logout{font-size:.7rem;padding:3px 8px;}
+  #impersonateBanner{padding:3px 10px;font-size:.68rem;}
+  .participant-layout{overflow-y:auto;}
+  .poker-area{justify-content:flex-start;overflow:visible;padding:4px 10px;}
+  .poker-table{margin-top:8px;margin-bottom:8px;height:min(180px,32vw);min-height:130px;}
+  .bid-area{margin-top:4px;}
+  .mobile-nav{padding:3px 0 max(3px,env(safe-area-inset-bottom));}
+  .mobile-nav-btn{font-size:.58rem;padding:2px 0;gap:1px;}
+  .mobile-nav-btn .icon{font-size:1.05rem;}
+}
 .poker-table{width:min(560px,calc(100vw - 80px));height:min(320px,50vw);min-height:180px;background:radial-gradient(ellipse at 50% 50%,#1e5535 0%,var(--table) 50%,var(--table2) 100%);border-radius:50%;border:6px solid #0d2010;box-shadow:0 0 0 3px #1a3d1a,0 0 60px rgba(0,0,0,.8),inset 0 0 40px rgba(0,0,0,.3);position:relative;flex-shrink:0;overflow:visible;margin-top:38px;margin-bottom:36px;}
 .seat{position:absolute;width:72px;display:flex;flex-direction:column;align-items:center;gap:3px;transform:translate(-50%,-50%);transition:opacity .3s;}
 .seat.dimmed{opacity:.25;}
