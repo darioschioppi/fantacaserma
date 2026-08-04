@@ -90,7 +90,10 @@ test.describe('Schermata Partecipante', () => {
     test('la nav contiene le tab Tavolo, Rosa, Acquisti', async ({ page }) => {
       const nav = page.locator('#participantMobileNav');
       await expect(nav.locator('button:has-text("Tavolo")')).toBeVisible();
-      await expect(nav.locator('button:has-text("Rosa")')).toBeVisible();
+      // Nota: esistono 2 bottoni "Rosa" (Mia rosa 📋 sempre visibile, Rosa
+      // Squadre 🏅 solo presidente/nascosta) — escludiamo quest'ultimo per
+      // selettore univoco.
+      await expect(nav.locator('button:has-text("Rosa"):not(#tabRosaBtn)')).toBeVisible();
       await expect(nav.locator('button:has-text("Acquisti")')).toBeVisible();
     });
 
@@ -105,7 +108,7 @@ test.describe('Schermata Partecipante', () => {
     });
 
     test('clic su Rosa mostra il pannello giocatori', async ({ page }) => {
-      await page.click('#participantMobileNav button:has-text("Rosa")');
+      await page.click('#participantMobileNav button:has-text("Rosa"):not(#tabRosaBtn)');
       await expect(page.locator('#playersPanel')).toBeVisible();
     });
 
@@ -117,7 +120,7 @@ test.describe('Schermata Partecipante', () => {
 
     test('clic su Tavolo ripristina il poker area', async ({ page }) => {
       // Vai su Rosa
-      await page.click('#participantMobileNav button:has-text("Rosa")');
+      await page.click('#participantMobileNav button:has-text("Rosa"):not(#tabRosaBtn)');
       await expect(page.locator('#playersPanel')).toBeVisible();
       // Torna su Tavolo
       await page.click('#participantMobileNav button:has-text("Tavolo")');
