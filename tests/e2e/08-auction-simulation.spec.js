@@ -182,7 +182,7 @@ async function cleanupTestAssignments() {
  * Attende che il Firebase db sia inizializzato E che RTDB sia autenticato.
  *
  * PROBLEMA NOTO: signInAnonymously() in initFirebase() NON è awaited.
- * Il listener db.ref('/game').on('value', ...) viene settato in enterAdmin() /
+ * Il listener db.ref('/game').on('value', ...) viene settato in
  * initParticipantFirebase() prima che auth sia pronto → PERMISSION_DENIED silenzioso.
  * Firebase SDK re-fire i listener dopo auth, ma i tempi sono imprevedibili (>30s).
  *
@@ -193,8 +193,8 @@ async function cleanupTestAssignments() {
  */
 /**
  * Attende che signInAnonymously() sia completato.
- * CHIAMARE PRIMA di cliccare il bottone login: quando enterAdmin() / loginTeam() (app)
- * registrano db.ref('/game').on('value', ...), l'auth deve essere GIÀ valida.
+ * CHIAMARE PRIMA di cliccare il bottone login: quando loginTeam() (app)
+ * registra db.ref('/game').on('value', ...), l'auth deve essere GIÀ valida.
  * Se si registra il listener prima che auth sia pronta, Firebase SDK
  * restituisce PERMISSION_DENIED e NON ri-registra automaticamente il listener.
  */
@@ -650,10 +650,10 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
     expect(logEntry).toBeTruthy();
     expect(logEntry.type).toBe('auction_start');
 
-    // Se il pannello Storico è già nel DOM (Feature 5 deployata),
-    // verifica anche il rendering UI. Altrimenti salta silenziosamente.
+    // Se il pannello Storico presidente è nel DOM, verifica anche il rendering UI.
+    // Altrimenti salta silenziosamente (tollera versioni precedenti).
     const hasHistoryPanel = await adminPage.evaluate(
-      () => !!document.getElementById('adminHistorySection')
+      () => !!document.getElementById('presidentStorPanel')
     );
     if (hasHistoryPanel) {
       await adminPage.waitForFunction(
@@ -662,19 +662,18 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
         { timeout: 8000 }
       );
       await adminPage.evaluate(() => {
-        const btn = Array.from(document.querySelectorAll('#adminMobileNav .mobile-nav-btn'))
-          .find(b => b.textContent.includes('Storico'));
-        if (btn) adminMobileTab('history', btn);
+        const btn = document.getElementById('tabStorBtn');
+        if (btn) participantMobileTab('stor', btn);
       });
       await adminPage.waitForFunction(
         () => {
-          const c = document.getElementById('adminHistoryList');
+          const c = document.getElementById('presStorList');
           return c && c.children.length > 0 && !c.querySelector('.empty-state');
         },
         undefined,
         { timeout: 5000 }
       );
-      const historyText = await adminPage.locator('#adminHistoryList').textContent();
+      const historyText = await adminPage.locator('#presStorList').textContent();
       expect(historyText).toMatch(/avvio asta/i);
     }
 

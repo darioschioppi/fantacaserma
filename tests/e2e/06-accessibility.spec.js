@@ -74,10 +74,11 @@ test.describe('Struttura DOM - Elementi chiave', () => {
     await expect(page.locator('#loader')).toBeAttached();
   });
 
-  test('tutte e 3 le schermate principali sono nel DOM', async ({ page }) => {
+  test('le 2 schermate principali sono nel DOM', async ({ page }) => {
+    // screen-admin è stata rimossa: era irraggiungibile da quando il login
+    // admin separato è stato eliminato (Benfiga usa screen-participant)
     await expect(page.locator('#screen-login')).toBeAttached();
     await expect(page.locator('#screen-participant')).toBeAttached();
-    await expect(page.locator('#screen-admin')).toBeAttached();
   });
 
   test('il toast container è presente', async ({ page }) => {
