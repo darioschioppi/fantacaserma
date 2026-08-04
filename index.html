@@ -69,31 +69,6 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 .topbar-budget{background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);color:var(--gold);font-weight:700;font-size:.85rem;padding:5px 12px;border-radius:20px;}
 .btn-logout{background:transparent;color:var(--text-s);font-size:.78rem;padding:5px 10px;border-radius:6px;border:1px solid var(--border);}
 .btn-logout:hover{color:var(--red);border-color:var(--red);}
-/* ADMIN */
-#screen-admin{overflow:hidden;}
-.admin-layout{display:flex;flex:1;overflow:hidden;}
-.admin-sidebar{width:280px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
-.admin-main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-#adminSearchSection{display:flex;flex-direction:column;flex:1;min-height:0;}
-#adminTeamsMobileSection{display:none;flex:1;overflow-y:auto;padding:12px 16px;flex-direction:column;}
-.admin-section{padding:14px 16px;border-bottom:1px solid var(--border);}
-.admin-section-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-s);margin-bottom:10px;}
-.teams-grid{display:flex;flex-direction:column;gap:4px;overflow-y:auto;padding:8px 12px;flex:1;}
-.team-row{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:7px 10px;display:flex;align-items:center;gap:8px;font-size:.82rem;}
-.team-row-name{flex:1;font-weight:600;font-size:.8rem;}
-.team-row-budget{color:var(--gold);font-weight:700;font-size:.78rem;}
-.team-row-count{color:var(--text-m);font-size:.75rem;}
-.online-dot{width:8px;height:8px;border-radius:50%;background:var(--text-s);flex-shrink:0;}
-.online-dot.online{background:var(--green);box-shadow:0 0 6px var(--green);}
-.admin-search-area{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;}
-.search-input{flex:1;min-width:140px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 12px;}
-.search-input:focus{border-color:var(--blue);}
-.search-select{background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 10px;}
-.players-table-wrap{flex:1;overflow-y:auto;padding:0 16px 12px;}
-.players-table{width:100%;border-collapse:collapse;font-size:.82rem;}
-.players-table th{position:sticky;top:0;background:var(--bg2);padding:8px 6px;text-align:left;color:var(--text-s);font-weight:600;font-size:.75rem;text-transform:uppercase;border-bottom:1px solid var(--border);}
-.players-table td{padding:7px 6px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle;}
-.players-table tr:hover td{background:rgba(255,255,255,.03);}
 .role-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.72rem;font-weight:700;}
 .role-P{background:rgba(245,158,11,.2);color:var(--P);}
 .role-D{background:rgba(34,197,94,.2);color:var(--D);}
@@ -101,27 +76,14 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 .role-A{background:rgba(239,68,68,.2);color:var(--A);}
 .btn-start-auction{background:var(--green);color:#fff;font-weight:700;font-size:.78rem;padding:5px 12px;border-radius:6px;white-space:nowrap;}
 .btn-start-auction:hover{background:var(--green2);}
-.admin-auction-panel{padding:14px 16px;background:var(--bg2);border-top:1px solid var(--border);display:none;flex-shrink:0;}
-.admin-auction-panel.visible{display:block;}
-.aap-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-s);margin-bottom:10px;}
-.aap-player{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
-.aap-player-info h3{font-size:1rem;font-weight:800;}
-.aap-player-info p{font-size:.8rem;color:var(--text-m);margin-top:2px;}
-.aap-timer-bar{height:4px;background:var(--border);border-radius:2px;margin-bottom:10px;overflow:hidden;}
-.aap-timer-fill{height:100%;background:var(--green);border-radius:2px;transition:width .5s linear,background .5s;}
 .aap-bids{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;max-height:120px;overflow-y:auto;}
 .aap-bid-chip{background:var(--card2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:.8rem;display:flex;gap:6px;align-items:center;}
 .aap-bid-chip.winner{background:rgba(255,215,0,.12);border-color:var(--gold);color:var(--gold);}
 .aap-bid-amount{font-weight:700;}
-.aap-actions{display:flex;gap:8px;flex-wrap:wrap;}
-.btn-reveal{background:var(--gold);color:#000;font-weight:700;padding:8px 16px;border-radius:8px;}
-.btn-reveal:hover{background:#ffe34d;}
 .btn-assign{background:var(--green);color:#fff;font-weight:700;padding:8px 16px;border-radius:8px;}
 .btn-assign:hover{background:var(--green2);}
 .btn-skip{background:var(--card);color:var(--text-m);font-weight:600;padding:8px 16px;border-radius:8px;border:1px solid var(--border);}
 .btn-skip:hover{border-color:var(--red);color:var(--red);}
-.admin-stats{display:flex;gap:8px;flex-wrap:wrap;}
-.stat-pill{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:.78rem;color:var(--text-m);}
 /* PARTICIPANT */
 #screen-participant{background:radial-gradient(ellipse at 50% 40%,#0d2818 0%,var(--bg) 80%);overflow:hidden;position:relative;}
 .participant-layout{display:flex;flex:1;overflow:hidden;position:relative;}
@@ -279,7 +241,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 .ios-install-banner .iib-close{background:none;border:none;color:var(--text-m);font-size:1.4rem;cursor:pointer;padding:4px 8px;align-self:flex-start;line-height:1;}
 /* MOBILE NAV */
 .mobile-nav{display:none;background:var(--bg2);border-top:1px solid var(--border);padding:8px 0 max(8px,env(safe-area-inset-bottom));flex-shrink:0;}
-@media(max-width:600px){.mobile-nav{display:flex;}.admin-sidebar{display:none;}}
+@media(max-width:600px){.mobile-nav{display:flex;}}
 #participantMobileNav{display:flex;}
 .mobile-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;color:var(--text-s);font-size:.65rem;padding:4px 0;transition:color .2s;}
 .mobile-nav-btn.active{color:var(--gold);}
@@ -344,160 +306,6 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
       <div class="login-error" id="teamError">Password errata. Riprova.</div>
       <button class="btn-login" onclick="loginTeam()">Entra →</button>
     </div>
-  </div>
-</div>
-
-<!-- ADMIN -->
-<div class="screen" id="screen-admin">
-  <div class="topbar">
-    <div class="topbar-brand" id="adminBrand">👑 <span>Admin</span></div>
-    <div id="adminPhaseBadge" class="phase-badge"><span class="phase-dot"></span> In attesa</div>
-    <div class="topbar-spacer"></div>
-    <div class="topbar-budget hidden" id="adminPresidentBudget">💰 500 cr</div>
-    <div class="admin-stats">
-      <div class="stat-pill">Venduti <strong id="statSold" style="color:var(--text)">0</strong></div>
-      <div class="stat-pill">Budget tot. <strong id="statBudget" style="color:var(--text)">0</strong> cr</div>
-    </div>
-    <button class="btn-logout" onclick="logout()">Esci</button>
-  </div>
-  <div class="admin-layout">
-    <div class="admin-sidebar">
-      <div class="admin-section"><div class="admin-section-title">🏟️ Squadre</div></div>
-      <div class="teams-grid" id="adminTeamsGrid"><div class="empty-state">Caricamento…</div></div>
-    </div>
-    <div class="admin-main">
-      <!-- Ricerca giocatori (tab Ricerca su mobile) -->
-      <div id="adminSearchSection">
-        <div class="admin-search-area">
-          <input class="search-input" id="searchInput" placeholder="🔍 Cerca giocatore…" oninput="filterPlayers()">
-          <select class="search-select" id="filterRuolo" onchange="filterPlayers()">
-            <option value="">Tutti i ruoli</option>
-            <option value="P">🧤 P</option>
-            <option value="D">🛡️ D</option>
-            <option value="C">⚙️ C</option>
-            <option value="A">⚽ A</option>
-          </select>
-          <select class="search-select" id="filterSquadra" onchange="filterPlayers()"><option value="">Tutte le sq.</option></select>
-          <select class="search-select" id="sortPlayers" onchange="filterPlayers()">
-            <option value="az">🔤 A→Z</option>
-            <option value="za">🔤 Z→A</option>
-            <option value="qa_asc">💰 QA ↑</option>
-            <option value="qa_desc">💰 QA ↓</option>
-            <option value="qi_asc">📊 QI ↑</option>
-            <option value="qi_desc">📊 QI ↓</option>
-          </select>
-        </div>
-        <div class="players-table-wrap">
-          <table class="players-table">
-            <thead><tr><th>Nome</th><th>Sq.</th><th>R</th><th>QI</th><th>QA</th><th></th></tr></thead>
-            <tbody id="playersTableBody"><tr><td colspan="6" class="empty-state">Caricamento giocatori…</td></tr></tbody>
-          </table>
-        </div>
-      </div>
-      <!-- Squadre (tab Squadre su mobile) -->
-      <div id="adminTeamsMobileSection">
-        <div class="teams-grid" id="adminTeamsGridMobile"><div class="empty-state">Caricamento…</div></div>
-      </div>
-      <!-- Assegnazioni (tab Assegn. su mobile) -->
-      <div id="adminAssignSection" style="display:none;flex-direction:column;flex:1;min-height:0;">
-        <div style="padding:10px 14px;font-size:.8rem;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);flex-shrink:0;">📝 Gestione Assegnazioni</div>
-        <div id="adm_assignListContainer" style="flex:1;overflow-y:auto;padding:8px 12px;"></div>
-        <div style="flex-shrink:0;border-top:2px solid var(--border);padding:10px 14px;background:var(--bg2);">
-          <div style="font-size:.72rem;font-weight:700;color:var(--text-s);margin-bottom:6px;text-transform:uppercase;">Assegna giocatore libero</div>
-          <input id="adm_assignFreeSearch" type="text" placeholder="🔍 Cerca giocatore libero…" oninput="renderAssignFreeResults()" style="width:100%;box-sizing:border-box;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.82rem;">
-          <div id="adm_assignFreeResults" style="margin-top:4px;max-height:120px;overflow-y:auto;"></div>
-          <div id="adm_assignFreeForm" style="display:none;margin-top:8px;">
-            <div style="font-size:.75rem;color:var(--gold);font-weight:700;margin-bottom:6px;">Giocatore: <span id="adm_assignFreeSelectedName">—</span></div>
-            <select id="adm_assignFreeTeam" style="width:100%;padding:6px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.82rem;margin-bottom:6px;"></select>
-            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
-              <input id="adm_assignFreeAmount" type="number" min="0" placeholder="Prezzo cr" style="flex:1;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.82rem;">
-            </div>
-            <div style="display:flex;gap:8px;">
-              <button onclick="confirmAssignFree()" style="flex:1;padding:8px;border-radius:8px;border:none;background:var(--green);color:#000;font-weight:700;font-size:.8rem;cursor:pointer;">✅ Assegna</button>
-              <button onclick="cancelAssignFree()" style="flex:1;padding:8px;border-radius:8px;border:none;background:var(--bg3);color:var(--text-m);font-size:.8rem;cursor:pointer;">Annulla</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- Rosa Squadre (tab Rosa su mobile) -->
-      <div id="adminRosaSection" style="display:none;flex-direction:column;flex:1;min-height:0;">
-        <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;">
-          <span style="font-size:.8rem;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:1px;">🏅 Rosa Squadre</span>
-          <span id="rosaLastUpdate" style="font-size:.72rem;color:var(--text-s);"></span>
-        </div>
-        <div id="adminRosaList" style="flex:1;overflow-y:auto;padding:8px 12px;"></div>
-      </div>
-      <!-- Storico operazioni (tab Storico su mobile) -->
-      <div id="adminHistorySection" style="display:none;flex-direction:column;flex:1;min-height:0;">
-        <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;">
-          <span style="font-size:.8rem;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:1px;">📋 Storico operazioni</span>
-          <span id="historyCount" style="font-size:.72rem;color:var(--text-s);"></span>
-        </div>
-        <div id="adminHistoryList" style="flex:1;overflow-y:auto;padding:8px 12px;"></div>
-      </div>
-      <div class="admin-auction-panel" id="adminAuctionPanel">
-        <!-- Timer duration stepper -->
-        <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;">
-          <span style="font-size:.72rem;color:var(--text-m);flex:1;">⏱ Durata timer:</span>
-          <button onclick="changeAuctionTimer(-5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">−</button>
-          <span id="aapTimerDuration" style="font-size:.9rem;font-weight:700;color:var(--gold);min-width:40px;text-align:center;">30s</span>
-          <button onclick="changeAuctionTimer(+5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">+</button>
-        </div>
-        <div class="aap-title" id="aapPhaseLabel">⚡ Asta in corso</div>
-        <div class="aap-player">
-          <div class="aap-player-info"><h3 id="aapPlayerName">—</h3><p id="aapPlayerMeta">—</p></div>
-          <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
-            <div class="timer-wrap" style="width:52px;height:52px;">
-              <svg class="timer-svg" viewBox="0 0 52 52">
-                <circle class="timer-ring-bg" cx="26" cy="26" r="22"/>
-                <circle class="timer-ring" id="adminTimerRing" cx="26" cy="26" r="22" stroke-dasharray="138.2" stroke-dashoffset="0"/>
-              </svg>
-              <div class="timer-num" id="adminTimerNum" style="font-size:1rem;">—</div>
-            </div>
-          </div>
-        </div>
-        <div class="aap-timer-bar"><div class="aap-timer-fill" id="aapTimerFill"></div></div>
-        <div class="aap-bids" id="aapBids"><div class="empty-state" style="font-size:.75rem;">In attesa di offerte…</div></div>
-        <div class="aap-actions" id="aapActions">
-          <button class="btn-skip" onclick="adminSkip()">⏭ Salta</button>
-          <button id="aapBtnPause" onclick="adminPauseAuction()" style="padding:7px 12px;border-radius:8px;border:none;background:var(--gold);color:#000;font-weight:700;font-size:.78rem;cursor:pointer;">⏸ Pausa</button>
-          <button id="aapBtnResume" onclick="adminResumeAuction()" style="display:none;padding:7px 12px;border-radius:8px;border:none;background:var(--green);color:#000;font-weight:700;font-size:.78rem;cursor:pointer;">▶ Riprendi</button>
-          <button onclick="adminEndAuction()" style="padding:7px 12px;border-radius:8px;border:none;background:var(--red);color:#fff;font-weight:700;font-size:.78rem;cursor:pointer;">⏹ Termina</button>
-          <button onclick="adminSimulateBids()" style="padding:7px 12px;border-radius:8px;border:none;background:#5a3e8a;color:#fff;font-weight:700;font-size:.78rem;cursor:pointer;">🎲 Simula</button>
-        </div>
-        <div id="aapPostReveal" style="display:none;margin-top:8px;">
-          <div style="font-size:.8rem;color:var(--text-m);margin-bottom:8px;">
-            Vincitore: <strong id="aapWinnerName" style="color:var(--gold)">—</strong>
-            con <strong id="aapWinnerBid" style="color:var(--gold)">—</strong> cr
-            <span style="font-size:.72rem;color:var(--text-s);margin-left:6px;">(assegnazione automatica…)</span>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn-skip" onclick="adminSkip()">⏭ Salta</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- PANNELLO OFFERTA PRESIDENTE - sempre visibile per Benfiga -->
-  <div id="presidentePanel" style="display:none;background:rgba(255,215,0,.06);border-top:2px solid var(--gold2);padding:14px 18px;flex-shrink:0;">
-    <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gold2);margin-bottom:10px;">🦅 La tua offerta come Benfiga</div>
-    <div id="presWaiting" style="color:var(--text-m);font-size:.85rem;font-style:italic;">In attesa che inizi un'asta…</div>
-    <div id="presidentBidArea" style="display:none;flex-direction:column;gap:7px;">
-      <div style="font-size:.78rem;color:var(--text-m);">Offerta minima: <strong id="presMinLabel">1</strong> cr · Budget: <strong id="presBudgetLabel" style="color:var(--gold)">500</strong> cr</div>
-      <div class="bid-row">
-        <input class="bid-input" type="number" id="presidentBidInput" min="1" value="1" step="1">
-        <button class="btn-bid" id="presidentBidBtn" onclick="presidentSubmitBid()">💰 OFFERTA</button>
-      </div>
-      <div class="bid-sent" id="presidentBidSent">✅ Offerta inviata!</div>
-    </div>
-  </div>
-  <div class="mobile-nav" id="adminMobileNav">
-    <button class="mobile-nav-btn active" onclick="adminMobileTab('search',this)"><span class="icon">🔍</span>Ricerca</button>
-    <button class="mobile-nav-btn" onclick="adminMobileTab('teams',this)"><span class="icon">🏟️</span>Squadre</button>
-    <button class="mobile-nav-btn" onclick="adminMobileTab('auction',this)"><span class="icon">⚡</span>Asta</button>
-    <button class="mobile-nav-btn" onclick="adminMobileTab('assign',this)"><span class="icon">📝</span>Assegn.</button>
-    <button class="mobile-nav-btn" onclick="adminMobileTab('history',this)"><span class="icon">📋</span>Storico</button>
-    <button class="mobile-nav-btn" onclick="adminMobileTab('rosa',this)"><span class="icon">🏅</span>Rosa</button>
   </div>
 </div>
 
@@ -793,9 +601,9 @@ function getAuctionDuration() {
   return (gameState.auctionDuration && gameState.auctionDuration >= 10)
     ? gameState.auctionDuration : currentAuctionDuration;
 }
-// Ritorna true sia per il login Admin diretto che per il Presidente-squadra
+// Ritorna true per il Presidente-squadra (Benfiga), unico ruolo con permessi di gestione asta
 function canManageAuction() {
-  return !!(currentUser && (currentUser.type === 'admin' || currentUser.isPresident));
+  return !!(currentUser && currentUser.isPresident);
 }
 const ROSTER_MAX = { P: 3, D: 8, C: 8, A: 6 }; // max per ruolo per squadra
 
@@ -920,7 +728,6 @@ function loadPlayers() {
     .then(r => r.json())
     .then(data => {
       allPlayers = data;
-      populateSquadreFilter();
       afterLoad();
     })
     .catch(err => {
@@ -938,8 +745,7 @@ function afterLoad() {
       currentUser = JSON.parse(saved);
       const savedReal = sessionStorage.getItem('fcRealUser');
       if (savedReal) { try { realUser = JSON.parse(savedReal); } catch(e) { realUser = null; } }
-      if (currentUser.type === 'admin') enterAdmin();
-      else enterParticipant();
+      enterParticipant();
     } catch(e) { showScreen('screen-login'); }
   } else {
     showScreen('screen-login');
@@ -1085,332 +891,6 @@ function stopImpersonate() {
   enterParticipant();
   toast('↩️ Sei tornato a Barca', 'success');
 }
-
-// ─── ADMIN ───
-function enterAdmin() {
-  showScreen('screen-admin');
-  // Inizializza tab mobile: Ricerca attivo, sezioni corrette visibili
-  const firstBtn = document.querySelector('#adminMobileNav .mobile-nav-btn');
-  if (firstBtn) adminMobileTab('search', firstBtn);
-  filterPlayers();
-  // Personalizza topbar per presidente
-  if (currentUser && currentUser.isPresident) {
-    const brand = document.getElementById('adminBrand');
-    if (brand) brand.innerHTML = currentUser.teamEmoji + ' <span>' + currentUser.teamName + ' <small style="opacity:.6;font-size:.75rem;">(Admin)</small></span>';
-    const budgetEl = document.getElementById('adminPresidentBudget');
-    if (budgetEl) budgetEl.classList.remove('hidden');
-    const pp = document.getElementById('presidentePanel');
-    if (pp) pp.style.display = 'block';
-  }
-  initAdminFirebase();
-}
-
-function initAdminFirebase() {
-  if (!db) return;
-  db.ref('/teams').once('value').then(snap => {
-    if (!snap.exists()) {
-      const teamsData = {};
-      TEAMS.forEach(t => {
-        teamsData[t.id] = { name: t.name, emoji: t.emoji, budget: BUDGET_START, connected: false, rosterCount: 0 };
-      });
-      db.ref('/teams').set(teamsData);
-    }
-  });
-  db.ref('/game').once('value').then(snap => {
-    if (!snap.exists()) db.ref('/game').set({ phase: 'waiting', round: 1, minBid: 1 });
-  });
-  db.ref('/teams').on('value', snap => {
-    teamsState = snap.val() || {};
-    renderAdminTeams();
-    updateAdminStats();
-    // Aggiorna budget presidente
-    if (currentUser && currentUser.isPresident) {
-      const td = teamsState[currentUser.teamId] || {};
-      const budget = td.budget != null ? td.budget : BUDGET_START;
-      const budgetEl = document.getElementById('adminPresidentBudget');
-      if (budgetEl) budgetEl.textContent = '💰 ' + budget + ' cr';
-    }
-  });
-  db.ref('/game').on('value', snap => { gameState = snap.val() || {}; updateAdminPhase(); renderAdminAuctionPanel(); });
-  db.ref('/bids').on('value', snap => { bidsState = snap.val() || {}; renderAdminBids(); });
-  db.ref('/bidSubmitted').on('value', snap => {
-    bidSubmittedState = snap.val() || {};
-    renderAdminBids();
-    if (currentUser && currentUser.isPresident) updatePresidentBidPanel();
-    checkAutoReveal(); // auto-reveal se tutti hanno offerto (funziona anche per admin diretto)
-  });
-  db.ref('/assignments').on('value', snap => {
-    const raw = snap.val();
-    assignmentsState = raw ? Object.entries(raw).map(([key, val]) => ({ ...val, _key: key })) : [];
-    updateAdminStats();
-  });
-  // Ultimi 100 eventi dal log — aggiorna pannello Storico se aperto
-  db.ref('/log').limitToLast(100).on('value', snap => {
-    logState = snap.val() || {};
-    const hs = document.getElementById('adminHistorySection');
-    if (hs && hs.style.display !== 'none') renderHistoryPanel();
-  });
-}
-
-function renderAdminTeams() {
-  // Popola sia la griglia sidebar (desktop) che quella mobile
-  const grids = [
-    document.getElementById('adminTeamsGrid'),
-    document.getElementById('adminTeamsGridMobile')
-  ];
-  grids.forEach(grid => {
-    if (!grid) return;
-    grid.textContent = '';
-    TEAMS.forEach(t => {
-      const td = teamsState[t.id] || { budget: BUDGET_START, connected: false, rosterCount: 0 };
-      const row = document.createElement('div');
-      row.className = 'team-row';
-
-      const emojiEl = document.createElement('span');
-      emojiEl.style.fontSize = '1.1rem';
-      emojiEl.textContent = t.emoji;
-
-      const nameEl = document.createElement('span');
-      nameEl.className = 'team-row-name';
-      nameEl.textContent = t.name;
-
-      const budgetEl = document.createElement('span');
-      budgetEl.className = 'team-row-budget';
-      budgetEl.textContent = (td.budget != null ? td.budget : BUDGET_START) + ' cr';
-
-      const countEl = document.createElement('span');
-      countEl.className = 'team-row-count';
-      countEl.textContent = (td.rosterCount || 0) + ' 🎽';
-
-      const dot = document.createElement('span');
-      dot.className = 'online-dot' + (td.connected ? ' online' : '');
-
-      row.appendChild(emojiEl);
-      row.appendChild(nameEl);
-      row.appendChild(budgetEl);
-      row.appendChild(countEl);
-      row.appendChild(dot);
-      grid.appendChild(row);
-    });
-  });
-}
-
-function updateAdminStats() {
-  setText('statSold', assignmentsState.length);
-  const total = TEAMS.reduce((s, t) => s + ((teamsState[t.id] || {}).budget != null ? (teamsState[t.id] || {}).budget : BUDGET_START), 0);
-  setText('statBudget', total);
-}
-
-function updateAdminPhase() {
-  const phase = gameState.phase || 'waiting';
-  const badge = document.getElementById('adminPhaseBadge');
-  badge.className = 'phase-badge ' + (phase === 'waiting' ? '' : phase);
-  const labels = { waiting: 'In attesa', bidding: '⚡ Asta', reveal: '🎯 Esito', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ In pausa' };
-  badge.textContent = '';
-  const dot = document.createElement('span');
-  dot.className = 'phase-dot';
-  badge.appendChild(dot);
-  badge.appendChild(document.createTextNode(' ' + (labels[phase] || phase)));
-  // Aggiorna label timer e pulsanti Pausa/Riprendi anche nell'admin panel
-  const timerDurLabel = document.getElementById('aapTimerDuration');
-  if (timerDurLabel) timerDurLabel.textContent = getAuctionDuration() + 's';
-  const btnPause  = document.getElementById('aapBtnPause');
-  const btnResume = document.getElementById('aapBtnResume');
-  if (btnPause)  btnPause.style.display  = phase === 'paused' ? 'none' : '';
-  if (btnResume) btnResume.style.display = phase === 'paused' ? ''     : 'none';
-}
-
-function renderAdminAuctionPanel() {
-  const panel = document.getElementById('adminAuctionPanel');
-  const phase = gameState.phase || 'waiting';
-  const cp = gameState.currentPlayer;
-  // Su mobile, controlla se siamo sul tab "Asta"
-  const onAuctionTab = document.querySelector('#adminMobileNav .mobile-nav-btn:nth-child(3)')?.classList.contains('active');
-  if (!cp || phase === 'waiting') {
-    if (onAuctionTab) {
-      // Mostra placeholder "nessuna asta" sul tab Asta mobile
-      panel.classList.add('visible');
-      setText('aapPhaseLabel', '⏸ Nessuna asta in corso');
-      setText('aapPlayerName', '—');
-      setText('aapPlayerMeta', 'Seleziona un giocatore dalla tab Ricerca');
-      document.getElementById('aapActions').style.display = 'none';
-      document.getElementById('aapPostReveal').style.display = 'none';
-    } else {
-      panel.classList.remove('visible');
-    }
-    return;
-  }
-  panel.classList.add('visible');
-  setText('aapPlayerName', cp.nome);
-  setText('aapPlayerMeta', cp.squadra + ' · ' + cp.ruolo + ' · QI ' + cp.qi);
-  const phaseLabels = { bidding: '⚡ Asta in corso', reveal: '🎯 Esito', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ Asta in pausa' };
-  setText('aapPhaseLabel', phaseLabels[phase] || phase);
-  // Aggiorna label durata timer
-  const timerDurLabel = document.getElementById('aapTimerDuration');
-  if (timerDurLabel) timerDurLabel.textContent = getAuctionDuration() + 's';
-  timerEndTs = gameState.timerEnd || null;
-  // Toggle Pausa/Riprendi
-  const btnPause  = document.getElementById('aapBtnPause');
-  const btnResume = document.getElementById('aapBtnResume');
-  if (btnPause)  btnPause.style.display  = phase === 'paused' ? 'none' : '';
-  if (btnResume) btnResume.style.display = phase === 'paused' ? ''     : 'none';
-  if (phase === 'bidding' || phase === 'tiebreaker' || phase === 'paused') {
-    document.getElementById('aapActions').style.display = 'flex';
-    document.getElementById('aapPostReveal').style.display = 'none';
-  } else if (phase === 'reveal') {
-    document.getElementById('aapActions').style.display = 'none';
-    document.getElementById('aapPostReveal').style.display = 'block';
-    computeAndShowWinner();
-  } else {
-    document.getElementById('aapActions').style.display = 'none';
-    document.getElementById('aapPostReveal').style.display = 'none';
-  }
-  // Aggiorna pannello offerta presidente (indipendente)
-  if (currentUser && currentUser.isPresident) updatePresidentBidPanel();
-}
-
-function updatePresidentBidPanel() {
-  const phase = gameState.phase || 'waiting';
-  const waiting = document.getElementById('presWaiting');
-  const bidArea = document.getElementById('presidentBidArea');
-  if (!waiting || !bidArea) return;
-  const tiebreakers = gameState.tiebreakers || null;
-  const inTiebreaker = !tiebreakers || tiebreakers.includes(currentUser.teamId);
-  const canBid = (phase === 'bidding' || phase === 'tiebreaker') && inTiebreaker;
-  if (canBid) {
-    waiting.style.display = 'none';
-    bidArea.style.display = 'flex';
-    const minBid = gameState.minBid || 1;
-    const td = teamsState[currentUser.teamId] || {};
-    const budget = td.budget != null ? td.budget : BUDGET_START;
-    setText('presMinLabel', minBid);
-    setText('presBudgetLabel', budget);
-    const inp = document.getElementById('presidentBidInput');
-    if (inp) { inp.min = minBid; if (!bidSubmittedState[currentUser.teamId]) inp.value = minBid; }
-    const mySubmitted = !!bidSubmittedState[currentUser.teamId];
-    const btn = document.getElementById('presidentBidBtn');
-    const sent = document.getElementById('presidentBidSent');
-    // Controllo rosa piena (pannello admin-screen)
-    const cpPres = gameState.currentPlayer;
-    const presRosterFull = cpPres ? isRosterFull(currentUser.teamId, cpPres.ruolo) : false;
-    if (mySubmitted || presRosterFull) {
-      if (btn) { btn.disabled = true; if (presRosterFull && !mySubmitted) btn.textContent = '🚫 Rosa piena'; }
-      if (inp) inp.disabled = true;
-    } else {
-      if (btn) { btn.disabled = false; btn.textContent = '💰 OFFERTA'; }
-      if (inp) inp.disabled = false;
-    }
-    if (sent) mySubmitted ? sent.classList.add('visible') : sent.classList.remove('visible');
-  } else if (phase === 'tiebreaker' && !inTiebreaker) {
-    waiting.style.display = 'block';
-    waiting.textContent = '👀 Sei fuori dallo spareggio (solo osservatore)';
-    bidArea.style.display = 'none';
-  } else {
-    waiting.style.display = 'block';
-    waiting.textContent = 'In attesa che inizi un\'asta…';
-    bidArea.style.display = 'none';
-  }
-}
-
-function computeAndShowWinner() {
-  const tiebreakers = gameState.tiebreakers || null;
-  const eligible = tiebreakers ? tiebreakers : TEAMS.map(t => t.id);
-  let maxAmount = -1, winnerId = null;
-  eligible.forEach(tid => {
-    const amount = getBidAmount(tid);
-    if (amount > maxAmount) { maxAmount = amount; winnerId = tid; }
-  });
-  if (!winnerId || maxAmount <= 0) { adminWinner = null; setText('aapWinnerName', '—'); setText('aapWinnerBid', '—'); return; }
-  const team = TEAMS.find(t => t.id === winnerId);
-  adminWinner = { teamId: winnerId, teamName: team ? team.name : winnerId, amount: maxAmount };
-  setText('aapWinnerName', adminWinner.teamName);
-  setText('aapWinnerBid', adminWinner.amount);
-}
-
-function renderAdminBids() {
-  const container = document.getElementById('aapBids');
-  const phase = gameState.phase || 'waiting';
-  const tiebreakers = gameState.tiebreakers || null;
-  const eligible = tiebreakers ? tiebreakers : TEAMS.map(t => t.id);
-  if (!gameState.currentPlayer) {
-    container.textContent = '';
-    const emp = document.createElement('div');
-    emp.className = 'empty-state';
-    emp.style.fontSize = '.75rem';
-    emp.textContent = 'In attesa di offerte…';
-    container.appendChild(emp);
-    return;
-  }
-  const rows = eligible.map(tid => {
-    const team = TEAMS.find(t => t.id === tid);
-    return { tid, team, amount: getBidAmount(tid), submitted: bidSubmittedState[tid] };
-  }).sort((a, b) => (b.amount || 0) - (a.amount || 0));
-  const maxAmt = rows.length ? (rows[0].amount || 0) : 0;
-  container.textContent = '';
-  rows.forEach(r => {
-    const chip = document.createElement('div');
-    const isWinner = r.amount === maxAmt && r.amount > 0 && phase === 'reveal';
-    chip.className = 'aap-bid-chip' + (isWinner ? ' winner' : '');
-
-    const emojiEl = document.createElement('span');
-    emojiEl.textContent = r.team ? r.team.emoji : '?';
-
-    const nameEl = document.createElement('span');
-    nameEl.style.cssText = 'font-size:.75rem;color:var(--text-m)';
-    nameEl.textContent = r.team ? r.team.name : r.tid;
-
-    const amtEl = document.createElement('span');
-    amtEl.className = 'aap-bid-amount';
-    // Importi visibili solo dopo la rivelazione (asta sealed-bid)
-    const showAmounts = (phase === 'reveal' || phase === 'assigned');
-    if (showAmounts) {
-      amtEl.textContent = r.amount != null ? (r.amount === 0 ? '🤚 PASSA' : r.amount + ' cr') : '—';
-      if (r.amount === 0) amtEl.style.color = 'var(--text-s)';
-    } else {
-      amtEl.textContent = r.submitted ? '🔒 Inviata' : '⏳';
-      amtEl.style.color = r.submitted ? 'var(--green)' : 'var(--text-s)';
-    }
-
-    chip.appendChild(emojiEl);
-    chip.appendChild(nameEl);
-    chip.appendChild(amtEl);
-    if (r.submitted && showAmounts) {
-      const tick = document.createElement('span');
-      tick.style.cssText = 'color:var(--green);font-size:.7rem';
-      tick.textContent = '✓';
-      chip.appendChild(tick);
-    }
-    container.appendChild(chip);
-  });
-  if (!rows.length) {
-    const emp = document.createElement('div');
-    emp.className = 'empty-state';
-    emp.style.fontSize = '.75rem';
-    emp.textContent = 'Nessuna offerta';
-    container.appendChild(emp);
-  }
-}
-
-// Admin timer display + auto-reveal alla scadenza
-setInterval(() => {
-  if (currentUser && currentUser.type === 'admin' && timerEndTs) {
-    const remaining = Math.max(0, Math.ceil((timerEndTs - Date.now()) / 1000));
-    updateTimerDisplay('adminTimerRing', 'adminTimerNum', remaining, getAuctionDuration());
-    const fill = document.getElementById('aapTimerFill');
-    if (fill) {
-      fill.style.width = (remaining / getAuctionDuration() * 100) + '%';
-      fill.style.background = remaining <= 5 ? 'var(--red)' : remaining <= 10 ? 'var(--gold)' : 'var(--green)';
-    }
-    // Auto-reveal alla scadenza (admin diretto)
-    if (remaining === 0 && !autoRevealFired) {
-      const phase = gameState.phase || 'waiting';
-      if (phase === 'bidding' || phase === 'tiebreaker') {
-        autoRevealFired = true;
-        adminReveal();
-      }
-    }
-  }
-}, 500);
 
 // ─── AUCTION LOG ───
 function writeLog(type, data) {
@@ -1618,92 +1098,7 @@ function adminSkip() {
   db.ref('/bidSubmitted').set(null);
   if (cp) writeLog('skipped', { player: cp.nome, ruolo: cp.ruolo, squadra: cp.squadra });
   toast('⏭ Giocatore saltato', 'info');
-  if (currentUser && currentUser.isPresident) updatePresidentBidPanel();
-}
-
-// ─── PLAYER SEARCH ───
-function populateSquadreFilter() {
-  const sel = document.getElementById('filterSquadra');
-  const squads = [...new Set(allPlayers.map(p => p.Squadra))].sort();
-  squads.forEach(s => {
-    const opt = document.createElement('option');
-    opt.value = s;
-    opt.textContent = s;
-    sel.appendChild(opt);
-  });
-}
-
-function filterPlayers() {
-  const query = document.getElementById('searchInput').value.toLowerCase().trim();
-  const ruolo = document.getElementById('filterRuolo').value;
-  const squadra = document.getElementById('filterSquadra').value;
-  const sort = document.getElementById('sortPlayers').value;
-  let results = [...allPlayers];
-  if (query) results = results.filter(p => p.Nome && p.Nome.toLowerCase().includes(query));
-  if (ruolo) results = results.filter(p => (p.Ruolo_Classic || '').startsWith(ruolo));
-  if (squadra) results = results.filter(p => p.Squadra === squadra);
-  if (sort === 'az')       results.sort((a, b) => (a.Nome || '').localeCompare(b.Nome || ''));
-  else if (sort === 'za')  results.sort((a, b) => (b.Nome || '').localeCompare(a.Nome || ''));
-  else if (sort === 'qa_asc')  results.sort((a, b) => (parseInt(a.QA) || 0) - (parseInt(b.QA) || 0));
-  else if (sort === 'qa_desc') results.sort((a, b) => (parseInt(b.QA) || 0) - (parseInt(a.QA) || 0));
-  else if (sort === 'qi_asc')  results.sort((a, b) => (parseInt(a.QI) || 0) - (parseInt(b.QI) || 0));
-  else if (sort === 'qi_desc') results.sort((a, b) => (parseInt(b.QI) || 0) - (parseInt(a.QI) || 0));
-  renderPlayersTable(results.slice(0, 80));
-}
-
-function renderPlayersTable(players) {
-  const tbody = document.getElementById('playersTableBody');
-  tbody.textContent = '';
-  if (!players.length) {
-    const tr = document.createElement('tr');
-    const td = document.createElement('td');
-    td.colSpan = 6;
-    td.className = 'empty-state';
-    td.textContent = 'Nessun risultato';
-    tr.appendChild(td);
-    tbody.appendChild(tr);
-    return;
-  }
-  players.forEach(p => {
-    const tr = document.createElement('tr');
-    const tdName = document.createElement('td');
-    tdName.style.fontWeight = '600';
-    tdName.textContent = p.Nome || '—';
-
-    const tdSq = document.createElement('td');
-    tdSq.style.cssText = 'color:var(--text-m);font-size:.78rem';
-    tdSq.textContent = p.Squadra || '—';
-
-    const tdR = document.createElement('td');
-    const badge = document.createElement('span');
-    const r = (p.Ruolo_Classic || '').charAt(0);
-    badge.className = 'role-badge role-' + r;
-    badge.textContent = p.Ruolo_Classic || '—';
-    tdR.appendChild(badge);
-
-    const tdQI = document.createElement('td');
-    tdQI.style.color = 'var(--text-m)';
-    tdQI.textContent = p.QI != null ? p.QI : '—';
-
-    const tdQA = document.createElement('td');
-    tdQA.style.color = 'var(--text-m)';
-    tdQA.textContent = p.QA != null ? p.QA : '—';
-
-    const tdBtn = document.createElement('td');
-    const btn = document.createElement('button');
-    btn.className = 'btn-start-auction';
-    btn.textContent = '▶ Asta';
-    btn.addEventListener('click', () => adminStartAuction(p));
-    tdBtn.appendChild(btn);
-
-    tr.appendChild(tdName);
-    tr.appendChild(tdSq);
-    tr.appendChild(tdR);
-    tr.appendChild(tdQI);
-    tr.appendChild(tdQA);
-    tr.appendChild(tdBtn);
-    tbody.appendChild(tr);
-  });
+  if (currentUser && currentUser.isPresident) renderPresidentAuction();
 }
 
 // ─── PARTICIPANT ───
@@ -2586,7 +1981,6 @@ function renderPresidentAuction() {
       const team = TEAMS.find(t => t.id === winId);
       adminWinner = { teamId: winId, teamName: team ? team.name : winId, amount: maxAmt };
       setText('paWinnerName', adminWinner.teamName); setText('paWinnerBid', adminWinner.amount);
-      setText('aapWinnerName', adminWinner.teamName); setText('aapWinnerBid', adminWinner.amount);
     }
   } else {
     document.getElementById('paActions').style.display = 'none';
@@ -2630,11 +2024,8 @@ function changeAuctionTimer(delta) {
   const next = Math.max(10, Math.min(120, current + delta));
   if (next === current) return;
   db.ref('/game/auctionDuration').set(next);
-  // Aggiorna entrambe le label (presidente e admin)
-  const lPres  = document.getElementById('paTimerDuration');
-  const lAdmin = document.getElementById('aapTimerDuration');
-  if (lPres)  lPres.textContent  = next + 's';
-  if (lAdmin) lAdmin.textContent = next + 's';
+  const lPres = document.getElementById('paTimerDuration');
+  if (lPres) lPres.textContent = next + 's';
   toast('⏱ Durata timer: ' + next + 's', 'info');
 }
 
@@ -2933,20 +2324,8 @@ async function adminResetSeason() {
 
 // ─── FEATURE 3: GESTIONE ASSEGNAZIONI ───
 let assignFreeSelected = null;
-// Scope: 'pres' = pannello presidente, 'admin' = pannello admin
-let assignScope = 'pres';
-const asgIdMap = {
-  assignListContainer:    'adm_assignListContainer',
-  assignFreeSearch:       'adm_assignFreeSearch',
-  assignFreeResults:      'adm_assignFreeResults',
-  assignFreeForm:         'adm_assignFreeForm',
-  assignFreeSelectedName: 'adm_assignFreeSelectedName',
-  assignFreeTeam:         'adm_assignFreeTeam',
-  assignFreeAmount:       'adm_assignFreeAmount',
-};
 function asgEl(id) {
-  const realId = (assignScope === 'admin') ? (asgIdMap[id] || id) : id;
-  return document.getElementById(realId);
+  return document.getElementById(id);
 }
 
 function renderAssignList() {
@@ -3248,45 +2627,6 @@ function toast(msg, type) {
   el.appendChild(text);
   container.appendChild(el);
   setTimeout(() => el.remove(), 3500);
-}
-
-function adminMobileTab(tab, btn) {
-  document.querySelectorAll('#adminMobileNav .mobile-nav-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-
-  const searchSection  = document.getElementById('adminSearchSection');
-  const teamsSection   = document.getElementById('adminTeamsMobileSection');
-  const assignSection  = document.getElementById('adminAssignSection');
-  const historySection = document.getElementById('adminHistorySection');
-  const rosaSection    = document.getElementById('adminRosaSection');
-  const auctionPanel   = document.getElementById('adminAuctionPanel');
-
-  if (searchSection)  searchSection.style.display  = tab === 'search'  ? 'flex'  : 'none';
-  if (teamsSection)   teamsSection.style.display   = tab === 'teams'   ? 'flex'  : 'none';
-  if (assignSection)  assignSection.style.display  = tab === 'assign'  ? 'flex'  : 'none';
-  if (historySection) historySection.style.display = tab === 'history' ? 'flex'  : 'none';
-  if (rosaSection)    rosaSection.style.display    = tab === 'rosa'    ? 'flex'  : 'none';
-
-  if (tab === 'auction') {
-    if (auctionPanel) auctionPanel.classList.add('visible');
-    renderAdminAuctionPanel();
-  } else {
-    if (auctionPanel && !gameState.currentPlayer) auctionPanel.classList.remove('visible');
-  }
-
-  // Imposta scope assegnazioni / carica dati sezione
-  if (tab === 'assign') {
-    assignScope = 'admin';
-    renderAssignList();
-  } else if (tab === 'history') {
-    renderHistoryPanel();
-    assignScope = 'pres';
-  } else if (tab === 'rosa') {
-    renderRosaPanel('adminRosaList', 'rosaLastUpdate');
-  } else {
-    // Ripristina scope per il pannello presidente (se in uso)
-    assignScope = 'pres';
-  }
 }
 
 function participantMobileTab(tab, btn) {
