@@ -539,6 +539,29 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <option value="free">🟢 Liberi</option>
           <option value="taken">🔴 Assegnati</option>
         </select>
+        <select class="pp-select" id="apFilterSquadra" onchange="filterAllPlayersList()">
+          <option value="">Tutte le squadre</option>
+          <option value="ATA">Atalanta</option>
+          <option value="BOL">Bologna</option>
+          <option value="CAG">Cagliari</option>
+          <option value="COM">Como</option>
+          <option value="FIO">Fiorentina</option>
+          <option value="FRO">Frosinone</option>
+          <option value="GEN">Genoa</option>
+          <option value="INT">Inter</option>
+          <option value="JUV">Juventus</option>
+          <option value="LAZ">Lazio</option>
+          <option value="LEC">Lecce</option>
+          <option value="MIL">Milan</option>
+          <option value="MON">Monza</option>
+          <option value="NAP">Napoli</option>
+          <option value="PAR">Parma</option>
+          <option value="ROM">Roma</option>
+          <option value="SAS">Sassuolo</option>
+          <option value="TOR">Torino</option>
+          <option value="UDI">Udinese</option>
+          <option value="VEN">Venezia</option>
+        </select>
         <select class="pp-select" id="apSort" onchange="filterAllPlayersList()">
           <option value="az">A→Z</option>
           <option value="qa_desc">💰 QA ↓</option>
@@ -1809,15 +1832,18 @@ function filterAllPlayersList() {
   const searchEl = document.getElementById('apSearch');
   const ruoloEl = document.getElementById('apFilterRuolo');
   const statoEl = document.getElementById('apFilterStato');
+  const squadraEl = document.getElementById('apFilterSquadra');
   const sortEl = document.getElementById('apSort');
   if (!searchEl || !ruoloEl || !statoEl || !sortEl) return;
   const query = (searchEl.value || '').toLowerCase().trim();
   const ruolo = ruoloEl.value;
   const stato = statoEl.value;
+  const squadra = squadraEl ? squadraEl.value : '';
   const sort = sortEl.value;
   let results = [...allPlayers];
   if (query) results = results.filter(p => p.Nome && p.Nome.toLowerCase().includes(query));
   if (ruolo) results = results.filter(p => (p.Ruolo_Classic || '').startsWith(ruolo));
+  if (squadra) results = results.filter(p => (p.Squadra || '').toUpperCase() === squadra);
   // Mappa assegnazioni: nome giocatore (lowercase) → { teamName, amount }
   const assignedMap = {};
   assignmentsState.forEach(a => { if (a.player) assignedMap[a.player.toLowerCase()] = a; });
