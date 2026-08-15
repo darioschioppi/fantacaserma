@@ -203,7 +203,21 @@ function clearEl(el){while(el.firstChild)el.removeChild(el.firstChild);}
 
 function initDashboard(){
   startClock();renderTeams();renderRecent();
-  try{firebase.initializeApp(firebaseConfig);db=firebase.database();firebase.auth().signInAnonymously().catch(function(e){console.warn('FC live: anonymous auth failed:',e.message);});}catch(e){console.warn(e);db=null;}
+  try{firebase.initializeApp(firebaseConfig);db=firebase.database();}catch(e){console.warn(e);db=null;return;}
+  // IMPORTANTE: attendere che il sign-in anonimo sia risolto prima di agganciare
+  // i listener. Le regole del DB richiedono auth!=null: se i listener vengono
+  // registrati mentre auth è ancora null, Firebase riceve un PERMISSION_DENIED
+  // iniziale e disattiva silenziosamente il listener anche dopo che l'auth
+  // si risolve — la dashboard resterebbe bloccata sui valori vuoti per sempre.
+  firebase.auth().signInAnonymously()
+    .then(function(){ attachListeners(); })
+    .catch(function(e){
+      console.warn('FC live: anonymous auth failed (abilita Anonymous in Firebase Console):', e.message);
+      attachListeners(); // fallback: prova comunque, le regole potrebbero bloccare i listener
+    });
+}
+
+function attachListeners(){
   if(!db)return;
   db.ref('/game').on('value',function(s){gameState=s.val()||{};onGameChange();});
   db.ref('/teams').on('value',function(s){teamsState=s.val()||{};renderTeams();updateStats();});
