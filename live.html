@@ -97,6 +97,30 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .log-body{flex:1;min-width:0;}
 .log-main{font-weight:600;color:var(--text);line-height:1.3;}
 .log-time{font-size:.65rem;color:var(--text-s);margin-top:1px;}
+/* RESPONSIVE: smartphone (sia verticale che orizzontale dopo rotazione).
+   La griglia fissa a 3 colonne (260px 1fr 260px) non entra negli schermi
+   dei telefoni: sotto 900px passiamo a layout a colonna singola, scrollabile
+   verticalmente, con la topbar che va a capo invece di tagliarsi. */
+@media(max-width:900px){
+  html,body{overflow:auto;height:auto;min-height:100%;}
+  .topbar{height:auto;flex-wrap:wrap;padding:8px 10px;gap:6px;}
+  .topbar-clock{order:99;margin-left:auto;}
+  .dash-body{display:flex;flex-direction:column;grid-template-columns:none;overflow:visible;padding:8px;gap:8px;}
+  .panel{flex-shrink:0;}
+  .panel-body{max-height:220px;}
+  .center-panel{grid-column:auto;order:-1;}
+  .auction-card{padding:12px;}
+  .stats-bar{flex-wrap:wrap;gap:10px 16px;}
+}
+@media(max-width:480px){
+  .topbar-brand{font-size:.92rem;}
+  .phase-pill,.conn-pill,.status-indicator,.round-badge{font-size:.72rem;padding:4px 10px;}
+  .timer-wrap{width:72px;height:72px;}
+  #dashTimerNum{font-size:1.2rem !important;}
+  #acPlayerName{font-size:1.1rem !important;}
+  .bids-grid{font-size:.72rem;}
+  .bids-grid th,.bids-grid td{padding:5px 6px;}
+}
 </style>
 </head>
 <body>
