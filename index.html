@@ -1855,7 +1855,7 @@ function filterAllPlayersList() {
   const tbody = document.getElementById('apTableBody');
   if (!tbody) return;
   tbody.textContent = '';
-  const list = results.slice(0, 150);
+  const list = results.slice(0, 600);
   if (!list.length) {
     const tr = document.createElement('tr'); const td = document.createElement('td');
     td.colSpan = 6; td.className = 'empty-state'; td.textContent = 'Nessun risultato';
@@ -1906,7 +1906,7 @@ function filterAstaPlayers() {
   const tbody = document.getElementById('paTableBody');
   if (!tbody) return;
   tbody.textContent = '';
-  const list = results.slice(0, 100);
+  const list = results.slice(0, 600);
   if (!list.length) {
     const tr = document.createElement('tr'); const td = document.createElement('td');
     td.colSpan = 5; td.className = 'empty-state'; td.textContent = 'Nessun risultato';
