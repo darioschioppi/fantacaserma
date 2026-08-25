@@ -6,6 +6,7 @@
     "teams":        { ".read": "auth != null", ".write": "auth != null" },
     "assignments":  { ".read": "auth != null", ".write": "auth != null" },
     "avatars":      { ".read": "auth != null", ".write": "auth != null" },
-    "log":          { ".read": "auth != null", ".write": "auth != null" }
+    "log":          { ".read": "auth != null", ".write": "auth != null" },
+    "plans":        { ".read": "auth != null", ".write": "auth != null" }
   }
 }
