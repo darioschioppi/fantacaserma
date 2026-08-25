@@ -1369,6 +1369,22 @@ function initParticipantFirebase() {
     myPlanState = snap.val() || {};
     const pp = document.getElementById('planPanel');
     if (pp && pp.style.display !== 'none') renderPlanList();
+    // Se il listener /plans si aggiorna DOPO che l'asta è già partita (es. pagina aperta
+    // a metà asta, o listener /plans più lento di /game), ri-applica la precompilazione
+    // sul campo offerta corrente: altrimenti il piano arriverebbe "in ritardo" e il campo
+    // resterebbe bloccato al minimo anche se un piano valido esiste.
+    const phase = gameState.phase || 'waiting';
+    if ((phase === 'bidding' || phase === 'tiebreaker') && !myBidSent) {
+      const cp = gameState.currentPlayer;
+      const minBid = gameState.minBid || 1;
+      const planned = getPlannedAmount(cp, minBid);
+      if (planned != null) {
+        const bidInput = document.getElementById('bidInput');
+        if (bidInput) bidInput.value = planned;
+        const paInp = document.getElementById('paBidInput');
+        if (paInp && !bidSubmittedState[currentUser.teamId]) paInp.value = planned;
+      }
+    }
   });
   // Storico operazioni — solo per il presidente
   if (currentUser && currentUser.isPresident) {

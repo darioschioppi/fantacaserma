@@ -250,4 +250,23 @@ test.describe.serial('Tab Pianificazione — budget pre-asta', () => {
 
     await page.close();
   });
+
+  test('PL6 — race condition: piano scritto su Firebase PRIMA del login viene applicato correttamente al bidInput', async ({ browser }) => {
+    // Scrive un piano reale su Firebase (richiede le regole /plans live) e avvia l'asta
+    // PRIMA che il browser si connetta: simula una squadra che apre l'app a metà asta,
+    // dove il listener /plans potrebbe arrivare dopo il listener /game.
+    await fbRest(`/plans/t8/${TEST_PLAYER.nome}`, 'PUT', { amount: 33, playerName: TEST_PLAYER.nome, ts: Date.now() });
+    await startTestAuction();
+
+    const page = await browser.newPage();
+    await loginTeam(page, 't8');
+    await waitForPhase(page, 'bidding');
+
+    await page.waitForFunction(() => document.getElementById('bidInput')?.value === '33', undefined, { timeout: 10000 });
+    const val = await page.locator('#bidInput').inputValue();
+    expect(val).toBe('33');
+
+    await fbRest(`/plans/t8/${TEST_PLAYER.nome}`, 'DELETE');
+    await page.close();
+  });
 });
