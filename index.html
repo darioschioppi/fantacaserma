@@ -526,58 +526,6 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
       </div>
       <div id="presStorList" style="flex:1;overflow-y:auto;padding:8px 12px;"></div>
     </div>
-    <!-- ELENCO GIOCATORI ACQUISTABILI (visibile a tutte le squadre) -->
-    <div class="players-panel" id="allPlayersPanel" style="display:none;flex-direction:column;">
-      <div class="pp-search-bar">
-        <input class="pp-search-input" id="apSearch" placeholder="🔍 Cerca giocatore…" oninput="filterAllPlayersList()">
-        <select class="pp-select" id="apFilterRuolo" onchange="filterAllPlayersList()">
-          <option value="">Tutti</option>
-          <option value="P">🧤 P</option>
-          <option value="D">🛡️ D</option>
-          <option value="C">⚙️ C</option>
-          <option value="A">⚽ A</option>
-        </select>
-        <select class="pp-select" id="apFilterStato" onchange="filterAllPlayersList()">
-          <option value="">Tutti gli stati</option>
-          <option value="free">🟢 Liberi</option>
-          <option value="taken">🔴 Assegnati</option>
-        </select>
-        <select class="pp-select" id="apFilterSquadra" onchange="filterAllPlayersList()">
-          <option value="">Tutte le squadre</option>
-          <option value="ATA">Atalanta</option>
-          <option value="BOL">Bologna</option>
-          <option value="CAG">Cagliari</option>
-          <option value="COM">Como</option>
-          <option value="FIO">Fiorentina</option>
-          <option value="FRO">Frosinone</option>
-          <option value="GEN">Genoa</option>
-          <option value="INT">Inter</option>
-          <option value="JUV">Juventus</option>
-          <option value="LAZ">Lazio</option>
-          <option value="LEC">Lecce</option>
-          <option value="MIL">Milan</option>
-          <option value="MON">Monza</option>
-          <option value="NAP">Napoli</option>
-          <option value="PAR">Parma</option>
-          <option value="ROM">Roma</option>
-          <option value="SAS">Sassuolo</option>
-          <option value="TOR">Torino</option>
-          <option value="UDI">Udinese</option>
-          <option value="VEN">Venezia</option>
-        </select>
-        <select class="pp-select" id="apSort" onchange="filterAllPlayersList()">
-          <option value="az">A→Z</option>
-          <option value="qa_desc">💰 QA ↓</option>
-          <option value="qi_desc">📊 QI ↓</option>
-        </select>
-      </div>
-      <div class="pp-table-wrap">
-        <table class="pp-table">
-          <thead><tr><th>Nome</th><th>Sq.</th><th>R</th><th>QI</th><th>QA</th><th>Stato</th></tr></thead>
-          <tbody id="apTableBody"></tbody>
-        </table>
-      </div>
-    </div>
     <!-- PIANIFICAZIONE BUDGET (visibile a tutte le squadre) -->
     <div class="players-panel" id="planPanel" style="display:none;flex-direction:column;">
       <div class="pp-search-bar">
@@ -634,7 +582,6 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
     <button class="mobile-nav-btn active" onclick="participantMobileTab('table',this)"><span class="icon">🃏</span>Tavolo</button>
     <button class="mobile-nav-btn" onclick="participantMobileTab('players',this)"><span class="icon">📋</span>Rosa</button>
     <button class="mobile-nav-btn" onclick="participantMobileTab('recent',this)"><span class="icon">🛒</span>Acquisti</button>
-    <button class="mobile-nav-btn" id="tabAllPlayersBtn" onclick="participantMobileTab('allplayers',this)"><span class="icon">👥</span>Giocatori</button>
     <button class="mobile-nav-btn" id="tabPlanBtn" onclick="participantMobileTab('plan',this)"><span class="icon">📅</span>Piano</button>
     <button class="mobile-nav-btn hidden" id="tabAstaBtn" onclick="participantMobileTab('asta',this)"><span class="icon">⚡</span>Asta</button>
     <button class="mobile-nav-btn hidden" id="tabAssignBtn" onclick="participantMobileTab('assign',this)"><span class="icon">📝</span>Assegn.</button>
@@ -1350,9 +1297,9 @@ function initParticipantFirebase() {
     assignmentsState = raw ? Object.entries(raw).map(([key, val]) => ({ ...val, _key: key })) : [];
     renderRecentList();
     filterParticipantPlayers(); // aggiorna rosa in real-time
-    // Aggiorna l'elenco giocatori acquistabili se il pannello è aperto
-    const alp = document.getElementById('allPlayersPanel');
-    if (alp && alp.style.display !== 'none') filterAllPlayersList();
+    // Aggiorna il tab Piano se il pannello è aperto (mostra stato assegnato/libero)
+    const planp = document.getElementById('planPanel');
+    if (planp && planp.style.display !== 'none') renderPlanList();
     // Aggiorna anche il pannello asta del presidente se visibile
     const ap = document.getElementById('presidentAstaPanel');
     if (ap && ap.style.display !== 'none') filterAstaPlayers();
@@ -1919,68 +1866,6 @@ function updateTimerDisplay(ringId, numId, remaining, total) {
   ringEl.style.stroke = remaining <= 5 ? 'var(--red)' : remaining <= 10 ? 'var(--gold)' : 'var(--green)';
   numEl.textContent = remaining;
   numEl.classList.toggle('urgent', remaining <= 10 && remaining > 0);
-}
-
-// ─── ELENCO GIOCATORI (visibile a tutte le squadre) ───
-function filterAllPlayersList() {
-  const searchEl = document.getElementById('apSearch');
-  const ruoloEl = document.getElementById('apFilterRuolo');
-  const statoEl = document.getElementById('apFilterStato');
-  const squadraEl = document.getElementById('apFilterSquadra');
-  const sortEl = document.getElementById('apSort');
-  if (!searchEl || !ruoloEl || !statoEl || !sortEl) return;
-  const query = (searchEl.value || '').toLowerCase().trim();
-  const ruolo = ruoloEl.value;
-  const stato = statoEl.value;
-  const squadra = squadraEl ? squadraEl.value : '';
-  const sort = sortEl.value;
-  let results = [...allPlayers];
-  if (query) results = results.filter(p => p.Nome && p.Nome.toLowerCase().includes(query));
-  if (ruolo) results = results.filter(p => (p.Ruolo_Classic || '').startsWith(ruolo));
-  if (squadra) results = results.filter(p => (p.Squadra || '').toUpperCase() === squadra);
-  // Mappa assegnazioni: nome giocatore (lowercase) → { teamName, amount }
-  const assignedMap = {};
-  assignmentsState.forEach(a => { if (a.player) assignedMap[a.player.toLowerCase()] = a; });
-  if (stato === 'free')  results = results.filter(p => !assignedMap[(p.Nome || '').toLowerCase()]);
-  if (stato === 'taken') results = results.filter(p => !!assignedMap[(p.Nome || '').toLowerCase()]);
-  if (sort === 'az')       results.sort((a, b) => (a.Nome || '').localeCompare(b.Nome || ''));
-  else if (sort === 'qa_desc') results.sort((a, b) => (parseInt(b.QA) || 0) - (parseInt(a.QA) || 0));
-  else if (sort === 'qi_desc') results.sort((a, b) => (parseInt(b.QI) || 0) - (parseInt(a.QI) || 0));
-  const tbody = document.getElementById('apTableBody');
-  if (!tbody) return;
-  tbody.textContent = '';
-  const list = results.slice(0, 600);
-  if (!list.length) {
-    const tr = document.createElement('tr'); const td = document.createElement('td');
-    td.colSpan = 6; td.className = 'empty-state'; td.textContent = 'Nessun risultato';
-    tr.appendChild(td); tbody.appendChild(tr); return;
-  }
-  list.forEach(p => {
-    const assignment = assignedMap[(p.Nome || '').toLowerCase()];
-    const tr = document.createElement('tr');
-    if (assignment) tr.className = 'pp-row-assigned';
-    const tdN = document.createElement('td'); tdN.style.fontWeight = '600'; tdN.textContent = p.Nome || '—';
-    const tdS = document.createElement('td'); tdS.style.cssText = 'color:var(--text-m);font-size:.75rem'; tdS.textContent = p.Squadra || '—';
-    const tdR = document.createElement('td');
-    const badge = document.createElement('span'); const r = (p.Ruolo_Classic || '').charAt(0);
-    badge.className = 'role-badge role-' + r; badge.textContent = r || '—'; tdR.appendChild(badge);
-    const tdQI = document.createElement('td'); tdQI.style.color = 'var(--text-m)'; tdQI.textContent = p.QI != null ? p.QI : '—';
-    const tdQA = document.createElement('td'); tdQA.style.color = 'var(--text-m)'; tdQA.textContent = p.QA != null ? p.QA : '—';
-    const tdStato = document.createElement('td');
-    if (assignment) {
-      const badgeAssigned = document.createElement('span');
-      badgeAssigned.className = 'pp-assigned-badge';
-      badgeAssigned.textContent = '🔴 ' + (assignment.teamName || '—') + ' · ' + (assignment.amount != null ? assignment.amount : '?') + ' cr';
-      tdStato.appendChild(badgeAssigned);
-    } else {
-      const freeSpan = document.createElement('span');
-      freeSpan.style.cssText = 'color:var(--green);font-size:.75rem;font-weight:700;';
-      freeSpan.textContent = '🟢 Libero';
-      tdStato.appendChild(freeSpan);
-    }
-    tr.appendChild(tdN); tr.appendChild(tdS); tr.appendChild(tdR); tr.appendChild(tdQI); tr.appendChild(tdQA); tr.appendChild(tdStato);
-    tbody.appendChild(tr);
-  });
 }
 
 // ─── PIANIFICAZIONE BUDGET (per squadra, prima dell'asta) ───
@@ -2844,7 +2729,6 @@ function participantMobileTab(tab, btn) {
   const pa = document.getElementById('pokerArea');
   const pp = document.getElementById('playersPanel');
   const rs = document.querySelector('.recent-sidebar');
-  const alp = document.getElementById('allPlayersPanel');
   const planp = document.getElementById('planPanel');
   const ap = document.getElementById('presidentAstaPanel');
   const asgn = document.getElementById('presidentAssignPanel');
@@ -2854,7 +2738,6 @@ function participantMobileTab(tab, btn) {
   if (pa) pa.style.display = 'none';
   if (pp) pp.style.display = 'none';
   if (rs) { rs.style.display = 'none'; rs.style.width = '200px'; rs.style.borderLeft = ''; }
-  if (alp) alp.style.display = 'none';
   if (planp) planp.style.display = 'none';
   if (ap) ap.style.display = 'none';
   if (asgn) asgn.style.display = 'none';
@@ -2866,8 +2749,6 @@ function participantMobileTab(tab, btn) {
     if (pp) { pp.style.display = 'flex'; filterParticipantPlayers(); }
   } else if (tab === 'recent') {
     if (rs) { rs.style.display = 'flex'; rs.style.width = '100%'; rs.style.borderLeft = 'none'; }
-  } else if (tab === 'allplayers') {
-    if (alp) { alp.style.display = 'flex'; filterAllPlayersList(); }
   } else if (tab === 'plan') {
     if (planp) { planp.style.display = 'flex'; renderPlanList(); }
   } else if (tab === 'asta') {
