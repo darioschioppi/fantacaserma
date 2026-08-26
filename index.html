@@ -323,12 +323,12 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
     <select id="impersonateSelect" class="hidden" onchange="onImpersonateSelect()" style="background:var(--card2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:5px 6px;font-size:.72rem;max-width:100px;flex-shrink:0;">
       <option value="">🎭 Impersona…</option>
     </select>
-    <button id="btnStopImpersonate" class="hidden" onclick="stopImpersonate()" style="background:rgba(239,68,68,.15);border:1px solid var(--red2);color:var(--red);font-size:.72rem;padding:5px 8px;border-radius:6px;flex-shrink:0;">↩️ Barca</button>
+    <button id="btnStopImpersonate" class="hidden" onclick="stopImpersonate()" style="background:rgba(239,68,68,.15);border:1px solid var(--red2);color:var(--red);font-size:.72rem;padding:5px 8px;border-radius:6px;flex-shrink:0;">↩️ Barça</button>
     <button class="btn-logout" onclick="logout()">Esci</button>
   </div>
   <div id="impersonateBanner" class="hidden" style="background:rgba(168,85,247,.15);border-bottom:1px solid rgba(168,85,247,.4);color:#c084fc;font-size:.78rem;padding:6px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-shrink:0;">
     <span>🎭 Stai impersonando <strong id="impersonateBannerName">—</strong></span>
-    <button onclick="stopImpersonate()" style="background:transparent;border:1px solid #c084fc;color:#c084fc;font-size:.7rem;padding:3px 8px;border-radius:6px;cursor:pointer;">↩️ Torna a Barca</button>
+    <button onclick="stopImpersonate()" style="background:transparent;border:1px solid #c084fc;color:#c084fc;font-size:.7rem;padding:3px 8px;border-radius:6px;cursor:pointer;">↩️ Torna a Barça</button>
   </div>
   <div id="mobileStatusBar" class="mobile-status-bar">
     <span id="mobileStatusDot" class="phase-dot"></span>
@@ -606,7 +606,7 @@ const firebaseConfig = {
 };
 
 const TEAMS = [
-  { id: 't1',  name: 'Barca',            emoji: '⚓', password: 'caserma1' },
+  { id: 't1',  name: 'Barça',            emoji: '⚓', password: 'caserma1' },
   { id: 't2',  name: 'Benfiga',          emoji: '🦅', password: 'caserma1', isPresident: true },
   { id: 't3',  name: 'Frattese1985',     emoji: '🔴', password: 'caserma1' },
   { id: 't4',  name: 'Morpheus',         emoji: '💊', password: 'caserma1' },
@@ -850,7 +850,7 @@ function setupImpersonationUI() {
     });
     const barcaOpt = document.createElement('option');
     barcaOpt.value = 't1';
-    barcaOpt.textContent = '⚓ Barca (originale)';
+    barcaOpt.textContent = '⚓ Barça (originale)';
     sel.appendChild(barcaOpt);
     sel.dataset.populated = '1';
   }
@@ -916,7 +916,7 @@ function stopImpersonate() {
   myBidSent = false;
   adminWinner = null;
   enterParticipant();
-  toast('↩️ Sei tornato a Barca', 'success');
+  toast('↩️ Sei tornato a Barça', 'success');
 }
 
 // ─── AUCTION LOG ───

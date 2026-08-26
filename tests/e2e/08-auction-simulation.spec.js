@@ -295,7 +295,7 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
 
     await Promise.all([
       loginAdmin(adminPage),
-      loginTeam(participantPage, 't1'), // Barca
+      loginTeam(participantPage, 't1'), // Barça
     ]);
 
     // Avvia asta via REST
@@ -325,7 +325,7 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
     const teamsData = (await fbRest('/teams/t1', 'GET')) || {};
     expect(teamsData.budget).toBeLessThanOrEqual(BUDGET_START - 80);
 
-    // Verifica UI partecipante (Barca): overlay rivelazione visibile
+    // Verifica UI partecipante (Barça): overlay rivelazione visibile
     await participantPage.waitForFunction(
       () => document.getElementById('revealOverlay')?.classList.contains('visible'),
       { timeout: 10000 }
@@ -500,7 +500,7 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
     // Crea assegnazione di test via REST (evita db.ref().update() root)
     const pushResult  = await fbRest('/assignments', 'POST', {
       player: '__TEST_PLAYER__', ruolo: 'A',
-      teamId: 't1', teamName: 'Barca', amount: 60, timestamp: Date.now()
+      teamId: 't1', teamName: 'Barça', amount: 60, timestamp: Date.now()
     });
     // REST POST ritorna { name: 'push-key' }
     const testKey = pushResult && pushResult.name;
@@ -866,7 +866,7 @@ test.describe.serial('Simulazione UI Real-time', () => {
 
   test('UI — partecipante vede il tavolo aggiornarsi quando una squadra offre', async ({ browser }) => {
     const adminPage = await browser.newPage();
-    const teamPage  = await browser.newPage(); // Barca (t1)
+    const teamPage  = await browser.newPage(); // Barça (t1)
 
     await Promise.all([
       loginAdmin(adminPage),

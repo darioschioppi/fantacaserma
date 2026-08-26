@@ -9,7 +9,7 @@ const { gotoAndLogin, BASE_URL } = require('./helpers');
 test.describe('Schermata Partecipante', () => {
   // ── Stato iniziale dopo login ─────────────────────────────────────────────
 
-  test.describe('Stato iniziale (Barca - t1)', () => {
+  test.describe('Stato iniziale (Barça - t1)', () => {
     test.beforeEach(async ({ page }) => {
       await gotoAndLogin(page, 't1');
     });

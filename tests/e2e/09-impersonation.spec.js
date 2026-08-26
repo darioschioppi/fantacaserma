@@ -21,7 +21,7 @@ test.describe('Impersonificazione Squadre', () => {
 
   test('Barca puo impersonare unaltra squadra: nome e budget cambiano', async ({ page }) => {
     await gotoAndLogin(page, 't1');
-    await expect(page.locator('#participantTeamName')).toContainText('Barca');
+    await expect(page.locator('#participantTeamName')).toContainText('Barça');
 
     await page.selectOption('#impersonateSelect', 't5');
     await page.locator('#impersonateBanner').waitFor({ state: 'visible', timeout: 8_000 });
@@ -38,7 +38,7 @@ test.describe('Impersonificazione Squadre', () => {
     await page.click('#btnStopImpersonate');
 
     await page.locator('#impersonateBanner').waitFor({ state: 'hidden', timeout: 8_000 });
-    await expect(page.locator('#participantTeamName')).toContainText('Barca');
+    await expect(page.locator('#participantTeamName')).toContainText('Barça');
   });
 
   test('si puo passare rapidamente da una squadra impersonata a un\'altra', async ({ page }) => {
@@ -64,7 +64,7 @@ test.describe('Impersonificazione Squadre', () => {
 
     await page.selectOption('#impersonateSelect', 't1');
     await page.locator('#impersonateBanner').waitFor({ state: 'hidden', timeout: 8_000 });
-    await expect(page.locator('#participantTeamName')).toContainText('Barca');
+    await expect(page.locator('#participantTeamName')).toContainText('Barça');
   });
 
   test('impersonificazione persiste al reload della pagina', async ({ page }) => {

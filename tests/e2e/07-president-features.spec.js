@@ -53,7 +53,7 @@ test.describe('Feature 1 — Timer configurabile', () => {
   });
 
   test('lo stepper timer non è visibile per un partecipante normale', async ({ page }) => {
-    // Barca (t1) non è presidente → non ha il tab asta → non vede lo stepper
+    // Barça (t1) non è presidente → non ha il tab asta → non vede lo stepper
     await page.evaluate(() => {
       // Il panel è nascosto per i non-presidenti
       const panel = document.getElementById('presidentAstaPanel');
@@ -326,7 +326,7 @@ test.describe('Feature 3 — Fix chiavi Firebase (assignmentsState)', () => {
     // Simula una situazione con dati locali
     await page.evaluate(() => {
       const raw = {
-        '-abc123': { player: 'Tizio', ruolo: 'A', teamId: 't1', teamName: 'Barca', amount: 50, timestamp: Date.now() },
+        '-abc123': { player: 'Tizio', ruolo: 'A', teamId: 't1', teamName: 'Barça', amount: 50, timestamp: Date.now() },
         '-xyz789': { player: 'Caio',  ruolo: 'D', teamId: 't3', teamName: 'Frattese1985', amount: 30, timestamp: Date.now() }
       };
       // Simula il listener: Object.entries + _key

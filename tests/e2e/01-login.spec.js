@@ -38,7 +38,7 @@ test.describe('Login Screen', () => {
 
   test('le squadre sono tutte presenti nel dropdown', async ({ page }) => {
     const expectedTeams = [
-      { value: 't1', text: 'Barca' },
+      { value: 't1', text: 'Barça' },
       { value: 't2', text: 'Benfiga' },
       { value: 't3', text: 'Frattese1985' },
       { value: 't4', text: 'Morpheus' },
