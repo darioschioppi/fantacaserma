@@ -845,12 +845,12 @@ function setupImpersonationUI() {
     TEAMS.filter(t => t.id !== 't1').forEach(t => {
       const opt = document.createElement('option');
       opt.value = t.id;
-      opt.textContent = t.emoji + ' ' + t.name;
+      opt.textContent = t.name;
       sel.appendChild(opt);
     });
     const barcaOpt = document.createElement('option');
     barcaOpt.value = 't1';
-    barcaOpt.textContent = '⚓ Barça (originale)';
+    barcaOpt.textContent = 'Barça (originale)';
     sel.appendChild(barcaOpt);
     sel.dataset.populated = '1';
   }
@@ -2500,7 +2500,7 @@ function openReassignForm(key) {
   sel.style.cssText = 'flex:1;min-width:120px;padding:5px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.8rem;';
   TEAMS.forEach(t => {
     const opt = document.createElement('option');
-    opt.value = t.id; opt.textContent = t.emoji + ' ' + t.name;
+    opt.value = t.id; opt.textContent = t.name;
     if (t.id === a.teamId) opt.selected = true;
     sel.appendChild(opt);
   });
@@ -2588,7 +2588,7 @@ function selectAssignFreePlayer(p) {
     sel.textContent = '';
     TEAMS.forEach(t => {
       const opt = document.createElement('option');
-      opt.value = t.id; opt.textContent = t.emoji + ' ' + t.name;
+      opt.value = t.id; opt.textContent = t.name;
       sel.appendChild(opt);
     });
   }
