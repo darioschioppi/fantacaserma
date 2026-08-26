@@ -122,20 +122,20 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 .seat{position:absolute;width:72px;display:flex;flex-direction:column;align-items:center;gap:3px;transform:translate(-50%,-50%);transition:opacity .3s;}
 .seat.dimmed{opacity:.25;}
 .seat-chip{width:56px;height:56px;border-radius:50%;background:var(--bg3);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;position:relative;transition:all .3s;}
-@media(max-width:480px){
-  .seat{width:56px;}
-  .seat-chip{width:40px;height:40px;font-size:1.1rem;}
-  .seat-name{font-size:.5rem;max-width:56px;}
-  .seat-badge-you{font-size:.45rem;padding:1px 3px;}
-}
 .seat-chip.submitted{border-color:var(--green);box-shadow:0 0 14px var(--green),0 0 28px rgba(34,197,94,.4);animation:pulse-green 1.5s infinite;}
 .seat-chip.mine{border-color:var(--gold);box-shadow:0 0 12px rgba(255,215,0,.4);}
 .seat-chip.tiebreaker{border-color:var(--red);box-shadow:0 0 14px var(--red),0 0 28px rgba(239,68,68,.4);animation:pulse-red 1s infinite;}
 @keyframes pulse-green{0%,100%{box-shadow:0 0 14px var(--green),0 0 28px rgba(34,197,94,.4);}50%{box-shadow:0 0 22px var(--green),0 0 44px rgba(34,197,94,.6);}}
 @keyframes pulse-red{0%,100%{box-shadow:0 0 14px var(--red),0 0 28px rgba(239,68,68,.4);}50%{box-shadow:0 0 22px var(--red),0 0 44px rgba(239,68,68,.6);}}
 .seat-badge-you{position:absolute;top:-6px;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;font-size:.55rem;font-weight:900;padding:1px 5px;border-radius:4px;letter-spacing:.5px;white-space:nowrap;}
-.seat-name{font-size:.62rem;font-weight:700;text-align:center;color:var(--text);max-width:76px;text-shadow:0 1px 3px rgba(0,0,0,.8);white-space:normal;line-height:1.15;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word;}
+.seat-name{font-size:.62rem;font-weight:700;text-align:center;color:var(--text);max-width:none;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.8);overflow:visible;}
 .seat-name.mine{color:var(--gold);}
+@media(max-width:480px){
+  .seat{width:56px;}
+  .seat-chip{width:40px;height:40px;font-size:1.1rem;}
+  .seat-name{font-size:.48rem;max-width:none;white-space:nowrap;overflow:visible;display:block;letter-spacing:-.2px;}
+  .seat-badge-you{font-size:.45rem;padding:1px 3px;}
+}
 /* AVATAR */
 .seat-chip img.avatar-img{position:absolute;inset:0;width:100%;height:100%;border-radius:50%;object-fit:cover;z-index:1;}
 .seat-chip .chip-emoji{position:relative;z-index:1;}
