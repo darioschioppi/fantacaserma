@@ -345,6 +345,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         <div id="auctionHeaderMeta" style="font-size:.72rem;color:var(--text-m);margin-top:1px;"></div>
       </div>
       <div class="tiebreaker-banner" id="tiebreakerBanner">⚖️ SPAREGGIO — rioffri ≥ <strong id="tiebreakerMin">—</strong> cr · non puoi passare</div>
+      <div class="tiebreaker-banner" id="disconnectBanner" style="border-color:var(--red2);color:var(--red);">⚠️ Asta in pausa: <strong id="disconnectTeamLabel">—</strong> disconnessa</div>
       <div class="poker-table" id="pokerTable">
         <div class="table-center" id="tableCenter">
           <div class="table-waiting-msg" id="tableWaitingMsg">In attesa dell'admin…</div>
@@ -419,6 +420,13 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         <span id="paTimerDuration" style="font-size:.9rem;font-weight:700;color:var(--gold);min-width:40px;text-align:center;">30s</span>
         <button onclick="changeAuctionTimer(+5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">+</button>
       </div>
+      <!-- Timeout riconnessione stepper -->
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;">
+        <span style="font-size:.72rem;color:var(--text-m);flex:1;">📡 Timeout riconnessione:</span>
+        <button onclick="changeReconnectTimeout(-15)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">−</button>
+        <span id="paReconnectTimeout" style="font-size:.9rem;font-weight:700;color:var(--gold);min-width:40px;text-align:center;">45s</span>
+        <button onclick="changeReconnectTimeout(+15)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">+</button>
+      </div>
       <div class="pp-search-bar">
         <input class="pp-search-input" id="paSearch" placeholder="🔍 Scegli giocatore da mettere all'asta…" oninput="filterAstaPlayers()">
         <select class="pp-select" id="paFilterRuolo" onchange="filterAstaPlayers()">
@@ -463,6 +471,15 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <button id="paBtnResume" onclick="adminResumeAuction()" style="display:none;padding:7px 12px;border-radius:8px;border:none;background:var(--green);color:#000;font-weight:700;font-size:.78rem;cursor:pointer;">▶ Riprendi</button>
           <button onclick="adminEndAuction()" style="padding:7px 12px;border-radius:8px;border:none;background:var(--red);color:#fff;font-weight:700;font-size:.78rem;cursor:pointer;">⏹ Termina asta</button>
           <button onclick="adminSimulateBids()" style="padding:7px 12px;border-radius:8px;border:none;background:#5a3e8a;color:#fff;font-weight:700;font-size:.78rem;cursor:pointer;">🎲 Simula</button>
+        </div>
+        <!-- Decisione presidente dopo timeout riconnessione scaduto senza esito -->
+        <div id="paDisconnectDecision" style="display:none;margin-top:10px;padding:10px;border-radius:8px;background:rgba(239,68,68,.1);border:1px solid var(--red2);">
+          <div style="font-size:.78rem;color:var(--red);font-weight:700;margin-bottom:8px;" id="paDisconnectDecisionMsg">⚠️ Timeout scaduto: come procedere?</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button onclick="disconnectDecisionResumeWithout()" style="padding:6px 10px;border-radius:8px;border:none;background:var(--green);color:#000;font-weight:700;font-size:.74rem;cursor:pointer;">▶ Riprendi senza</button>
+            <button onclick="disconnectDecisionRestartPlayer()" style="padding:6px 10px;border-radius:8px;border:none;background:var(--blue);color:#fff;font-weight:700;font-size:.74rem;cursor:pointer;">🔄 Riparti su questo giocatore</button>
+            <button onclick="disconnectDecisionKeepWaiting()" style="padding:6px 10px;border-radius:8px;border:none;background:var(--bg3);color:var(--text);font-weight:700;font-size:.74rem;cursor:pointer;border:1px solid var(--border);">⏳ Continua ad aspettare</button>
+          </div>
         </div>
         <div id="paPostReveal" style="display:none;margin-top:8px;">
           <div style="font-size:.8rem;color:var(--text-m);margin-bottom:8px;">Vincitore: <strong id="paWinnerName" style="color:var(--gold)">—</strong> con <strong id="paWinnerBid" style="color:var(--gold)">—</strong> cr <span style="font-size:.72rem;color:var(--text-s);">(assegnazione automatica…)</span></div>
@@ -660,6 +677,18 @@ let adminWinner = null;
 let autoRevealFired = false;
 let prevPhase = null; // traccia la phase precedente per il trigger notifica audio
 let myPlanState = {}; // cache locale di /plans/{teamId}: { sanitizedKey: {amount, playerName, ts} }
+let myPresenceSessionKey = null; // pushId della sessione di presenza corrente su /teams/{teamId}/sessions
+let disconnectDebounceTimer = null; // debounce ~3s prima di considerare "davvero" disconnessa una squadra
+let disconnectWatchdogInterval = null; // controlla il timeout di riconnessione lato presidente
+const DEFAULT_RECONNECT_TIMEOUT_SEC = 45;
+
+// Una squadra è "online" se ha almeno una sessione di presenza attiva. Sostituisce il
+// vecchio booleano singolo /teams/{id}/connected, che si rompeva con più dispositivi
+// sulla stessa squadra (un device che si disconnette non deve spegnere gli altri).
+function isTeamOnline(teamId) {
+  const sessions = (teamsState[teamId] || {}).sessions;
+  return !!(sessions && Object.keys(sessions).length > 0);
+}
 
 // ─── SAFE DOM HELPERS ───
 function setText(id, val) {
@@ -773,9 +802,10 @@ function setupConnectionWatchdog() {
       firebase.database().goOffline();
       firebase.database().goOnline();
     } catch (e) { /* no-op */ }
-    // Rinfresca subito lo stato "connesso" della squadra corrente.
+    // Ri-registra la sessione di presenza della squadra corrente (il vecchio pushId
+    // potrebbe essere già stato rimosso da onDisconnect durante la sospensione).
     if (currentUser && currentUser.teamId) {
-      db.ref('/teams/' + currentUser.teamId + '/connected').set(true).catch(() => {});
+      registerPresenceSession(currentUser.teamId);
     }
   });
 }
@@ -838,7 +868,7 @@ function loginTeam() {
 
 function logout() {
   if (currentUser && db && (currentUser.type === 'team' || currentUser.isPresident) && currentUser.teamId) {
-    db.ref('/teams/' + currentUser.teamId + '/connected').set(false);
+    removePresenceSession(currentUser.teamId);
   }
   clearFirebaseListeners();
   clearTimerInterval();
@@ -920,6 +950,7 @@ function startImpersonate(teamId) {
   const team = TEAMS.find(t => t.id === teamId);
   if (!team) return;
   if (!realUser) realUser = currentUser; // salva l'identità originale solo alla prima impersonificazione
+  removePresenceSession(currentUser.teamId); // chiude la sessione dell'identità precedente
   clearFirebaseListeners();
   clearTimerInterval();
   currentUser = { type: 'team', teamId: team.id, teamName: team.name, teamEmoji: team.emoji, isPresident: !!team.isPresident };
@@ -938,6 +969,7 @@ function startImpersonate(teamId) {
 function stopImpersonate() {
   if (!realUser) return;
   const orig = realUser;
+  removePresenceSession(currentUser.teamId); // chiude la sessione della squadra impersonata
   clearFirebaseListeners();
   clearTimerInterval();
   realUser = null;
@@ -961,7 +993,7 @@ function adminStartAuction(playerData) {
   const phase = gameState.phase || 'waiting';
   if (phase !== 'waiting' && phase !== 'assigned') { toast('Prima chiudi l\'asta corrente!', 'error'); return; }
   // Avvisa se non tutti connessi, ma permette di procedere con conferma
-  const notConn = TEAMS.filter(t => !((teamsState[t.id] || {}).connected));
+  const notConn = TEAMS.filter(t => !isTeamOnline(t.id));
   if (notConn.length > 0) {
     const names = notConn.map(t => t.name.split(' ')[0]).join(', ');
     if (!confirm('⚠️ Non tutti connessi — mancano: ' + names + '.\nAvviare l\'asta comunque?')) return;
@@ -1181,7 +1213,7 @@ function enterParticipant() {
   if (u.isPresident && db) {
     db.ref('/teams').once('value').then(snap => {
       if (!snap.exists()) {
-        const td = {}; TEAMS.forEach(t => { td[t.id] = { name: t.name, emoji: t.emoji, budget: BUDGET_START, connected: false, rosterCount: 0 }; });
+        const td = {}; TEAMS.forEach(t => { td[t.id] = { name: t.name, emoji: t.emoji, budget: BUDGET_START, rosterCount: 0 }; });
         db.ref('/teams').set(td);
       }
     });
@@ -1264,8 +1296,7 @@ function updateConnectedChips() {
   let count = 0;
   const missing = [];
   TEAMS.forEach(t => {
-    const td = teamsState[t.id] || {};
-    const online = !!td.connected;
+    const online = isTeamOnline(t.id);
     if (online) count++; else missing.push(t.name.split(' ')[0]);
     const dot = document.getElementById('online-dot-' + t.id);
     if (dot) dot.classList.toggle('online', online);
@@ -1306,16 +1337,42 @@ function isRosterFull(teamId, ruolo) {
   return getRosterCounts(teamId)[r] >= ROSTER_MAX[r];
 }
 
+// Presenza multi-dispositivo: registra una sessione dedicata (pushId) su
+// /teams/{teamId}/sessions/{pushId} invece del vecchio booleano singolo /connected.
+// Ogni dispositivo/tab ha la propria sessione con onDisconnect().remove() — così la
+// disconnessione di UN device non spegne la presenza online se un altro device della
+// stessa squadra è ancora connesso (bug segnalato: due telefoni sulla stessa squadra).
+function registerPresenceSession(teamId) {
+  if (!db || !teamId) return;
+  // Se questo stesso browser/tab aveva già una sessione registrata (es. richiamata
+  // dal watchdog senza una reale disconnessione), la rimuove prima di crearne una
+  // nuova: altrimenti resterebbe come sessione "fantasma" mai chiusa da onDisconnect.
+  if (myPresenceSessionKey) {
+    db.ref('/teams/' + teamId + '/sessions/' + myPresenceSessionKey).remove().catch(() => {});
+    myPresenceSessionKey = null;
+  }
+  // .off() prima di re-registrare: evita di accumulare più listener .info/connected
+  // se questa funzione viene richiamata più volte (es. watchdog dopo background).
+  db.ref('.info/connected').off();
+  db.ref('.info/connected').on('value', snap => {
+    if (snap.val() !== true) return;
+    const sessionRef = db.ref('/teams/' + teamId + '/sessions').push();
+    myPresenceSessionKey = sessionRef.key;
+    sessionRef.onDisconnect().remove();
+    sessionRef.set(true);
+  });
+}
+
+// Rimuove esplicitamente la sessione di presenza corrente (logout, cambio identità).
+function removePresenceSession(teamId) {
+  if (!db || !teamId || !myPresenceSessionKey) return;
+  db.ref('/teams/' + teamId + '/sessions/' + myPresenceSessionKey).remove().catch(() => {});
+  myPresenceSessionKey = null;
+}
+
 function initParticipantFirebase() {
   if (!db) return;
-  // Presenza: pattern ufficiale Firebase su path /teams già permesso dalle regole
-  const connRef = db.ref('/teams/' + currentUser.teamId + '/connected');
-  db.ref('.info/connected').on('value', snap => {
-    if (snap.val() === true) {
-      connRef.onDisconnect().set(false);
-      connRef.set(true);
-    }
-  });
+  registerPresenceSession(currentUser.teamId);
   db.ref('/game').on('value', snap => { gameState = snap.val() || {}; handleGameStateChange(); });
   db.ref('/bidSubmitted').on('value', snap => {
     bidSubmittedState = snap.val() || {};
@@ -1327,7 +1384,12 @@ function initParticipantFirebase() {
     if (gameState.phase === 'reveal' || gameState.phase === 'assigned') renderRevealOverlay(gameState.phase === 'assigned');
     if (currentUser && currentUser.isPresident) renderPresidentBids();
   });
-  db.ref('/teams').on('value', snap => { teamsState = snap.val() || {}; updateBudgetDisplay(); updateConnectedChips(); });
+  db.ref('/teams').on('value', snap => {
+    teamsState = snap.val() || {};
+    updateBudgetDisplay();
+    updateConnectedChips();
+    if (currentUser && currentUser.isPresident) checkDisconnectionPause();
+  });
   db.ref('/assignments').on('value', snap => {
     const raw = snap.val();
     assignmentsState = raw ? Object.entries(raw).map(([key, val]) => ({ ...val, _key: key })) : [];
@@ -1404,6 +1466,12 @@ function handleGameStateChange() {
   prevPhase = phase;
   const cp = gameState.currentPlayer;
   updateParticipantPhase(phase);
+  // Il banner disconnessione si mostra solo durante phase==='paused' con pausedReason
+  // 'disconnect' (gestito esplicitamente più sotto): in ogni altra fase va sempre chiuso.
+  if (!(phase === 'paused' && gameState.pausedReason === 'disconnect')) {
+    const dBannerTop = document.getElementById('disconnectBanner');
+    if (dBannerTop) dBannerTop.classList.remove('visible');
+  }
   // Aggiorna label durata timer (Feature 1)
   const timerLabel = document.getElementById('paTimerDuration');
   if (timerLabel) timerLabel.textContent = getAuctionDuration() + 's';
@@ -1540,9 +1608,18 @@ function handleGameStateChange() {
     stopLocalTimer();
     document.getElementById('bidInputArea').style.display = 'none';
     document.getElementById('bidAreaWaiting').style.display = 'block';
-    setText('bidAreaWaiting', '⏸ Asta in pausa…');
     document.getElementById('revealOverlay').classList.remove('visible');
     document.getElementById('tiebreakerBanner').classList.remove('visible');
+    const dBanner = document.getElementById('disconnectBanner');
+    if (gameState.pausedReason === 'disconnect') {
+      const team = TEAMS.find(t => t.id === gameState.disconnectedTeamId);
+      setText('disconnectTeamLabel', team ? (team.emoji + ' ' + team.name) : '—');
+      if (dBanner) dBanner.classList.add('visible');
+      setText('bidAreaWaiting', '⏸ Asta in pausa: attesa riconnessione…');
+    } else {
+      if (dBanner) dBanner.classList.remove('visible');
+      setText('bidAreaWaiting', '⏸ Asta in pausa…');
+    }
   } else if (phase === 'reveal') {
     stopLocalTimer();
     document.getElementById('bidInputArea').style.display = 'none';
@@ -1872,7 +1949,7 @@ function checkAutoReveal() {
   const tiebreakers = gameState.tiebreakers || null;
   const eligible = tiebreakers
     ? TEAMS.filter(t => tiebreakers.includes(t.id))
-    : TEAMS.filter(t => (teamsState[t.id] || {}).connected);
+    : TEAMS.filter(t => isTeamOnline(t.id));
   if (!eligible.length) return;
   const allSubmitted = eligible.every(t => bidSubmittedState[t.id]);
   if (allSubmitted) {
@@ -1881,6 +1958,131 @@ function checkAutoReveal() {
       if ((gameState.phase || 'waiting') === phase) adminReveal();
     }, 800); // breve delay per sincronizzazione Firebase
   }
+}
+
+// ─── BLOCCO ASTA SU DISCONNESSIONE ───
+// Il presidente (unico client con potere di scrittura su /game) fa da "autorità server":
+// osserva lo stato presenza di /teams e, se una squadra ancora in gioco su questo turno
+// si disconnette davvero, metti in pausa l'asta in automatico. Nessun client normale
+// decide da solo se bloccare/riattivare — evita comportamenti non sincronizzati.
+function getEligibleTeamsForCurrentTurn() {
+  const tiebreakers = gameState.tiebreakers || null;
+  return tiebreakers ? TEAMS.filter(t => tiebreakers.includes(t.id)) : TEAMS.slice();
+}
+
+function checkDisconnectionPause() {
+  if (!canManageAuction()) return;
+  const phase = gameState.phase || 'waiting';
+
+  // Ripresa automatica: la squadra che aveva causato la pausa è tornata online.
+  if (phase === 'paused' && gameState.pausedReason === 'disconnect' && gameState.disconnectedTeamId) {
+    if (isTeamOnline(gameState.disconnectedTeamId)) {
+      stopDisconnectWatchdog();
+      adminResumeAuction();
+      const team = TEAMS.find(t => t.id === gameState.disconnectedTeamId);
+      writeLog('auction_resumed_reconnect', { teamId: gameState.disconnectedTeamId, teamName: team ? team.name : gameState.disconnectedTeamId });
+    }
+    return;
+  }
+
+  // Rilevamento nuova disconnessione: solo durante bidding/tiebreaker, solo se la
+  // squadra è eligible per questo turno e non ha già inviato la propria offerta
+  // (se ha già offerto, la sua disconnessione non blocca nulla).
+  if (phase !== 'bidding' && phase !== 'tiebreaker') return;
+  const eligible = getEligibleTeamsForCurrentTurn();
+  const disconnected = eligible.find(t => !isTeamOnline(t.id) && !bidSubmittedState[t.id]);
+
+  if (!disconnected) {
+    // Nessuno disconnesso: annulla un eventuale debounce pendente (falso allarme risolto).
+    if (disconnectDebounceTimer) { clearTimeout(disconnectDebounceTimer); disconnectDebounceTimer = null; }
+    return;
+  }
+  if (disconnectDebounceTimer) return; // debounce già in corso per questa disconnessione
+
+  // Debounce ~3s: evita di metter in pausa per un blip di rete cortissimo.
+  disconnectDebounceTimer = setTimeout(() => {
+    disconnectDebounceTimer = null;
+    // Doppio controllo: potrebbe essersi già riconnessa nei 3s di attesa.
+    if (isTeamOnline(disconnected.id)) return;
+    const curPhase = gameState.phase || 'waiting';
+    if (curPhase !== 'bidding' && curPhase !== 'tiebreaker') return;
+    const paused = pauseAuction('disconnect', { disconnectedTeamId: disconnected.id, disconnectedAt: Date.now() });
+    if (paused) {
+      writeLog('auction_paused_disconnect', { teamId: disconnected.id, teamName: disconnected.name, pausedAt: Date.now() });
+      toast('⚠️ Asta in pausa: ' + disconnected.name + ' disconnessa', 'error');
+      startDisconnectWatchdog();
+    }
+  }, 3000);
+}
+
+// Controlla periodicamente se il timeout di riconnessione è scaduto senza che la
+// squadra disconnessa sia tornata online: in quel caso NON riprende da sola, mostra
+// invece un pannello di decisione al presidente (righe presidentAstaPanel).
+function startDisconnectWatchdog() {
+  stopDisconnectWatchdog();
+  disconnectWatchdogInterval = setInterval(() => {
+    const phase = gameState.phase || 'waiting';
+    if (phase !== 'paused' || gameState.pausedReason !== 'disconnect' || !gameState.disconnectedAt) {
+      stopDisconnectWatchdog();
+      return;
+    }
+    const timeoutSec = gameState.reconnectTimeoutSec || DEFAULT_RECONNECT_TIMEOUT_SEC;
+    const elapsedSec = (Date.now() - gameState.disconnectedAt) / 1000;
+    if (elapsedSec >= timeoutSec) {
+      stopDisconnectWatchdog();
+      renderDisconnectDecisionPanel();
+    }
+  }, 1000);
+}
+
+function stopDisconnectWatchdog() {
+  if (disconnectWatchdogInterval) { clearInterval(disconnectWatchdogInterval); disconnectWatchdogInterval = null; }
+  const panel = document.getElementById('paDisconnectDecision');
+  if (panel) panel.style.display = 'none';
+}
+
+// Mostra al presidente il pannello di decisione quando il timeout di riconnessione
+// scade senza che la squadra disconnessa sia tornata online.
+function renderDisconnectDecisionPanel() {
+  const panel = document.getElementById('paDisconnectDecision');
+  if (!panel) return;
+  const team = TEAMS.find(t => t.id === gameState.disconnectedTeamId);
+  const msg = document.getElementById('paDisconnectDecisionMsg');
+  if (msg) msg.textContent = '⚠️ ' + (team ? (team.emoji + ' ' + team.name) : 'La squadra') + ' non si è riconnessa in tempo: come procedere?';
+  panel.style.display = 'block';
+}
+
+// Opzione 1: riprende l'asta escludendo la squadra disconnessa da questo giocatore
+// (può comunque rientrare nelle aste successive) — evita di bloccare tutti per uno.
+function disconnectDecisionResumeWithout() {
+  const team = TEAMS.find(t => t.id === gameState.disconnectedTeamId);
+  document.getElementById('paDisconnectDecision').style.display = 'none';
+  // Segna la squadra come "passata" per questo giocatore, così non blocca il conteggio
+  // eligible (checkAutoReveal/checkDisconnectionPause) al resume.
+  if (team) db.ref('/bidSubmitted/' + team.id).set(true);
+  adminResumeAuction();
+  writeLog('disconnect_resumed_without', { teamId: team ? team.id : gameState.disconnectedTeamId, teamName: team ? team.name : '—' });
+  toast('▶ Asta ripresa senza ' + (team ? team.name : 'la squadra disconnessa'), 'info');
+}
+
+// Opzione 2: annulla il turno corrente e rimette il giocatore in coda (stesso adminSkip
+// già usato altrove), azzerando bids/bidSubmitted per ripartire da zero.
+function disconnectDecisionRestartPlayer() {
+  const team = TEAMS.find(t => t.id === gameState.disconnectedTeamId);
+  document.getElementById('paDisconnectDecision').style.display = 'none';
+  writeLog('disconnect_restarted_player', { teamId: team ? team.id : gameState.disconnectedTeamId, teamName: team ? team.name : '—' });
+  db.ref('/game').update({ pausedReason: null, disconnectedTeamId: null, disconnectedAt: null });
+  adminSkip();
+  toast('🔄 Giocatore rimesso in coda', 'info');
+}
+
+// Opzione 3: nessuna azione automatica, resetta il cronometro del timeout per un
+// altro ciclo di attesa (il presidente ha scelto di continuare ad aspettare).
+function disconnectDecisionKeepWaiting() {
+  document.getElementById('paDisconnectDecision').style.display = 'none';
+  db.ref('/game/disconnectedAt').set(Date.now());
+  startDisconnectWatchdog();
+  toast('⏳ Continuo ad attendere la riconnessione…', 'info');
 }
 
 function stopLocalTimer() {
@@ -2050,9 +2252,11 @@ function renderPresidentAuction() {
   const btnResume = document.getElementById('paBtnResume');
   if (btnPause) btnPause.style.display = phase === 'paused' ? 'none' : '';
   if (btnResume) btnResume.style.display = phase === 'paused' ? '' : 'none';
-  // Aggiorna label durata timer
+  // Aggiorna label durata timer e timeout riconnessione
   const timerLabel = document.getElementById('paTimerDuration');
   if (timerLabel) timerLabel.textContent = getAuctionDuration() + 's';
+  const reconnLabel = document.getElementById('paReconnectTimeout');
+  if (reconnLabel) reconnLabel.textContent = (gameState.reconnectTimeoutSec || DEFAULT_RECONNECT_TIMEOUT_SEC) + 's';
   const bidArea = document.getElementById('paBidArea');
   if (phase === 'bidding' || phase === 'tiebreaker') {
     document.getElementById('paActions').style.display = 'flex';
@@ -2156,13 +2360,31 @@ function changeAuctionTimer(delta) {
   toast('⏱ Durata timer: ' + next + 's', 'info');
 }
 
+// Timeout (in secondi) entro cui una squadra disconnessa deve riconnettersi prima
+// che l'asta richieda una decisione esplicita del presidente (range 15-120s).
+function changeReconnectTimeout(delta) {
+  const current = gameState.reconnectTimeoutSec || DEFAULT_RECONNECT_TIMEOUT_SEC;
+  const next = Math.max(15, Math.min(120, current + delta));
+  if (next === current) return;
+  db.ref('/game/reconnectTimeoutSec').set(next);
+  const lPres = document.getElementById('paReconnectTimeout');
+  if (lPres) lPres.textContent = next + 's';
+  toast('📡 Timeout riconnessione: ' + next + 's', 'info');
+}
+
 // ─── FEATURE 2: PAUSA / FINE ASTA ───
-function adminPauseAuction() {
+// Helper condiviso: pausa manuale (presidente) e pausa automatica da disconnessione
+// (checkDisconnectionPause) passano entrambe da qui, con reason diverso.
+function pauseAuction(reason, extra) {
   const phase = gameState.phase || 'waiting';
-  if (phase !== 'bidding' && phase !== 'tiebreaker') return;
-  // Salva pausedAt per calcolare il tempo rimanente al resume
-  db.ref('/game').update({ phase: 'paused', pausedPhase: phase, pausedAt: Date.now() });
-  toast('⏸ Asta in pausa', 'info');
+  if (phase !== 'bidding' && phase !== 'tiebreaker') return false;
+  const updates = Object.assign({ phase: 'paused', pausedPhase: phase, pausedAt: Date.now(), pausedReason: reason || 'manual' }, extra || {});
+  db.ref('/game').update(updates);
+  return true;
+}
+
+function adminPauseAuction() {
+  if (pauseAuction('manual')) toast('⏸ Asta in pausa', 'info');
 }
 
 function adminResumeAuction() {
@@ -2175,7 +2397,10 @@ function adminResumeAuction() {
   const remaining = Math.max(5000, frozenEnd - pausedAt); // almeno 5s al resume
   const timerEnd  = Date.now() + remaining;
   autoRevealFired = false;
-  db.ref('/game').update({ phase: resumePhase, timerEnd, pausedPhase: null, pausedAt: null });
+  db.ref('/game').update({
+    phase: resumePhase, timerEnd, pausedPhase: null, pausedAt: null,
+    pausedReason: null, disconnectedTeamId: null, disconnectedAt: null,
+  });
   toast('▶ Asta ripresa (' + Math.round(remaining / 1000) + 's rimasti)', 'success');
 }
 
@@ -2434,7 +2659,7 @@ async function adminResetSeason() {
   const updates = {};
   // Ripristina tutte le squadre
   TEAMS.forEach(t => {
-    updates['/teams/' + t.id] = { name: t.name, emoji: t.emoji, budget: BUDGET_START, connected: false, rosterCount: 0 };
+    updates['/teams/' + t.id] = { name: t.name, emoji: t.emoji, budget: BUDGET_START, rosterCount: 0 };
   });
   // Reset partita
   updates['/game'] = { phase: 'waiting', round: 1, minBid: 1 };
@@ -2722,6 +2947,8 @@ function applyAvatarToChip(teamId) {
 
 // ─── FIREBASE CLEANUP ───
 function clearFirebaseListeners() {
+  stopDisconnectWatchdog();
+  if (disconnectDebounceTimer) { clearTimeout(disconnectDebounceTimer); disconnectDebounceTimer = null; }
   if (!db) return;
   try {
     db.ref('/game').off();

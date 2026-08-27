@@ -593,7 +593,7 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
 
     // Reset atomico (stesso schema di adminResetSeason)
     const teamOps = TEAMS.map(id =>
-      fbRest('/teams/' + id, 'PATCH', { budget: BUDGET_START, rosterCount: 0, connected: false })
+      fbRest('/teams/' + id, 'PATCH', { budget: BUDGET_START, rosterCount: 0 })
     );
     await Promise.all([
       ...teamOps,
