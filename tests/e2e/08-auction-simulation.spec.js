@@ -310,8 +310,9 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
 
     // Attende reveal automatico (tutti hanno offerto)
     await waitForPhase(adminPage, 'reveal', 8000);
-    // Attende assegnazione automatica
-    await waitForPhase(adminPage, 'assigned', 8000);
+    // Attende assegnazione automatica: la fase reveal resta visibile per
+    // revealDuration (default 10s, configurabile) prima di passare ad 'assigned'.
+    await waitForPhase(adminPage, 'assigned', 15000);
 
     // Verifica assegnazione via REST
     const assignments = await getAssignments();
@@ -365,7 +366,7 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
     await simulateBid('t2', 75);
     await simulatePass('t6');
 
-    await waitForPhase(adminPage, 'assigned', 10000);
+    await waitForPhase(adminPage, 'assigned', 15000);
 
     const assignments = await getAssignments();
     const testAssign  = assignments.find(a => a.player === '__TEST_PLAYER__');
@@ -478,8 +479,8 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
 
     // Attende scadenza timer → reveal automatico (max 6s + 3s buffer)
     await waitForPhase(adminPage, 'reveal', 12000);
-    // Poi assegnazione automatica
-    await waitForPhase(adminPage, 'assigned', 8000);
+    // Poi assegnazione automatica (reveal resta visibile per revealDuration, default 10s)
+    await waitForPhase(adminPage, 'assigned', 15000);
 
     const assignments = await getAssignments();
     const testAssign  = assignments.find(a => a.player === '__TEST_PLAYER__');
@@ -921,7 +922,9 @@ test.describe.serial('Simulazione UI Real-time', () => {
     await simulateBid('t4', 65);
     await Promise.all(['t1','t3','t5','t6','t7','t8','t9','t10'].map(t => simulatePass(t)));
 
-    await waitForPhase(adminPage, 'tiebreaker', 10000);
+    // Passa prima da 'reveal' (resta visibile per revealDuration, default 10s) e solo
+    // dopo transisce a 'tiebreaker': margine ampio per non essere troppo a filo.
+    await waitForPhase(adminPage, 'tiebreaker', 16000);
 
     // t2 (partecipante) deve vedere il banner rosso tiebreaker
     await participantPage.waitForFunction(
@@ -957,7 +960,7 @@ test.describe.serial('Simulazione UI Real-time', () => {
     await simulateBid('t6', 90);
     await Promise.all(['t1','t2','t3','t4','t5','t7','t8','t9','t10'].map(t => simulatePass(t)));
 
-    await waitForPhase(adminPage, 'assigned', 12000);
+    await waitForPhase(adminPage, 'assigned', 17000);
 
     // Overlay visibile per il partecipante
     await participantPage.waitForFunction(
