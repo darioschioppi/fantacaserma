@@ -733,6 +733,7 @@ function initFirebase() {
         console.warn('FC: anonymous auth failed (abilita Anonymous in Firebase Console):', e.message);
         loadPlayers(); // fallback: carica comunque, le regole Firebase potrebbero bloccare i listener
       });
+    setupConnectionWatchdog();
   } catch(e) {
     console.warn('Firebase init error:', e);
     db = null;
@@ -747,6 +748,36 @@ function initFirebase() {
       showScreen('screen-login');
     }
   }, 5000);
+}
+
+// ─── WATCHDOG CONNESSIONE ───
+// Su mobile, quando il browser/PWA resta a lungo in background (schermo bloccato,
+// cambio app), il sistema può sospendere la socket WebSocket verso Firebase senza
+// che l'app se ne accorga: i listener restano "vivi" ma non ricevono più aggiornamenti,
+// quindi lo stato "squadre connesse" resta bloccato sull'ultimo valore noto.
+// Al ritorno in foreground forziamo un ciclo goOffline/goOnline: Firebase ristabilisce
+// la connessione e re-invia lo stato corrente a tutti i listener attivi.
+let lastHiddenAt = null;
+function setupConnectionWatchdog() {
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      lastHiddenAt = Date.now();
+      return;
+    }
+    // Torniamo visibili: se eravamo in background da un po', forza la riconnessione.
+    const hiddenForMs = lastHiddenAt ? Date.now() - lastHiddenAt : 0;
+    lastHiddenAt = null;
+    if (!db || hiddenForMs < 8000) return;
+    console.log('FC: ripristino connessione Firebase dopo background di', Math.round(hiddenForMs / 1000), 's');
+    try {
+      firebase.database().goOffline();
+      firebase.database().goOnline();
+    } catch (e) { /* no-op */ }
+    // Rinfresca subito lo stato "connesso" della squadra corrente.
+    if (currentUser && currentUser.teamId) {
+      db.ref('/teams/' + currentUser.teamId + '/connected').set(true).catch(() => {});
+    }
+  });
 }
 
 function loadPlayers() {
