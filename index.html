@@ -427,6 +427,13 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         <span id="paReconnectTimeout" style="font-size:.9rem;font-weight:700;color:var(--gold);min-width:40px;text-align:center;">45s</span>
         <button onclick="changeReconnectTimeout(+15)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">+</button>
       </div>
+      <!-- Durata rivelazione prezzi stepper -->
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;">
+        <span style="font-size:.72rem;color:var(--text-m);flex:1;">🎯 Durata rivelazione:</span>
+        <button onclick="changeRevealDuration(-5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">−</button>
+        <span id="paRevealDuration" style="font-size:.9rem;font-weight:700;color:var(--gold);min-width:40px;text-align:center;">10s</span>
+        <button onclick="changeRevealDuration(+5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">+</button>
+      </div>
       <div class="pp-search-bar">
         <input class="pp-search-input" id="paSearch" placeholder="🔍 Scegli giocatore da mettere all'asta…" oninput="filterAstaPlayers()">
         <select class="pp-select" id="paFilterRuolo" onchange="filterAstaPlayers()">
@@ -1043,12 +1050,23 @@ function presidentSubmitBid() {
   });
 }
 
+// Durata (secondi) per cui la schermata di rivelazione resta visibile a tutti prima
+// che l'asta prosegua. Sincronizzata via timestamp Firebase (revealEnd), stesso pattern
+// già usato per il timer d'asta (timerEnd): ogni client calcola localmente il countdown
+// dallo stesso istante assoluto, garantendo la stessa esperienza a tutti i partecipanti.
+function getRevealDuration() {
+  return gameState.revealDuration || 10;
+}
+
 function adminReveal() {
-  db.ref('/game/phase').set('reveal');
+  const revealEnd = Date.now() + getRevealDuration() * 1000;
+  db.ref('/game').update({ phase: 'reveal', revealEnd: revealEnd });
   const cp = gameState.currentPlayer;
   if (cp) writeLog('reveal', { player: cp.nome, ruolo: cp.ruolo, squadra: cp.squadra });
-  // Auto-processa il risultato dopo 3s (animazione reveal)
-  setTimeout(() => autoProcessReveal(), 3000);
+  // Nota: l'avanzamento a fine reveal viene programmato in handleGameStateChange()
+  // (branch phase==='reveal'), non qui — un'unica fonte di scheduling basata sempre
+  // sul revealEnd sincronizzato, che copre sia il caso normale sia il recovery dopo
+  // un reload del presidente durante la fase di rivelazione.
 }
 
 function autoProcessReveal() {
@@ -1626,6 +1644,15 @@ function handleGameStateChange() {
     document.getElementById('bidAreaWaiting').style.display = 'block';
     setText('bidAreaWaiting', 'Esito in corso…');
     renderRevealOverlay(false);
+    // Fallback di recovery: se il presidente ricarica la pagina mentre la fase è già
+    // 'reveal' (o il tab con l'unico setTimeout locale è stato chiuso/sospeso), l'asta
+    // resterebbe bloccata per sempre in questa fase — nessun altro client la fa avanzare.
+    // Riprogramma qui l'avanzamento in base al revealEnd sincronizzato via Firebase,
+    // così la ripresa resta coerente indipendentemente da quale client la programma.
+    if (currentUser && currentUser.isPresident) {
+      const remaining = Math.max(0, (gameState.revealEnd || Date.now()) - Date.now());
+      setTimeout(() => { if ((gameState.phase || 'waiting') === 'reveal') autoProcessReveal(); }, remaining);
+    }
   } else if (phase === 'assigned') {
     stopLocalTimer();
     document.getElementById('bidInputArea').style.display = 'none';
@@ -2252,11 +2279,13 @@ function renderPresidentAuction() {
   const btnResume = document.getElementById('paBtnResume');
   if (btnPause) btnPause.style.display = phase === 'paused' ? 'none' : '';
   if (btnResume) btnResume.style.display = phase === 'paused' ? '' : 'none';
-  // Aggiorna label durata timer e timeout riconnessione
+  // Aggiorna label durata timer, timeout riconnessione e durata rivelazione
   const timerLabel = document.getElementById('paTimerDuration');
   if (timerLabel) timerLabel.textContent = getAuctionDuration() + 's';
   const reconnLabel = document.getElementById('paReconnectTimeout');
   if (reconnLabel) reconnLabel.textContent = (gameState.reconnectTimeoutSec || DEFAULT_RECONNECT_TIMEOUT_SEC) + 's';
+  const revealLabel = document.getElementById('paRevealDuration');
+  if (revealLabel) revealLabel.textContent = getRevealDuration() + 's';
   const bidArea = document.getElementById('paBidArea');
   if (phase === 'bidding' || phase === 'tiebreaker') {
     document.getElementById('paActions').style.display = 'flex';
@@ -2370,6 +2399,18 @@ function changeReconnectTimeout(delta) {
   const lPres = document.getElementById('paReconnectTimeout');
   if (lPres) lPres.textContent = next + 's';
   toast('📡 Timeout riconnessione: ' + next + 's', 'info');
+}
+
+// Durata (in secondi) della schermata di rivelazione prezzi, uguale per tutti
+// (range 5-30s, default 10s).
+function changeRevealDuration(delta) {
+  const current = getRevealDuration();
+  const next = Math.max(5, Math.min(30, current + delta));
+  if (next === current) return;
+  db.ref('/game/revealDuration').set(next);
+  const lPres = document.getElementById('paRevealDuration');
+  if (lPres) lPres.textContent = next + 's';
+  toast('🎯 Durata rivelazione: ' + next + 's', 'info');
 }
 
 // ─── FEATURE 2: PAUSA / FINE ASTA ───
