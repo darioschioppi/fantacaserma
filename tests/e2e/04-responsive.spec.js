@@ -47,9 +47,11 @@ test.describe('Layout Mobile', () => {
   });
 
   test('la player card al centro tavolo è nascosta su mobile', async ({ page }) => {
-    // Su mobile .player-card ha display:none !important
+    // La card al centro del tavolo è stata rimossa dal redesign (le info del
+    // giocatore vivono solo in #auctionHeader, sopra il campo offerta): .player-card
+    // non esiste più nel markup. Il test resta come guardia di non-regressione —
+    // se dovesse tornare, deve comunque restare nascosta su mobile.
     const playerCard = page.locator('.player-card');
-    // Potrebbe non esistere affatto o essere hidden
     const count = await playerCard.count();
     if (count > 0) {
       // Verifica che tutte le player card siano nascoste
