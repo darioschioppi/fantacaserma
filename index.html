@@ -1974,9 +1974,14 @@ function checkAutoReveal() {
   const phase = gameState.phase || 'waiting';
   if (phase !== 'bidding' && phase !== 'tiebreaker') return;
   const tiebreakers = gameState.tiebreakers || null;
-  const eligible = tiebreakers
-    ? TEAMS.filter(t => tiebreakers.includes(t.id))
-    : TEAMS.filter(t => isTeamOnline(t.id));
+  // IMPORTANTE: l'insieme "eligible" NON va filtrato per squadre online. Se lo fosse,
+  // con poche squadre connesse (es. solo il presidente durante un test) basterebbe la
+  // sua offerta per far credere al sistema che "tutti" abbiano già offerto, chiudendo
+  // l'asta all'istante invece di aspettare il timer configurato. Le squadre offline
+  // continuano a essere "eligible" (devono ancora offrire) finché non scade il tempo o
+  // non offrono davvero — la gestione delle disconnessioni reali durante l'asta è
+  // separata (vedi checkDisconnectionPause), qui contiamo sempre tutte le squadre.
+  const eligible = tiebreakers ? TEAMS.filter(t => tiebreakers.includes(t.id)) : TEAMS.slice();
   if (!eligible.length) return;
   const allSubmitted = eligible.every(t => bidSubmittedState[t.id]);
   if (allSubmitted) {
