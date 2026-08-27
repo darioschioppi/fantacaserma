@@ -353,7 +353,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;">
           <div></div>
           <div id="auctionHeaderName" class="auction-header-name" style="text-align:center;"></div>
-          <div id="auctionHeaderTimer" class="auction-header-timer" style="text-align:right;"></div>
+          <div id="auctionHeaderTimer" class="auction-header-timer" style="text-align:right;">—</div>
         </div>
         <div id="auctionHeaderMeta" class="auction-header-meta"></div>
       </div>
@@ -426,13 +426,6 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         <span id="paTimerDuration" style="font-size:.9rem;font-weight:700;color:var(--gold);min-width:40px;text-align:center;">30s</span>
         <button onclick="changeAuctionTimer(+5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">+</button>
       </div>
-      <!-- Timeout riconnessione stepper -->
-      <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;">
-        <span style="font-size:.72rem;color:var(--text-m);flex:1;">📡 Timeout riconnessione:</span>
-        <button onclick="changeReconnectTimeout(-15)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">−</button>
-        <span id="paReconnectTimeout" style="font-size:.9rem;font-weight:700;color:var(--gold);min-width:40px;text-align:center;">45s</span>
-        <button onclick="changeReconnectTimeout(+15)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">+</button>
-      </div>
       <!-- Durata rivelazione prezzi stepper -->
       <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;">
         <span style="font-size:.72rem;color:var(--text-m);flex:1;">🎯 Durata rivelazione:</span>
@@ -484,15 +477,6 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <button id="paBtnResume" onclick="adminResumeAuction()" style="display:none;padding:7px 12px;border-radius:8px;border:none;background:var(--green);color:#000;font-weight:700;font-size:.78rem;cursor:pointer;">▶ Riprendi</button>
           <button onclick="adminEndAuction()" style="padding:7px 12px;border-radius:8px;border:none;background:var(--red);color:#fff;font-weight:700;font-size:.78rem;cursor:pointer;">⏹ Termina asta</button>
           <button onclick="adminSimulateBids()" style="padding:7px 12px;border-radius:8px;border:none;background:#5a3e8a;color:#fff;font-weight:700;font-size:.78rem;cursor:pointer;">🎲 Simula</button>
-        </div>
-        <!-- Decisione presidente dopo timeout riconnessione scaduto senza esito -->
-        <div id="paDisconnectDecision" style="display:none;margin-top:10px;padding:10px;border-radius:8px;background:rgba(239,68,68,.1);border:1px solid var(--red2);">
-          <div style="font-size:.78rem;color:var(--red);font-weight:700;margin-bottom:8px;" id="paDisconnectDecisionMsg">⚠️ Timeout scaduto: come procedere?</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button onclick="disconnectDecisionResumeWithout()" style="padding:6px 10px;border-radius:8px;border:none;background:var(--green);color:#000;font-weight:700;font-size:.74rem;cursor:pointer;">▶ Riprendi senza</button>
-            <button onclick="disconnectDecisionRestartPlayer()" style="padding:6px 10px;border-radius:8px;border:none;background:var(--blue);color:#fff;font-weight:700;font-size:.74rem;cursor:pointer;">🔄 Riparti su questo giocatore</button>
-            <button onclick="disconnectDecisionKeepWaiting()" style="padding:6px 10px;border-radius:8px;border:none;background:var(--bg3);color:var(--text);font-weight:700;font-size:.74rem;cursor:pointer;border:1px solid var(--border);">⏳ Continua ad aspettare</button>
-          </div>
         </div>
         <div id="paPostReveal" style="display:none;margin-top:8px;">
           <div style="font-size:.8rem;color:var(--text-m);margin-bottom:8px;">Vincitore: <strong id="paWinnerName" style="color:var(--gold)">—</strong> con <strong id="paWinnerBid" style="color:var(--gold)">—</strong> cr <span style="font-size:.72rem;color:var(--text-s);">(assegnazione automatica…)</span></div>
@@ -692,8 +676,6 @@ let prevPhase = null; // traccia la phase precedente per il trigger notifica aud
 let myPlanState = {}; // cache locale di /plans/{teamId}: { sanitizedKey: {amount, playerName, ts} }
 let myPresenceSessionKey = null; // pushId della sessione di presenza corrente su /teams/{teamId}/sessions
 let disconnectDebounceTimer = null; // debounce ~3s prima di considerare "davvero" disconnessa una squadra
-let disconnectWatchdogInterval = null; // controlla il timeout di riconnessione lato presidente
-const DEFAULT_RECONNECT_TIMEOUT_SEC = 45;
 
 // Una squadra è "online" se ha almeno una sessione di presenza attiva. Sostituisce il
 // vecchio booleano singolo /teams/{id}/connected, che si rompeva con più dispositivi
@@ -1991,36 +1973,30 @@ function checkAutoReveal() {
 }
 
 // ─── BLOCCO ASTA SU DISCONNESSIONE ───
-// Il presidente (unico client con potere di scrittura su /game) fa da "autorità server":
-// osserva lo stato presenza di /teams e, se una squadra ancora in gioco su questo turno
-// si disconnette davvero, metti in pausa l'asta in automatico. Nessun client normale
-// decide da solo se bloccare/riattivare — evita comportamenti non sincronizzati.
-function getEligibleTeamsForCurrentTurn() {
-  const tiebreakers = gameState.tiebreakers || null;
-  return tiebreakers ? TEAMS.filter(t => tiebreakers.includes(t.id)) : TEAMS.slice();
-}
-
+// Spec (Dario): se ANCHE UNA sola squadra si disconnette durante bidding/tiebreaker,
+// l'asta si blocca subito (timer fermo) e riprende solo quando TUTTI i partecipanti
+// sono di nuovo connessi — nessun timeout, nessuna decisione intermedia del presidente:
+// l'unica via di uscita manuale è l'annullamento definitivo (adminEndAuction, solo
+// Benfiga). Il presidente (unico client con potere di scrittura su /game) fa da
+// "autorità server": osserva lo stato presenza di /teams e decide blocco/ripresa.
 function checkDisconnectionPause() {
   if (!canManageAuction()) return;
   const phase = gameState.phase || 'waiting';
 
-  // Ripresa automatica: la squadra che aveva causato la pausa è tornata online.
-  if (phase === 'paused' && gameState.pausedReason === 'disconnect' && gameState.disconnectedTeamId) {
-    if (isTeamOnline(gameState.disconnectedTeamId)) {
-      stopDisconnectWatchdog();
+  // Ripresa automatica: TUTTE le squadre sono di nuovo online.
+  if (phase === 'paused' && gameState.pausedReason === 'disconnect') {
+    const stillOffline = TEAMS.filter(t => !isTeamOnline(t.id));
+    if (stillOffline.length === 0) {
       adminResumeAuction();
-      const team = TEAMS.find(t => t.id === gameState.disconnectedTeamId);
-      writeLog('auction_resumed_reconnect', { teamId: gameState.disconnectedTeamId, teamName: team ? team.name : gameState.disconnectedTeamId });
+      writeLog('auction_resumed_reconnect', {});
     }
     return;
   }
 
-  // Rilevamento nuova disconnessione: solo durante bidding/tiebreaker, solo se la
-  // squadra è eligible per questo turno e non ha già inviato la propria offerta
-  // (se ha già offerto, la sua disconnessione non blocca nulla).
+  // Rilevamento nuova disconnessione: solo durante bidding/tiebreaker, qualsiasi
+  // squadra offline blocca l'asta (indipendentemente da tiebreaker/offerta già inviata).
   if (phase !== 'bidding' && phase !== 'tiebreaker') return;
-  const eligible = getEligibleTeamsForCurrentTurn();
-  const disconnected = eligible.find(t => !isTeamOnline(t.id) && !bidSubmittedState[t.id]);
+  const disconnected = TEAMS.find(t => !isTeamOnline(t.id));
 
   if (!disconnected) {
     // Nessuno disconnesso: annulla un eventuale debounce pendente (falso allarme risolto).
@@ -2040,79 +2016,8 @@ function checkDisconnectionPause() {
     if (paused) {
       writeLog('auction_paused_disconnect', { teamId: disconnected.id, teamName: disconnected.name, pausedAt: Date.now() });
       toast('⚠️ Asta in pausa: ' + disconnected.name + ' disconnessa', 'error');
-      startDisconnectWatchdog();
     }
   }, 3000);
-}
-
-// Controlla periodicamente se il timeout di riconnessione è scaduto senza che la
-// squadra disconnessa sia tornata online: in quel caso NON riprende da sola, mostra
-// invece un pannello di decisione al presidente (righe presidentAstaPanel).
-function startDisconnectWatchdog() {
-  stopDisconnectWatchdog();
-  disconnectWatchdogInterval = setInterval(() => {
-    const phase = gameState.phase || 'waiting';
-    if (phase !== 'paused' || gameState.pausedReason !== 'disconnect' || !gameState.disconnectedAt) {
-      stopDisconnectWatchdog();
-      return;
-    }
-    const timeoutSec = gameState.reconnectTimeoutSec || DEFAULT_RECONNECT_TIMEOUT_SEC;
-    const elapsedSec = (Date.now() - gameState.disconnectedAt) / 1000;
-    if (elapsedSec >= timeoutSec) {
-      stopDisconnectWatchdog();
-      renderDisconnectDecisionPanel();
-    }
-  }, 1000);
-}
-
-function stopDisconnectWatchdog() {
-  if (disconnectWatchdogInterval) { clearInterval(disconnectWatchdogInterval); disconnectWatchdogInterval = null; }
-  const panel = document.getElementById('paDisconnectDecision');
-  if (panel) panel.style.display = 'none';
-}
-
-// Mostra al presidente il pannello di decisione quando il timeout di riconnessione
-// scade senza che la squadra disconnessa sia tornata online.
-function renderDisconnectDecisionPanel() {
-  const panel = document.getElementById('paDisconnectDecision');
-  if (!panel) return;
-  const team = TEAMS.find(t => t.id === gameState.disconnectedTeamId);
-  const msg = document.getElementById('paDisconnectDecisionMsg');
-  if (msg) msg.textContent = '⚠️ ' + (team ? (team.emoji + ' ' + team.name) : 'La squadra') + ' non si è riconnessa in tempo: come procedere?';
-  panel.style.display = 'block';
-}
-
-// Opzione 1: riprende l'asta escludendo la squadra disconnessa da questo giocatore
-// (può comunque rientrare nelle aste successive) — evita di bloccare tutti per uno.
-function disconnectDecisionResumeWithout() {
-  const team = TEAMS.find(t => t.id === gameState.disconnectedTeamId);
-  document.getElementById('paDisconnectDecision').style.display = 'none';
-  // Segna la squadra come "passata" per questo giocatore, così non blocca il conteggio
-  // eligible (checkAutoReveal/checkDisconnectionPause) al resume.
-  if (team) db.ref('/bidSubmitted/' + team.id).set(true);
-  adminResumeAuction();
-  writeLog('disconnect_resumed_without', { teamId: team ? team.id : gameState.disconnectedTeamId, teamName: team ? team.name : '—' });
-  toast('▶ Asta ripresa senza ' + (team ? team.name : 'la squadra disconnessa'), 'info');
-}
-
-// Opzione 2: annulla il turno corrente e rimette il giocatore in coda (stesso adminSkip
-// già usato altrove), azzerando bids/bidSubmitted per ripartire da zero.
-function disconnectDecisionRestartPlayer() {
-  const team = TEAMS.find(t => t.id === gameState.disconnectedTeamId);
-  document.getElementById('paDisconnectDecision').style.display = 'none';
-  writeLog('disconnect_restarted_player', { teamId: team ? team.id : gameState.disconnectedTeamId, teamName: team ? team.name : '—' });
-  db.ref('/game').update({ pausedReason: null, disconnectedTeamId: null, disconnectedAt: null });
-  adminSkip();
-  toast('🔄 Giocatore rimesso in coda', 'info');
-}
-
-// Opzione 3: nessuna azione automatica, resetta il cronometro del timeout per un
-// altro ciclo di attesa (il presidente ha scelto di continuare ad aspettare).
-function disconnectDecisionKeepWaiting() {
-  document.getElementById('paDisconnectDecision').style.display = 'none';
-  db.ref('/game/disconnectedAt').set(Date.now());
-  startDisconnectWatchdog();
-  toast('⏳ Continuo ad attendere la riconnessione…', 'info');
 }
 
 function stopLocalTimer() {
@@ -2282,11 +2187,9 @@ function renderPresidentAuction() {
   const btnResume = document.getElementById('paBtnResume');
   if (btnPause) btnPause.style.display = phase === 'paused' ? 'none' : '';
   if (btnResume) btnResume.style.display = phase === 'paused' ? '' : 'none';
-  // Aggiorna label durata timer, timeout riconnessione e durata rivelazione
+  // Aggiorna label durata timer e durata rivelazione
   const timerLabel = document.getElementById('paTimerDuration');
   if (timerLabel) timerLabel.textContent = getAuctionDuration() + 's';
-  const reconnLabel = document.getElementById('paReconnectTimeout');
-  if (reconnLabel) reconnLabel.textContent = (gameState.reconnectTimeoutSec || DEFAULT_RECONNECT_TIMEOUT_SEC) + 's';
   const revealLabel = document.getElementById('paRevealDuration');
   if (revealLabel) revealLabel.textContent = getRevealDuration() + 's';
   const bidArea = document.getElementById('paBidArea');
@@ -2392,18 +2295,6 @@ function changeAuctionTimer(delta) {
   toast('⏱ Durata timer: ' + next + 's', 'info');
 }
 
-// Timeout (in secondi) entro cui una squadra disconnessa deve riconnettersi prima
-// che l'asta richieda una decisione esplicita del presidente (range 15-120s).
-function changeReconnectTimeout(delta) {
-  const current = gameState.reconnectTimeoutSec || DEFAULT_RECONNECT_TIMEOUT_SEC;
-  const next = Math.max(15, Math.min(120, current + delta));
-  if (next === current) return;
-  db.ref('/game/reconnectTimeoutSec').set(next);
-  const lPres = document.getElementById('paReconnectTimeout');
-  if (lPres) lPres.textContent = next + 's';
-  toast('📡 Timeout riconnessione: ' + next + 's', 'info');
-}
-
 // Durata (in secondi) della schermata di rivelazione prezzi, uguale per tutti
 // (range 5-30s, default 10s).
 function changeRevealDuration(delta) {
@@ -2449,10 +2340,14 @@ function adminResumeAuction() {
 }
 
 function adminEndAuction() {
+  // Solo Benfiga può annullare definitivamente l'asta (anche durante una pausa da
+  // disconnessione, che altrimenti non avrebbe altra via di uscita manuale).
+  if (!currentUser || !currentUser.isPresident) { toast('⛔ Solo Benfiga può terminare l\'asta', 'error'); return; }
   const cp = gameState.currentPlayer;
   if (cp) writeLog('ended_manual', { player: cp.nome, ruolo: cp.ruolo });
   db.ref('/game').update({ phase: 'waiting', currentPlayer: null, timerEnd: null,
-    tiebreakers: null, minBid: null, tiebreakerFirstBid: null, pausedPhase: null });
+    tiebreakers: null, minBid: null, tiebreakerFirstBid: null, pausedPhase: null,
+    pausedReason: null, disconnectedTeamId: null, disconnectedAt: null });
   db.ref('/bids').set(null);
   db.ref('/bidSubmitted').set(null);
   toast('⏹ Asta terminata', 'info');
@@ -2991,7 +2886,6 @@ function applyAvatarToChip(teamId) {
 
 // ─── FIREBASE CLEANUP ───
 function clearFirebaseListeners() {
-  stopDisconnectWatchdog();
   if (disconnectDebounceTimer) { clearTimeout(disconnectDebounceTimer); disconnectDebounceTimer = null; }
   if (!db) return;
   try {
