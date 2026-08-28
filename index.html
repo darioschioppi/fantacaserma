@@ -19,6 +19,9 @@ console.firebase.google.com → Il tuo progetto → Project Settings → Your ap
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<!-- ExcelJS: usata solo per l'export "Rose Squadre" in .xlsx vero (con
+     formattazione). Caricata da CDN, nessun build step necessario. -->
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
 <style>
 :root {
   --bg:#0a1628;--bg2:#111d35;--bg3:#1a2744;
@@ -2696,27 +2699,33 @@ function renderRosaPanel(containerId, updateTsId) {
 
 // ─── EXPORT ROSE IN EXCEL ───
 /**
- * Esporta le rose di tutte le squadre in un file .xls (formato SpreadsheetML,
- * apribile nativamente da Excel senza warning, senza dover caricare librerie
- * esterne come SheetJS). Un foglio per squadra: ruolo, giocatore, squadra
- * Serie A, prezzo pagato; riga di riepilogo con budget residuo e totale spesi.
- * Genera il file lato client e lo scarica subito con un click, come richiesto.
+ * Esporta le rose di tutte le squadre in un vero file .xlsx (via ExcelJS,
+ * caricata da CDN), con un foglio per squadra: intestazione colorata, colonne
+ * dimensionate, badge colore per ruolo (stessa palette dell'app: P/D/C/A),
+ * prezzo formattato come numero con unità "cr", riga di riepilogo in grassetto
+ * con budget residuo e totale spesi. Genera il file lato client e lo salva/
+ * condivide con un click.
  */
-function xmlEsc(s) {
-  return String(s == null ? '' : s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
-}
 function excelSheetName(name) {
   // I nomi foglio Excel non possono contenere : \ / ? * [ ] e sono limitati a 31 caratteri.
   return String(name || 'Squadra').replace(/[:\\/?*\[\]]/g, '_').slice(0, 31);
 }
-function exportRoseToExcel() {
-  const ROLE_ORDER = { P: 0, D: 1, C: 2, A: 3 };
-  const cellStr = (v) => `<Cell><Data ss:Type="String">${xmlEsc(v)}</Data></Cell>`;
-  const cellNum = (v) => `<Cell><Data ss:Type="Number">${Number(v) || 0}</Data></Cell>`;
+// Colori ruolo coerenti con --P/--D/--C/--A del tema app (righe 33 del CSS),
+// in formato ARGB richiesto da ExcelJS per i fill.
+const ROLE_FILL_COLOR = { P: 'FFF59E0B', D: 'FF22C55E', C: 'FF3B82F6', A: 'FFEF4444' };
+const ROLE_LABEL = { P: 'Portiere', D: 'Difensore', C: 'Centrocampista', A: 'Attaccante' };
 
-  const sheets = TEAMS.map(team => {
+async function exportRoseToExcel() {
+  if (typeof ExcelJS === 'undefined') {
+    toast('❌ Libreria Excel non disponibile — controlla la connessione', 'error');
+    return;
+  }
+  const ROLE_ORDER = { P: 0, D: 1, C: 2, A: 3 };
+  const workbook = new ExcelJS.Workbook();
+  workbook.creator = 'FantaCaserma';
+  workbook.created = new Date();
+
+  TEAMS.forEach(team => {
     const td = teamsState[team.id] || {};
     const budget = td.budget != null ? td.budget : BUDGET_START;
     const teamAssigns = assignmentsState.filter(a => a.teamId === team.id);
@@ -2728,31 +2737,69 @@ function exportRoseToExcel() {
     });
     const totalSpent = sorted.reduce((sum, a) => sum + (a.amount || 0), 0);
 
-    const headerRow = `<Row><Cell><Data ss:Type="String">Ruolo</Data></Cell>` +
-      `<Cell><Data ss:Type="String">Giocatore</Data></Cell>` +
-      `<Cell><Data ss:Type="String">Squadra Serie A</Data></Cell>` +
-      `<Cell><Data ss:Type="String">Prezzo (cr)</Data></Cell></Row>`;
-    const playerRows = sorted.map(a =>
-      `<Row>${cellStr((a.ruolo || '').charAt(0) || '?')}${cellStr(a.player || '—')}${cellStr(a.squadra || '')}${cellNum(a.amount || 0)}</Row>`
-    ).join('');
-    const summaryRow = `<Row><Cell/><Cell/><Cell><Data ss:Type="String">Budget residuo / Spesi totali</Data></Cell>` +
-      `<Cell><Data ss:Type="String">${budget} cr / ${totalSpent} cr</Data></Cell></Row>`;
+    const sheet = workbook.addWorksheet(excelSheetName(team.name), {
+      views: [{ state: 'frozen', ySplit: 1 }], // header sempre visibile durante lo scroll
+    });
+    sheet.columns = [
+      { header: 'Ruolo', key: 'ruolo', width: 16 },
+      { header: 'Giocatore', key: 'player', width: 26 },
+      { header: 'Squadra Serie A', key: 'squadra', width: 18 },
+      { header: 'Prezzo (cr)', key: 'amount', width: 14 },
+    ];
 
-    return `<Worksheet ss:Name="${xmlEsc(excelSheetName(team.name))}"><Table>` +
-      headerRow + playerRows + `<Row/>` + summaryRow + `</Table></Worksheet>`;
-  }).join('');
+    // Intestazione: sfondo scuro coerente col tema dell'app, testo bianco in grassetto.
+    const headerRow = sheet.getRow(1);
+    headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF111D35' } };
+    headerRow.alignment = { vertical: 'middle' };
+    headerRow.height = 20;
 
-  const xml = `<?xml version="1.0"?>` +
-    `<?mso-application progid="Excel.Sheet"?>` +
-    `<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" ` +
-    `xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">` +
-    `<Styles><Style ss:ID="Default" ss:Name="Normal"/></Styles>` +
-    sheets +
-    `</Workbook>`;
+    sorted.forEach(a => {
+      const r = (a.ruolo || '').charAt(0);
+      const row = sheet.addRow({
+        ruolo: ROLE_LABEL[r] || a.ruolo || '?',
+        player: a.player || '—',
+        squadra: a.squadra || '',
+        amount: a.amount || 0,
+      });
+      row.getCell('amount').numFmt = '0 "cr"';
+      const roleCell = row.getCell('ruolo');
+      if (ROLE_FILL_COLOR[r]) {
+        roleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: ROLE_FILL_COLOR[r] } };
+        roleCell.font = { color: { argb: 'FFFFFFFF' }, bold: true };
+      }
+      row.alignment = { vertical: 'middle' };
+    });
+
+    if (!sorted.length) {
+      const emptyRow = sheet.addRow({ ruolo: '', player: 'Nessun giocatore acquistato', squadra: '', amount: null });
+      emptyRow.getCell('player').font = { italic: true, color: { argb: 'FF888888' } };
+    }
+
+    sheet.addRow({}); // riga vuota di separazione
+    const summaryRow = sheet.addRow({
+      ruolo: '', player: '', squadra: 'Budget residuo / Spesi totali',
+      amount: null,
+    });
+    summaryRow.getCell('squadra').font = { bold: true };
+    const budgetCell = summaryRow.getCell('amount');
+    budgetCell.value = `${budget} cr / ${totalSpent} cr`;
+    budgetCell.font = { bold: true, color: { argb: 'FFB8960C' } }; // coerente con --gold2
+
+    // Riquadro sottile su tutte le celle con dati per leggibilità in Excel/Google Sheets.
+    const lastDataRow = sheet.rowCount;
+    for (let r = 1; r <= lastDataRow; r++) {
+      for (let c = 1; c <= 4; c++) {
+        const cell = sheet.getRow(r).getCell(c);
+        cell.border = { bottom: { style: 'thin', color: { argb: 'FFDDDDDD' } } };
+      }
+    }
+  });
 
   const today = new Date().toISOString().slice(0, 10);
-  const filename = `rose_squadre_${today}.xls`;
-  const mimeType = 'application/vnd.ms-excel';
+  const filename = `rose_squadre_${today}.xlsx`;
+  const mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+  const buffer = await workbook.xlsx.writeBuffer();
 
   // Tre percorsi di salvataggio, in ordine di priorità:
   // 1. App Android nativa (APK): questa è una WebView pura, non un browser —
@@ -2766,7 +2813,7 @@ function exportRoseToExcel() {
   // 3. Fallback classico <a download> (desktop, dove funziona sempre).
   if (typeof AndroidFileSaver !== 'undefined' && AndroidFileSaver.saveFile) {
     try {
-      const base64 = btoa(unescape(encodeURIComponent(xml)));
+      const base64 = arrayBufferToBase64(buffer);
       AndroidFileSaver.saveFile(base64, filename, mimeType);
       toast('📥 Rose esportate in Excel', 'success');
     } catch (e) {
@@ -2775,7 +2822,7 @@ function exportRoseToExcel() {
     return;
   }
 
-  const blob = new Blob([xml], { type: mimeType });
+  const blob = new Blob([buffer], { type: mimeType });
   const file = new File([blob], filename, { type: mimeType });
   if (navigator.canShare && navigator.canShare({ files: [file] })) {
     navigator.share({ files: [file], title: filename })
@@ -2787,6 +2834,18 @@ function exportRoseToExcel() {
     return;
   }
   downloadRoseBlob(blob, filename);
+}
+
+// Conversione ArrayBuffer → base64 a blocchi, per non superare i limiti degli
+// argomenti di String.fromCharCode/apply su file di dimensioni maggiori.
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  const chunkSize = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+  }
+  return btoa(binary);
 }
 
 /** Fallback di download classico (funziona su desktop; su alcune WebView
