@@ -1659,6 +1659,12 @@ function handleGameStateChange() {
     document.getElementById('bidAreaWaiting').style.display = 'block';
     setText('bidAreaWaiting', 'Esito in corso…');
     renderRevealOverlay(false);
+    // L'overlay di rivelazione vive dentro la tab "Tavolo" (#pokerArea). Il
+    // presidente però resta di norma sulla tab "Asta" per gestire i controlli
+    // durante l'incanto, quindi non vedeva mai la rivelazione (bug segnalato:
+    // "la schermata Rivelazione deve esserci anche per Benfiga"). Passa alla
+    // tab Tavolo qui, così il presidente vede lo stesso overlay dei partecipanti.
+    switchToTableTabIfPresident();
     // Fallback di recovery: se il presidente ricarica la pagina mentre la fase è già
     // 'reveal' (o il tab con l'unico setTimeout locale è stato chiuso/sospeso), l'asta
     // resterebbe bloccata per sempre in questa fase — nessun altro client la fa avanzare.
@@ -1678,6 +1684,7 @@ function handleGameStateChange() {
     document.getElementById('tiebreakerBanner').classList.remove('visible');
     TEAMS.forEach(t => { const s = document.getElementById('seat-' + t.id); if (s) s.classList.remove('dimmed'); });
     renderRevealOverlay(true);
+    switchToTableTabIfPresident();
   } else {
     stopLocalTimer();
     document.getElementById('bidInputArea').style.display = 'none';
@@ -3037,6 +3044,18 @@ function toast(msg, type) {
   el.appendChild(text);
   container.appendChild(el);
   setTimeout(() => el.remove(), 3500);
+}
+
+// Il presidente resta spesso sulla tab "Asta" per gestire i controlli durante
+// l'incanto; l'overlay di Rivelazione vive però dentro la tab "Tavolo"
+// (#pokerArea), quindi senza questo switch automatico non lo vedeva mai
+// (bug segnalato: "la schermata Rivelazione deve esserci anche per Benfiga").
+function switchToTableTabIfPresident() {
+  if (!(currentUser && currentUser.isPresident)) return;
+  const pa = document.getElementById('pokerArea');
+  if (pa && pa.style.display === 'flex') return; // già sul Tavolo, nessun cambio
+  const tableBtn = document.querySelector('#participantMobileNav .mobile-nav-btn[onclick*="\'table\'"]');
+  participantMobileTab('table', tableBtn);
 }
 
 function participantMobileTab(tab, btn) {
