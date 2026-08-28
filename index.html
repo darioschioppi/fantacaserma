@@ -2777,10 +2777,17 @@ async function exportRoseToExcel() {
 
     sorted.forEach(a => {
       const r = (a.ruolo || '').charAt(0);
+      // Il record di assegnazione (/assignments) NON salva la squadra di Serie
+      // A del giocatore — solo nome/ruolo/squadra fantacalcistica/prezzo. Va
+      // ricavata dall'elenco ufficiale (allPlayers) incrociando per nome,
+      // esattamente come già fa la vista "Mia rosa" (renderMyRosa) — prima qui
+      // si leggeva a.squadra, che non esiste mai: colonna sempre vuota nell'
+      // export (bug segnalato: "la squadra di serie A non si legge nel file").
+      const pd = allPlayers.find(p => p.Nome && p.Nome.toLowerCase() === (a.player || '').toLowerCase());
       const row = sheet.addRow({
         ruolo: ROLE_LABEL[r] || a.ruolo || '?',
         player: a.player || '—',
-        squadra: a.squadra || '',
+        squadra: pd ? pd.Squadra : '',
         amount: a.amount || 0,
       });
       row.getCell('amount').numFmt = '0 "cr"';
