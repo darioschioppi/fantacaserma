@@ -1087,7 +1087,12 @@ function autoProcessReveal() {
         adminWinner = { teamId: firstTid, teamName: team ? team.name : firstTid, amount: assignAmount };
         writeLog('tiebreaker_first_bid_win', { player: cp.nome, team: firstTid, amount: assignAmount });
         toast('⏱️ Nessun rilancio — assegnato a ' + (team ? team.name : firstTid) + ' (prima offerta)', 'info');
-        adminAssign();
+        // Scrive il prezzo vincente su /bids prima di assegnare: senza nuove offerte
+        // in questo round di tiebreaker, /bids resta vuoto e la schermata di
+        // rivelazione (che legge da lì) mostrerebbe "0 cr" per tutti anche se
+        // l'assegnazione reale è al prezzo corretto (bug segnalato: prezzo che
+        // "torna a 0" invece di restare quello dell'ultima offerta valida).
+        db.ref('/bids/' + firstTid).set({ amount: assignAmount, ts: firstTs }).then(() => adminAssign());
         return;
       }
     }
