@@ -2079,6 +2079,20 @@ function checkAutoReveal() {
 // l'unica via di uscita manuale è l'annullamento definitivo (adminEndAuction, solo
 // Benfiga). Il presidente (unico client con potere di scrittura su /game) fa da
 // "autorità server": osserva lo stato presenza di /teams e decide blocco/ripresa.
+//
+// Eccezione (Feature: "Gestione disconnessione durante l'asta"): una squadra
+// che ha già completato il reparto del calciatore attualmente all'asta non può
+// più offrire per lui — il suo eventuale voto viene già escluso automaticamente
+// (isRosterFull) sia da submitBid() sia da autoProcessReveal()/adminAssign(),
+// quindi la sua disconnessione non ha alcun impatto reale sull'esito. Va quindi
+// IGNORATA ai fini di sospensione/ripresa: la verifica è sul reparto del
+// calciatore CORRENTE (non sul totale giocatori acquistati), e non deve
+// alterare il comportamento per le squadre ancora abilitate a offrire.
+function canTeamBidForCurrentPlayer(teamId) {
+  const cp = gameState.currentPlayer;
+  if (!cp) return true; // nessun giocatore in asta: nessuna esclusione applicabile
+  return !isRosterFull(teamId, cp.ruolo);
+}
 function checkDisconnectionPause() {
   // NOTA: nessun gate su canManageAuction()/isPresident — questa funzione deve
   // girare su OGNI client collegato (non solo quello di Benfiga), altrimenti se
@@ -2089,9 +2103,11 @@ function checkDisconnectionPause() {
   // (auth != null), quindi non serve un ruolo speciale per eseguire il resume/pause.
   const phase = gameState.phase || 'waiting';
 
-  // Ripresa automatica: TUTTE le squadre sono di nuovo online.
+  // Ripresa automatica: TUTTE le squadre RILEVANTI sono di nuovo online (una
+  // squadra che ha già completato il reparto del calciatore corrente non può
+  // più offrire per lui, quindi non conta né per bloccare né per la ripresa).
   if (phase === 'paused' && gameState.pausedReason === 'disconnect') {
-    const stillOffline = TEAMS.filter(t => !isTeamOnline(t.id));
+    const stillOffline = TEAMS.filter(t => !isTeamOnline(t.id) && canTeamBidForCurrentPlayer(t.id));
     if (stillOffline.length === 0) {
       adminResumeAuction();
       // "claim" sul log: solo chi riesce a scrivere questo marcatore atomico
@@ -2125,9 +2141,12 @@ function checkDisconnectionPause() {
   }
 
   // Rilevamento nuova disconnessione: solo durante bidding/tiebreaker, qualsiasi
-  // squadra offline blocca l'asta (indipendentemente da tiebreaker/offerta già inviata).
+  // squadra offline blocca l'asta (indipendentemente da tiebreaker/offerta già
+  // inviata) — TRANNE se ha già completato il reparto del calciatore corrente:
+  // in quel caso non può più offrire per lui, quindi la sua disconnessione va
+  // ignorata ai fini della sospensione (richiesta esplicita).
   if (phase !== 'bidding' && phase !== 'tiebreaker') return;
-  const disconnectedTeams = TEAMS.filter(t => !isTeamOnline(t.id));
+  const disconnectedTeams = TEAMS.filter(t => !isTeamOnline(t.id) && canTeamBidForCurrentPlayer(t.id));
 
   if (!disconnectedTeams.length) {
     // Nessuno disconnesso: annulla un eventuale debounce pendente (falso allarme risolto).
@@ -2139,8 +2158,10 @@ function checkDisconnectionPause() {
   // Debounce ~3s: evita di metter in pausa per un blip di rete cortissimo.
   disconnectDebounceTimer = setTimeout(() => {
     disconnectDebounceTimer = null;
-    // Doppio controllo: ricalcola l'elenco (potrebbero essersi già riconnesse nei 3s).
-    const stillDisconnected = TEAMS.filter(t => !isTeamOnline(t.id));
+    // Doppio controllo: ricalcola l'elenco (potrebbero essersi già riconnesse nei
+    // 3s, oppure — se il giocatore in asta è cambiato nel frattempo — una squadra
+    // prima esclusa potrebbe ora essere di nuovo rilevante, o viceversa).
+    const stillDisconnected = TEAMS.filter(t => !isTeamOnline(t.id) && canTeamBidForCurrentPlayer(t.id));
     if (!stillDisconnected.length) return;
     const curPhase = gameState.phase || 'waiting';
     if (curPhase !== 'bidding' && curPhase !== 'tiebreaker') return;
