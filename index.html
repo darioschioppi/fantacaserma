@@ -1746,10 +1746,21 @@ function renderRevealOverlay(isAssigned) {
     return { tid, team, amount: getBidAmount(tid) };
   }).sort((a, b) => b.amount - a.amount);
   const maxAmt = rows.length ? rows[0].amount : 0;
+  const topBidders = rows.filter(r => r.amount === maxAmt && r.amount > 0);
+  // "VINCITORE" solo se c'è un'offerta più alta NETTA (una sola squadra). Se due o
+  // più squadre pareggiano all'importo massimo, non è ancora stato deciso un
+  // vincitore: la UI mostrava erroneamente "🏆 VINCITORE" su entrambe le righe in
+  // pareggio, dando l'impressione (falsa) che il sistema avesse assegnato il
+  // giocatore a due squadre insieme, mentre stava per aprire un nuovo giro di
+  // spareggio (bug segnalato: "il sistema ha assegnato entrambi i partecipanti
+  // come vincitori invece di procedere con un ulteriore giro d'asta").
+  const isNetWinner = topBidders.length === 1;
   const listEl = document.getElementById('revealBidsList');
   listEl.textContent = '';
   rows.forEach((r, idx) => {
-    const isWinner = r.amount === maxAmt && r.amount > 0;
+    const isTopBid = r.amount === maxAmt && r.amount > 0;
+    const isWinner = isTopBid && isNetWinner;
+    const isTiedTop = isTopBid && !isNetWinner;
     const row = document.createElement('div');
     row.className = 'reveal-bid-row' + (isWinner ? ' winner' : '');
     row.style.animationDelay = (idx * 0.12) + 's';
@@ -1777,6 +1788,12 @@ function renderRevealOverlay(isAssigned) {
       const lbl = document.createElement('span');
       lbl.className = 'reveal-winner-label';
       lbl.textContent = '🏆 VINCITORE';
+      row.appendChild(lbl);
+    } else if (isTiedTop) {
+      const lbl = document.createElement('span');
+      lbl.className = 'reveal-winner-label';
+      lbl.style.background = 'var(--red)';
+      lbl.textContent = '⚖️ PARITÀ — SPAREGGIO';
       row.appendChild(lbl);
     }
     listEl.appendChild(row);
