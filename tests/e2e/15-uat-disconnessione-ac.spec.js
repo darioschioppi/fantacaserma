@@ -142,8 +142,12 @@ async function fakeOnlineAllExcept(realTeamIds) {
   const fakeIds = TEAMS.filter(t => !realTeamIds.includes(t));
   await Promise.all(fakeIds.map(tid => fbRest(`/teams/${tid}/sessions/fake`, 'PUT', true)));
 }
+// Rimuove TUTTE le sessioni (non solo quella "fake"): se un test browser viene
+// interrotto a metà (es. una pagina non chiusa correttamente per un timeout),
+// onDisconnect() potrebbe non aver ancora fatto pulizia — lasciando sessioni
+// "reali" residue che falserebbero i test successivi nella stessa run.
 async function clearFakeSessions() {
-  await Promise.all(TEAMS.map(tid => fbRest(`/teams/${tid}/sessions/fake`, 'DELETE').catch(() => {})));
+  await Promise.all(TEAMS.map(tid => fbRest(`/teams/${tid}/sessions`, 'DELETE').catch(() => {})));
 }
 
 const usedPlayerNames = [];

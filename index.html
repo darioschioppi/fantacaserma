@@ -1622,8 +1622,17 @@ function handleGameStateChange() {
     document.getElementById('tiebreakerBanner').classList.remove('visible');
     const dBanner = document.getElementById('disconnectBanner');
     if (gameState.pausedReason === 'disconnect') {
-      const team = TEAMS.find(t => t.id === gameState.disconnectedTeamId);
-      setText('disconnectTeamLabel', team ? (team.emoji + ' ' + team.name) : '—');
+      // Mostra TUTTE le squadre ancora disconnesse, non solo la prima rilevata
+      // (bug segnalato: se REAL e Frattese1985 sono entrambe offline, il banner
+      // indicava solo Frattese1985). disconnectedTeamIds è l'elenco aggiornato
+      // dinamicamente da checkDisconnectionPause() man mano che si riconnettono.
+      const idsRaw = gameState.disconnectedTeamIds ||
+        (gameState.disconnectedTeamId ? [gameState.disconnectedTeamId] : []);
+      const teams = idsRaw.map(id => TEAMS.find(t => t.id === id)).filter(Boolean);
+      const label = teams.length
+        ? teams.map(t => t.emoji + ' ' + t.name).join(', ')
+        : '—';
+      setText('disconnectTeamLabel', label);
       if (dBanner) dBanner.classList.add('visible');
       setText('bidAreaWaiting', '⏸ Asta in pausa: attesa riconnessione…');
     } else {
@@ -2023,7 +2032,24 @@ function checkDisconnectionPause() {
     const stillOffline = TEAMS.filter(t => !isTeamOnline(t.id));
     if (stillOffline.length === 0) {
       adminResumeAuction();
-      writeLog('auction_resumed_reconnect', {});
+      // "claim" sul log: solo chi riesce a scrivere questo marcatore atomico
+      // registra l'evento, evitando righe duplicate quando più client rilevano
+      // la stessa ripresa nello stesso istante (bug segnalato: decine di righe
+      // "auction_paused_disconnect" duplicate per lo stesso millisecondo).
+      db.ref('/game/lastResumeLoggedAt').transaction(current => {
+        if (current === gameState.pausedAt) return; // già loggato da un altro client
+        return gameState.pausedAt || Date.now();
+      }, (err, committed) => {
+        if (!err && committed) writeLog('auction_resumed_reconnect', {});
+      });
+    } else {
+      // Aggiorna la lista delle squadre ancora offline man mano che si riconnettono
+      // una alla volta (mostra sempre TUTTE quelle mancanti, non solo la prima).
+      const stillOfflineIds = stillOffline.map(t => t.id);
+      const current = gameState.disconnectedTeamIds || [];
+      if (JSON.stringify(current) !== JSON.stringify(stillOfflineIds)) {
+        db.ref('/game/disconnectedTeamIds').set(stillOfflineIds);
+      }
     }
     return;
   }
@@ -2031,9 +2057,9 @@ function checkDisconnectionPause() {
   // Rilevamento nuova disconnessione: solo durante bidding/tiebreaker, qualsiasi
   // squadra offline blocca l'asta (indipendentemente da tiebreaker/offerta già inviata).
   if (phase !== 'bidding' && phase !== 'tiebreaker') return;
-  const disconnected = TEAMS.find(t => !isTeamOnline(t.id));
+  const disconnectedTeams = TEAMS.filter(t => !isTeamOnline(t.id));
 
-  if (!disconnected) {
+  if (!disconnectedTeams.length) {
     // Nessuno disconnesso: annulla un eventuale debounce pendente (falso allarme risolto).
     if (disconnectDebounceTimer) { clearTimeout(disconnectDebounceTimer); disconnectDebounceTimer = null; }
     return;
@@ -2043,14 +2069,32 @@ function checkDisconnectionPause() {
   // Debounce ~3s: evita di metter in pausa per un blip di rete cortissimo.
   disconnectDebounceTimer = setTimeout(() => {
     disconnectDebounceTimer = null;
-    // Doppio controllo: potrebbe essersi già riconnessa nei 3s di attesa.
-    if (isTeamOnline(disconnected.id)) return;
+    // Doppio controllo: ricalcola l'elenco (potrebbero essersi già riconnesse nei 3s).
+    const stillDisconnected = TEAMS.filter(t => !isTeamOnline(t.id));
+    if (!stillDisconnected.length) return;
     const curPhase = gameState.phase || 'waiting';
     if (curPhase !== 'bidding' && curPhase !== 'tiebreaker') return;
-    const paused = pauseAuction('disconnect', { disconnectedTeamId: disconnected.id, disconnectedAt: Date.now() });
+    const pausedAt = Date.now();
+    const disconnectedIds = stillDisconnected.map(t => t.id);
+    const paused = pauseAuction('disconnect', {
+      // disconnectedTeamId (singolare) resta per retrocompatibilità con eventuali
+      // client meno recenti; disconnectedTeamIds è l'elenco completo usato dalla UI.
+      disconnectedTeamId: disconnectedIds[0], disconnectedTeamIds: disconnectedIds, disconnectedAt: pausedAt,
+    });
     if (paused) {
-      writeLog('auction_paused_disconnect', { teamId: disconnected.id, teamName: disconnected.name, pausedAt: Date.now() });
-      toast('⚠️ Asta in pausa: ' + disconnected.name + ' disconnessa', 'error');
+      // "claim" sul log: transaction atomica per evitare righe duplicate quando
+      // più client (uno per ogni squadra collegata) rilevano la stessa pausa.
+      db.ref('/game/lastPauseLoggedAt').transaction(current => {
+        if (current === pausedAt) return;
+        return pausedAt;
+      }, (err, committed) => {
+        if (!err && committed) {
+          const names = stillDisconnected.map(t => t.name).join(', ');
+          writeLog('auction_paused_disconnect', { teamIds: disconnectedIds, teamNames: names, pausedAt });
+        }
+      });
+      const names = stillDisconnected.map(t => t.name).join(', ');
+      toast('⚠️ Asta in pausa: ' + names + ' disconnessa' + (stillDisconnected.length > 1 ? 'e' : ''), 'error');
     }
   }, 3000);
 }
@@ -2369,7 +2413,8 @@ function adminResumeAuction() {
   autoRevealFired = false;
   db.ref('/game').update({
     phase: resumePhase, timerEnd, pausedPhase: null, pausedAt: null,
-    pausedReason: null, disconnectedTeamId: null, disconnectedAt: null,
+    pausedReason: null, disconnectedTeamId: null, disconnectedTeamIds: null, disconnectedAt: null,
+    lastPauseLoggedAt: null, lastResumeLoggedAt: null,
   });
   toast('▶ Asta ripresa (' + Math.round(remaining / 1000) + 's rimasti)', 'success');
 }
@@ -2382,7 +2427,8 @@ function adminEndAuction() {
   if (cp) writeLog('ended_manual', { player: cp.nome, ruolo: cp.ruolo });
   db.ref('/game').update({ phase: 'waiting', currentPlayer: null, timerEnd: null,
     tiebreakers: null, minBid: null, tiebreakerFirstBid: null, pausedPhase: null,
-    pausedReason: null, disconnectedTeamId: null, disconnectedAt: null });
+    pausedReason: null, disconnectedTeamId: null, disconnectedTeamIds: null, disconnectedAt: null,
+    lastPauseLoggedAt: null, lastResumeLoggedAt: null });
   db.ref('/bids').set(null);
   db.ref('/bidSubmitted').set(null);
   toast('⏹ Asta terminata', 'info');
