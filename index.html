@@ -257,6 +257,13 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 .pp-search-input:focus{border-color:var(--blue);}
 .pp-select{background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 9px;}
 .pp-table-wrap{flex:1;overflow-y:auto;padding:0 8px 8px;}
+/* Contenitore di stepper+ricerca+tabella nel pannello asta presidente: DEVE
+   essere flex (non il default block) perché .pp-table-wrap al suo interno
+   usa flex:1/overflow-y:auto per scrollare — senza questa regola la tabella
+   si espandeva alla sua altezza naturale e veniva troncata dal contenitore,
+   bloccando la lista giocatori senza possibilità di scorrere oltre le prime
+   righe (bug: "sono bloccato a DiGregorio, non ho una barra per scorrere"). */
+#paPreAuctionControls{display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0;}
 .pp-table{width:100%;border-collapse:collapse;font-size:.82rem;}
 .pp-table th{position:sticky;top:0;background:var(--bg2);padding:7px 5px;text-align:left;color:var(--text-s);font-weight:600;font-size:.72rem;text-transform:uppercase;border-bottom:1px solid var(--border);}
 .pp-table td{padding:6px 5px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle;}
