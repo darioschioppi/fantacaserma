@@ -34,16 +34,20 @@ Segui la [guida illustrata](https://darioschioppi.github.io/fantacaserma/install
 - Spareggio inline in caso di parità
 - Storico assegnazioni proprie
 - Classifica budget e rosa
+- Pianificazione: importo "preparato" in anticipo per un giocatore, usato per precompilare l'offerta quando la sua asta parte
+- Accesso multi-dispositivo: la stessa squadra può stare collegata da più telefoni/PC contemporaneamente (es. più persone della stessa squadra); conta come "connessa" finché almeno un dispositivo è online
+- Esportazione delle rose di tutte le squadre in un file Excel, con un click
 
-### Admin / Presidente
-- Ricerca e selezione giocatori da liste ufficiali (Fantacalcio Classic / Mantra)
-- Avvio asta con timer configurabile (10–120 secondi, default 30s)
-- Pausa e ripresa asta
+### Admin / Presidente (Benfiga)
+- Ricerca e selezione giocatori da un elenco ufficiale (Fantacalcio Classic — 539 giocatori con ruolo, squadra Serie A e quotazione)
+- Avvio asta con timer configurabile (10–120 secondi, default 30s) e durata configurabile della rivelazione prezzi
+- Pausa e ripresa asta (manuale, o automatica in caso di disconnessione)
 - Terminazione manuale asta (giocatore rimesso in attesa)
 - Gestione assegnazioni: rimuovi, riassegna a squadra diversa con prezzo custom
 - Assegnazione manuale di giocatori liberi
 - Audit log su Firebase per ogni operazione amministrativa
-- Visualizzazione budget e rosa di tutte le squadre
+- Visualizzazione budget e rosa di tutte le squadre, esportabili in Excel
+- Reset stagione (azzera assegnazioni, budget e log — irreversibile)
 
 ---
 
@@ -53,8 +57,23 @@ Segui la [guida illustrata](https://darioschioppi.github.io/fantacaserma/install
 2. Tutte le squadre hanno N secondi per inviare l'offerta (timer configurabile)
 3. Il tavolo poker mostra chi ha offerto (senza importo)
 4. Alla scadenza le buste si aprono: chi ha offerto di più vince
-5. In caso di parità → spareggio inline nella stessa schermata
+5. In caso di parità → spareggio inline nella stessa schermata (si rilancia allo stesso importo o più alto)
 6. Il giocatore viene assegnato, budget detratto, rosa aggiornata
+
+### Gestione delle disconnessioni
+
+Regola di base: **una squadra è "connessa" se almeno uno dei suoi dispositivi/tab è online**; è "disconnessa" solo quando *tutte* le sue sessioni sono cadute. Se anche una sola delle 10 squadre risulta completamente disconnessa durante un'asta in corso, l'asta si sospende immediatamente per tutti (timer fermo, offerte bloccate, giocatore e offerta corrente preservati) e riprende automaticamente solo quando tutte le squadre sono di nuovo online — senza bisogno di alcuna azione manuale del presidente. Il comportamento è documentato e verificato nel dettaglio nel [Test Book](docs/TEST_BOOK.md).
+
+---
+
+## 📚 Documentazione
+
+| Documento | Contenuto |
+|---|---|
+| [`docs/REQUISITI.md`](docs/REQUISITI.md) | Cosa deve fare il software e perché, in linguaggio non tecnico |
+| [`docs/ANALISI_FUNZIONALE.md`](docs/ANALISI_FUNZIONALE.md) | Chi usa l'app e come, passo per passo, per ogni scenario |
+| [`docs/SOLUTION_DESIGN.md`](docs/SOLUTION_DESIGN.md) | Come è costruito tecnicamente: architettura, dati, componenti |
+| [`docs/TEST_BOOK.md`](docs/TEST_BOOK.md) | Cosa viene verificato dai test automatici e come |
 
 ---
 
