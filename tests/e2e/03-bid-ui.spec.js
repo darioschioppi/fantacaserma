@@ -57,11 +57,11 @@ test.describe('Bid Area - Struttura HTML', () => {
     expect(text).not.toContain('INVIA');
   });
 
-  test('la bid area contiene il pulsante Passa (testo breve)', async ({ page }) => {
+  test('la bid area contiene il pulsante PASSA (senza emoji, maiuscolo)', async ({ page }) => {
     const btn = page.locator('#btnPass');
     const text = await btn.textContent();
-    // Fix: era "Passa questo giocatore", ora è "Passa"
-    expect(text?.trim()).toBe('🤚 Passa');
+    // Fix: emoji rimosse dai bottoni OFFERTA/PASSA su richiesta esplicita, testo tutto maiuscolo.
+    expect(text?.trim()).toBe('PASSA');
   });
 
   test('esistono 2 pulsanti stepper (+ e -)', async ({ page }) => {

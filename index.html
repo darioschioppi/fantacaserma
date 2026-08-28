@@ -173,14 +173,14 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 .bid-row{display:flex;gap:8px;align-items:center;}
 .bid-input{flex:1;min-width:0;background:var(--card);border:2px solid var(--border);border-radius:10px;color:var(--text);padding:10px 14px;font-size:1.2rem;font-weight:700;text-align:center;transition:border-color .2s;}
 .bid-input:focus{border-color:var(--green);}
-.btn-bid{background:var(--green);color:#fff;font-weight:800;font-size:.95rem;padding:10px 20px;border-radius:10px;white-space:nowrap;transition:all .2s;}
+.btn-bid{background:var(--green);color:#fff;font-weight:800;font-size:.95rem;padding:10px 20px;border-radius:10px;white-space:nowrap;transition:all .2s;text-transform:uppercase;}
 .btn-bid:hover{background:var(--green2);transform:translateY(-1px);}
 .btn-bid:disabled{opacity:.5;cursor:not-allowed;transform:none;}
 .bid-sent{text-align:center;color:var(--green);font-weight:700;font-size:.9rem;display:none;}
 .bid-sent.visible{display:block;}
-.btn-pass{background:transparent;border:1.5px solid var(--border);color:var(--text-m);border-radius:10px;padding:10px 16px;font-weight:700;font-size:.88rem;transition:all .2s;white-space:nowrap;}
-.btn-pass:hover:not(:disabled){border-color:var(--red);color:var(--red);}
-.btn-pass:disabled{opacity:.4;cursor:not-allowed;}
+.btn-pass{background:var(--red);border:none;color:#fff;border-radius:10px;padding:10px 20px;font-weight:800;font-size:.95rem;transition:all .2s;white-space:nowrap;text-transform:uppercase;}
+.btn-pass:hover:not(:disabled){background:var(--red2);transform:translateY(-1px);}
+.btn-pass:disabled{opacity:.4;cursor:not-allowed;transform:none;}
 .roster-full-msg{display:none;color:var(--red);font-size:.8rem;text-align:center;padding:8px 10px;background:rgba(239,68,68,.08);border-radius:8px;border:1px solid rgba(239,68,68,.25);font-weight:600;}
 .bid-area-waiting{text-align:center;color:var(--text-m);font-size:.85rem;font-style:italic;}
 .btn-stepper{width:38px;height:38px;border-radius:10px;background:var(--card2);border:1.5px solid var(--border);color:var(--text);font-size:1.3rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
@@ -378,8 +378,8 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <div style="border-top:2px solid var(--border);margin-top:22px;padding-top:22px;">
             <!-- Azione: offerta + passa -->
             <div style="display:flex;gap:8px;">
-              <button class="btn-bid" id="btnBid" onclick="submitBid()" style="flex:1;">💰 OFFERTA</button>
-              <button class="btn-pass" id="btnPass" onclick="passAuction()">🤚 Passa</button>
+              <button class="btn-bid" id="btnBid" onclick="submitBid()" style="flex:1;">OFFERTA</button>
+              <button class="btn-pass" id="btnPass" onclick="passAuction()" style="flex:1;">PASSA</button>
             </div>
           </div>
           <div class="bid-sent" id="bidSent">✅ Offerta inviata! Attendi la rivelazione.</div>
@@ -494,8 +494,8 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         <!-- Separatore: distanza visiva e funzionale AMPIA dal campo prezzo, per
              evitare che un tap sul campo attivi per errore Offerta o Passa. -->
         <div style="border-top:2px solid var(--border);margin-top:22px;padding-top:22px;">
-          <button class="btn-bid" id="paBidBtn" onclick="presidentSubmitBid()" style="width:100%;">💰 OFFERTA</button>
-          <button class="btn-pass" id="paBtnPass" onclick="presidentPass()" style="width:100%;margin-top:6px;">🤚 Passa</button>
+          <button class="btn-bid" id="paBidBtn" onclick="presidentSubmitBid()" style="width:100%;">OFFERTA</button>
+          <button class="btn-pass" id="paBtnPass" onclick="presidentPass()" style="width:100%;margin-top:6px;">PASSA</button>
         </div>
         <div class="bid-sent" id="paBidSent">✅ Offerta inviata!</div>
       </div>
@@ -1569,7 +1569,7 @@ function handleGameStateChange() {
       const isInTiebreaker = tiebreakers.includes(currentUser.teamId);
       if (!isInTiebreaker) {
         document.getElementById('btnBid').disabled = true;
-        document.getElementById('btnBid').textContent = '👀 Solo osservatore';
+        document.getElementById('btnBid').textContent = 'SOLO OSSERVATORE';
         document.getElementById('bidSent').classList.remove('visible');
       }
       // Nello spareggio il pulsante "Passa" è nascosto: il giocatore va assegnato
@@ -1584,7 +1584,7 @@ function handleGameStateChange() {
     }
     if (!myBidSent) {
       document.getElementById('btnBid').disabled = false;
-      document.getElementById('btnBid').textContent = '💰 OFFERTA';
+      document.getElementById('btnBid').textContent = 'OFFERTA';
     }
     // Aggiorna budget e slot ruolo nella bid area (usa "cp" già letto sopra da gameState.currentPlayer)
     if (currentUser && currentUser.teamId) {
@@ -1611,7 +1611,7 @@ function handleGameStateChange() {
       if (rfMsg) rfMsg.style.display = full ? 'block' : 'none';
       if (full && !myBidSent) {
         document.getElementById('btnBid').disabled = true;
-        document.getElementById('btnBid').textContent = '🚫 Rosa piena';
+        document.getElementById('btnBid').textContent = 'ROSA PIENA';
         document.getElementById('bidInput').disabled = true;
       }
       if (btnPass) btnPass.disabled = myBidSent;
@@ -1723,7 +1723,7 @@ function updateSeatSubmitted() {
       if (mySubmitted) {
         btnBid.disabled = true;
         const myBidAmount = getBidAmount(currentUser.teamId);
-        btnBid.textContent = (myBidAmount === 0) ? '🤚 Hai passato' : '✅ Offerta inviata';
+        btnBid.textContent = (myBidAmount === 0) ? 'HAI PASSATO' : 'OFFERTA INVIATA';
         if (myBidAmount !== 0) bidSentEl.classList.add('visible');
         bidInput.disabled = true;
         if (btnPass) btnPass.disabled = true;
@@ -1735,7 +1735,7 @@ function updateSeatSubmitted() {
           const full = cp ? isRosterFull(currentUser.teamId, cp.ruolo) : false;
           if (!full) {
             btnBid.disabled = false;
-            btnBid.textContent = '💰 OFFERTA';
+            btnBid.textContent = 'OFFERTA';
             bidInput.disabled = false;
           }
           bidSentEl.classList.remove('visible');
@@ -2295,10 +2295,10 @@ function renderPresidentAuction() {
         const paRfMsg = document.getElementById('paRosterFullMsg');
         if (paRfMsg) paRfMsg.style.display = rosterFull ? 'block' : 'none';
         if (mySubmitted || rosterFull) {
-          if (btn) { btn.disabled = true; if (rosterFull && !mySubmitted) btn.textContent = '🚫 Rosa piena'; }
+          if (btn) { btn.disabled = true; if (rosterFull && !mySubmitted) btn.textContent = 'ROSA PIENA'; }
           if (inp) inp.disabled = true;
         } else {
-          if (btn) { btn.disabled = false; btn.textContent = '💰 OFFERTA'; }
+          if (btn) { btn.disabled = false; btn.textContent = 'OFFERTA'; }
           if (inp) inp.disabled = false;
         }
         if (sent) mySubmitted ? sent.classList.add('visible') : sent.classList.remove('visible');
