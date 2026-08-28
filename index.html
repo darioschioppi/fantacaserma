@@ -2074,28 +2074,20 @@ function checkDisconnectionPause() {
     if (!stillDisconnected.length) return;
     const curPhase = gameState.phase || 'waiting';
     if (curPhase !== 'bidding' && curPhase !== 'tiebreaker') return;
-    const pausedAt = Date.now();
     const disconnectedIds = stillDisconnected.map(t => t.id);
-    const paused = pauseAuction('disconnect', {
-      // disconnectedTeamId (singolare) resta per retrocompatibilità con eventuali
-      // client meno recenti; disconnectedTeamIds è l'elenco completo usato dalla UI.
-      disconnectedTeamId: disconnectedIds[0], disconnectedTeamIds: disconnectedIds, disconnectedAt: pausedAt,
+    const names = stillDisconnected.map(t => t.name).join(', ');
+    // pauseAuction() ora usa una transaction su /game: se più client (uno per
+    // ogni squadra collegata) rilevano la stessa disconnessione entro la stessa
+    // finestra di debounce, solo il PRIMO a eseguirla vince (onCommitted=true)
+    // e scrive il log — gli altri la trovano già 'paused' e abortiscono, senza
+    // duplicare né l'update né la riga di log (bug osservato: 6 righe
+    // "auction_paused_disconnect" duplicate per lo stesso evento).
+    pauseAuction('disconnect', {
+      disconnectedTeamId: disconnectedIds[0], disconnectedTeamIds: disconnectedIds, disconnectedAt: Date.now(),
+    }, (committed) => {
+      if (committed) writeLog('auction_paused_disconnect', { teamIds: disconnectedIds, teamNames: names, pausedAt: Date.now() });
     });
-    if (paused) {
-      // "claim" sul log: transaction atomica per evitare righe duplicate quando
-      // più client (uno per ogni squadra collegata) rilevano la stessa pausa.
-      db.ref('/game/lastPauseLoggedAt').transaction(current => {
-        if (current === pausedAt) return;
-        return pausedAt;
-      }, (err, committed) => {
-        if (!err && committed) {
-          const names = stillDisconnected.map(t => t.name).join(', ');
-          writeLog('auction_paused_disconnect', { teamIds: disconnectedIds, teamNames: names, pausedAt });
-        }
-      });
-      const names = stillDisconnected.map(t => t.name).join(', ');
-      toast('⚠️ Asta in pausa: ' + names + ' disconnessa' + (stillDisconnected.length > 1 ? 'e' : ''), 'error');
-    }
+    toast('⚠️ Asta in pausa: ' + names + ' disconnessa' + (stillDisconnected.length > 1 ? 'e' : ''), 'error');
   }, 3000);
 }
 
@@ -2389,11 +2381,26 @@ function changeRevealDuration(delta) {
 // ─── FEATURE 2: PAUSA / FINE ASTA ───
 // Helper condiviso: pausa manuale (presidente) e pausa automatica da disconnessione
 // (checkDisconnectionPause) passano entrambe da qui, con reason diverso.
-function pauseAuction(reason, extra) {
+function pauseAuction(reason, extra, onCommitted) {
   const phase = gameState.phase || 'waiting';
   if (phase !== 'bidding' && phase !== 'tiebreaker') return false;
-  const updates = Object.assign({ phase: 'paused', pausedPhase: phase, pausedAt: Date.now(), pausedReason: reason || 'manual' }, extra || {});
-  db.ref('/game').update(updates);
+  const pausedAt = Date.now();
+  const updates = Object.assign({ phase: 'paused', pausedPhase: phase, pausedAt, pausedReason: reason || 'manual' }, extra || {});
+  // Transaction atomica su /game (non un semplice update): quando più client
+  // (uno per squadra collegata) rilevano la stessa disconnessione entro la
+  // stessa finestra di debounce, ognuno chiamava update() indipendentemente,
+  // sovrascrivendosi a vicenda e producendo righe di log duplicate (bug
+  // osservato: 6 scritture "auction_paused_disconnect" per lo stesso evento,
+  // con pausedAt diversi di 1-2ms perché ogni client usa il proprio Date.now()).
+  // Con la transaction, solo il PRIMO client che la esegue vede ancora la fase
+  // originale (bidding/tiebreaker) e applica l'update; tutti gli altri la
+  // trovano già in 'paused' e abortiscono (ritornano undefined) senza scrivere.
+  db.ref('/game').transaction(current => {
+    if (!current || (current.phase !== 'bidding' && current.phase !== 'tiebreaker')) return; // abort: già cambiata
+    return Object.assign({}, current, updates);
+  }, (err, committed) => {
+    if (onCommitted) onCommitted(!err && committed);
+  });
   return true;
 }
 
