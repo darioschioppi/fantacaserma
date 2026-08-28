@@ -1573,9 +1573,30 @@ function handleGameStateChange() {
   timerEndTs = gameState.timerEnd || null;
   if (phase === 'bidding' || phase === 'tiebreaker') {
     if (phase === 'tiebreaker') autoRevealFired = false; // reset per spareggio
+    document.getElementById('revealOverlay').classList.remove('visible');
+    // Rosa già piena per il ruolo del giocatore in asta: la squadra non può
+    // comunque vincere (isRosterFull la esclude sia da autoProcessReveal che
+    // da adminAssign), quindi passa automaticamente e non mostra affatto
+    // l'area offerta (stepper/campo prezzo/bottoni) — prima restava visibile
+    // solo disabilitata con etichetta "ROSA PIENA", ma l'utente doveva comunque
+    // notarla e ignorarla; ora si vede solo il tavolo col nome del giocatore,
+    // come nelle altre fasi in cui non c'è nulla da fare (richiesta esplicita:
+    // "mostra solo il tavolo e il nome del giocatore ma non" [i controlli]).
+    const myRosterFull = cp && currentUser && currentUser.teamId
+      ? isRosterFull(currentUser.teamId, cp.ruolo) : false;
+    if (myRosterFull) {
+      document.getElementById('bidInputArea').style.display = 'none';
+      document.getElementById('bidAreaWaiting').style.display = 'block';
+      setText('bidAreaWaiting', '🚫 Rosa completa per questo ruolo — passi automaticamente');
+      if (!bidSubmittedState[currentUser.teamId]) {
+        db.ref('/bids/' + currentUser.teamId).set({ amount: 0, ts: Date.now() });
+        db.ref('/bidSubmitted/' + currentUser.teamId).set(true);
+      }
+      startLocalTimer();
+      return;
+    }
     document.getElementById('bidAreaWaiting').style.display = 'none';
     document.getElementById('bidInputArea').style.display = 'flex';
-    document.getElementById('revealOverlay').classList.remove('visible');
     const minBid = gameState.minBid || 1;
     setText('bidMinLabel', minBid);
     const bidInput = document.getElementById('bidInput');
@@ -2325,35 +2346,46 @@ function renderPresidentAuction() {
     if (bidArea) {
       const tiebreakers = gameState.tiebreakers || null;
       const inTiebreaker = !tiebreakers || tiebreakers.includes(currentUser.teamId);
-      bidArea.style.display = inTiebreaker ? 'block' : 'none';
-      if (inTiebreaker) {
-        const minBid = gameState.minBid || 1;
-        const td = teamsState[currentUser.teamId] || {};
-        setText('paBudgetLabel', td.budget != null ? td.budget : BUDGET_START);
-        const inp = document.getElementById('paBidInput');
-        if (inp) {
-          inp.min = minBid;
-          if (!bidSubmittedState[currentUser.teamId]) {
-            const planned = getPlannedAmount(cp, minBid);
-            inp.value = (planned != null) ? planned : minBid;
+      // Rosa già piena per il ruolo in asta: Benfiga non può comunque vincere,
+      // passa automaticamente e non vede affatto i controlli offerta — stesso
+      // trattamento applicato al pannello partecipante (prima restavano
+      // visibili solo disabilitati con etichetta "ROSA PIENA").
+      const cpR = gameState.currentPlayer;
+      const rosterFull = cpR ? isRosterFull(currentUser.teamId, cpR.ruolo) : false;
+      if (inTiebreaker && rosterFull) {
+        bidArea.style.display = 'none';
+        if (!bidSubmittedState[currentUser.teamId]) {
+          db.ref('/bids/' + currentUser.teamId).set({ amount: 0, ts: Date.now() });
+          db.ref('/bidSubmitted/' + currentUser.teamId).set(true);
+        }
+      } else {
+        bidArea.style.display = inTiebreaker ? 'block' : 'none';
+        if (inTiebreaker) {
+          const minBid = gameState.minBid || 1;
+          const td = teamsState[currentUser.teamId] || {};
+          setText('paBudgetLabel', td.budget != null ? td.budget : BUDGET_START);
+          const inp = document.getElementById('paBidInput');
+          if (inp) {
+            inp.min = minBid;
+            if (!bidSubmittedState[currentUser.teamId]) {
+              const planned = getPlannedAmount(cp, minBid);
+              inp.value = (planned != null) ? planned : minBid;
+            }
           }
+          const mySubmitted = !!bidSubmittedState[currentUser.teamId];
+          const btn = document.getElementById('paBidBtn');
+          const sent = document.getElementById('paBidSent');
+          const paRfMsg = document.getElementById('paRosterFullMsg');
+          if (paRfMsg) paRfMsg.style.display = 'none';
+          if (mySubmitted) {
+            if (btn) btn.disabled = true;
+            if (inp) inp.disabled = true;
+          } else {
+            if (btn) { btn.disabled = false; btn.textContent = 'OFFERTA'; }
+            if (inp) inp.disabled = false;
+          }
+          if (sent) mySubmitted ? sent.classList.add('visible') : sent.classList.remove('visible');
         }
-        const mySubmitted = !!bidSubmittedState[currentUser.teamId];
-        const btn = document.getElementById('paBidBtn');
-        const sent = document.getElementById('paBidSent');
-        // Controllo rosa piena per Benfiga
-        const cpR = gameState.currentPlayer;
-        const rosterFull = cpR ? isRosterFull(currentUser.teamId, cpR.ruolo) : false;
-        const paRfMsg = document.getElementById('paRosterFullMsg');
-        if (paRfMsg) paRfMsg.style.display = rosterFull ? 'block' : 'none';
-        if (mySubmitted || rosterFull) {
-          if (btn) { btn.disabled = true; if (rosterFull && !mySubmitted) btn.textContent = 'ROSA PIENA'; }
-          if (inp) inp.disabled = true;
-        } else {
-          if (btn) { btn.disabled = false; btn.textContent = 'OFFERTA'; }
-          if (inp) inp.disabled = false;
-        }
-        if (sent) mySubmitted ? sent.classList.add('visible') : sent.classList.remove('visible');
       }
     }
   } else if (phase === 'paused') {
