@@ -1,43 +1,59 @@
 [
   {
-    "Nome": "Martinez L.",
-    "Squadra": "INT",
-    "Ruolo_Classic": "A",
-    "QI": "35",
-    "QA": "35",
-    "FVM": "367"
-  },
-  {
     "Nome": "Malen",
     "Squadra": "ROM",
     "Ruolo_Classic": "A",
     "QI": "34",
-    "QA": "34",
-    "FVM": "365"
+    "QA": "36",
+    "FVM": "414"
   },
   {
-    "Nome": "Dimarco",
+    "Nome": "Martinez L.",
     "Squadra": "INT",
-    "Ruolo_Classic": "D",
-    "QI": "32",
-    "QA": "32",
-    "FVM": "255"
-  },
-  {
-    "Nome": "Paz N.",
-    "Squadra": "COM",
-    "Ruolo_Classic": "C",
-    "QI": "30",
-    "QA": "30",
-    "FVM": "247"
+    "Ruolo_Classic": "A",
+    "QI": "35",
+    "QA": "34",
+    "FVM": "367"
   },
   {
     "Nome": "Thuram",
     "Squadra": "INT",
     "Ruolo_Classic": "A",
     "QI": "29",
+    "QA": "28",
+    "FVM": "263"
+  },
+  {
+    "Nome": "Hojlund",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "A",
+    "QI": "28",
+    "QA": "27",
+    "FVM": "257"
+  },
+  {
+    "Nome": "Dimarco",
+    "Squadra": "INT",
+    "Ruolo_Classic": "D",
+    "QI": "32",
+    "QA": "31",
+    "FVM": "253"
+  },
+  {
+    "Nome": "Paz N.",
+    "Squadra": "COM",
+    "Ruolo_Classic": "C",
+    "QI": "30",
     "QA": "29",
-    "FVM": "270"
+    "FVM": "247"
+  },
+  {
+    "Nome": "Calhanoglu",
+    "Squadra": "INT",
+    "Ruolo_Classic": "C",
+    "QI": "27",
+    "QA": "28",
+    "FVM": "236"
   },
   {
     "Nome": "McTominay",
@@ -45,23 +61,7 @@
     "Ruolo_Classic": "C",
     "QI": "28",
     "QA": "28",
-    "FVM": "230"
-  },
-  {
-    "Nome": "Hojlund",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "A",
-    "QI": "28",
-    "QA": "28",
-    "FVM": "260"
-  },
-  {
-    "Nome": "Calhanoglu",
-    "Squadra": "INT",
-    "Ruolo_Classic": "C",
-    "QI": "27",
-    "QA": "27",
-    "FVM": "236"
+    "FVM": "228"
   },
   {
     "Nome": "Ramos G.",
@@ -69,23 +69,23 @@
     "Ruolo_Classic": "A",
     "QI": "27",
     "QA": "27",
-    "FVM": "227"
-  },
-  {
-    "Nome": "Orsolini",
-    "Squadra": "BOL",
-    "Ruolo_Classic": "C",
-    "QI": "26",
-    "QA": "26",
-    "FVM": "200"
+    "FVM": "228"
   },
   {
     "Nome": "Kolo Muani",
     "Squadra": "JUV",
     "Ruolo_Classic": "A",
     "QI": "26",
-    "QA": "26",
-    "FVM": "212"
+    "QA": "25",
+    "FVM": "211"
+  },
+  {
+    "Nome": "Orsolini",
+    "Squadra": "BOL",
+    "Ruolo_Classic": "C",
+    "QI": "26",
+    "QA": "25",
+    "FVM": "192"
   },
   {
     "Nome": "Kean",
@@ -93,22 +93,30 @@
     "Ruolo_Classic": "A",
     "QI": "25",
     "QA": "25",
-    "FVM": "200"
+    "FVM": "187"
+  },
+  {
+    "Nome": "Douvikas",
+    "Squadra": "COM",
+    "Ruolo_Classic": "A",
+    "QI": "20",
+    "QA": "21",
+    "FVM": "170"
   },
   {
     "Nome": "Pulisic",
     "Squadra": "MIL",
     "Ruolo_Classic": "C",
     "QI": "25",
-    "QA": "25",
-    "FVM": "170"
+    "QA": "24",
+    "FVM": "160"
   },
   {
     "Nome": "Yildiz",
     "Squadra": "JUV",
     "Ruolo_Classic": "A",
     "QI": "23",
-    "QA": "23",
+    "QA": "22",
     "FVM": "150"
   },
   {
@@ -116,16 +124,8 @@
     "Squadra": "MIL",
     "Ruolo_Classic": "C",
     "QI": "22",
-    "QA": "22",
+    "QA": "23",
     "FVM": "145"
-  },
-  {
-    "Nome": "Douvikas",
-    "Squadra": "COM",
-    "Ruolo_Classic": "A",
-    "QI": "20",
-    "QA": "20",
-    "FVM": "160"
   },
   {
     "Nome": "Scamacca",
@@ -133,15 +133,7 @@
     "Ruolo_Classic": "A",
     "QI": "19",
     "QA": "19",
-    "FVM": "126"
-  },
-  {
-    "Nome": "Baturina",
-    "Squadra": "COM",
-    "Ruolo_Classic": "C",
-    "QI": "19",
-    "QA": "19",
-    "FVM": "98"
+    "FVM": "123"
   },
   {
     "Nome": "Davis K.",
@@ -149,7 +141,55 @@
     "Ruolo_Classic": "A",
     "QI": "19",
     "QA": "19",
-    "FVM": "115"
+    "FVM": "109"
+  },
+  {
+    "Nome": "De Bruyne",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "C",
+    "QI": "15",
+    "QA": "16",
+    "FVM": "107"
+  },
+  {
+    "Nome": "Esposito F.P.",
+    "Squadra": "INT",
+    "Ruolo_Classic": "A",
+    "QI": "16",
+    "QA": "17",
+    "FVM": "105"
+  },
+  {
+    "Nome": "Berardi",
+    "Squadra": "SAS",
+    "Ruolo_Classic": "A",
+    "QI": "18",
+    "QA": "18",
+    "FVM": "101"
+  },
+  {
+    "Nome": "Krstovic",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "A",
+    "QI": "18",
+    "QA": "19",
+    "FVM": "100"
+  },
+  {
+    "Nome": "De Ketelaere",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "A",
+    "QI": "17",
+    "QA": "17",
+    "FVM": "98"
+  },
+  {
+    "Nome": "Baturina",
+    "Squadra": "COM",
+    "Ruolo_Classic": "C",
+    "QI": "19",
+    "QA": "19",
+    "FVM": "97"
   },
   {
     "Nome": "Mora",
@@ -157,15 +197,23 @@
     "Ruolo_Classic": "C",
     "QI": "19",
     "QA": "19",
-    "FVM": "100"
+    "FVM": "95"
   },
   {
-    "Nome": "Krstovic",
-    "Squadra": "ATA",
+    "Nome": "Dybala",
+    "Squadra": "ROM",
     "Ruolo_Classic": "A",
-    "QI": "18",
-    "QA": "18",
-    "FVM": "100"
+    "QI": "14",
+    "QA": "15",
+    "FVM": "95"
+  },
+  {
+    "Nome": "Zaccagni",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "C",
+    "QI": "16",
+    "QA": "16",
+    "FVM": "88"
   },
   {
     "Nome": "Da Cunha",
@@ -173,7 +221,79 @@
     "Ruolo_Classic": "C",
     "QI": "18",
     "QA": "18",
-    "FVM": "90"
+    "FVM": "87"
+  },
+  {
+    "Nome": "Atta",
+    "Squadra": "FIO",
+    "Ruolo_Classic": "C",
+    "QI": "17",
+    "QA": "16",
+    "FVM": "86"
+  },
+  {
+    "Nome": "Laurientè",
+    "Squadra": "SAS",
+    "Ruolo_Classic": "A",
+    "QI": "15",
+    "QA": "15",
+    "FVM": "86"
+  },
+  {
+    "Nome": "Zaniolo",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "C",
+    "QI": "18",
+    "QA": "18",
+    "FVM": "85"
+  },
+  {
+    "Nome": "Wesley",
+    "Squadra": "ROM",
+    "Ruolo_Classic": "D",
+    "QI": "17",
+    "QA": "17",
+    "FVM": "82"
+  },
+  {
+    "Nome": "Molina N.",
+    "Squadra": "ROM",
+    "Ruolo_Classic": "D",
+    "QI": "18",
+    "QA": "18",
+    "FVM": "80"
+  },
+  {
+    "Nome": "Barella",
+    "Squadra": "INT",
+    "Ruolo_Classic": "C",
+    "QI": "17",
+    "QA": "17",
+    "FVM": "80"
+  },
+  {
+    "Nome": "Simeone",
+    "Squadra": "TOR",
+    "Ruolo_Classic": "A",
+    "QI": "15",
+    "QA": "15",
+    "FVM": "80"
+  },
+  {
+    "Nome": "Raspadori",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "A",
+    "QI": "13",
+    "QA": "14",
+    "FVM": "76"
+  },
+  {
+    "Nome": "Castro S.",
+    "Squadra": "ROM",
+    "Ruolo_Classic": "A",
+    "QI": "14",
+    "QA": "14",
+    "FVM": "76"
   },
   {
     "Nome": "Leao",
@@ -189,63 +309,15 @@
     "Ruolo_Classic": "P",
     "QI": "18",
     "QA": "18",
-    "FVM": "65"
+    "FVM": "75"
   },
   {
-    "Nome": "Berardi",
-    "Squadra": "SAS",
-    "Ruolo_Classic": "A",
-    "QI": "18",
-    "QA": "18",
-    "FVM": "108"
-  },
-  {
-    "Nome": "Zaniolo",
-    "Squadra": "UDI",
+    "Nome": "Vlasic",
+    "Squadra": "TOR",
     "Ruolo_Classic": "C",
-    "QI": "18",
-    "QA": "18",
-    "FVM": "90"
-  },
-  {
-    "Nome": "Molina N.",
-    "Squadra": "ROM",
-    "Ruolo_Classic": "D",
-    "QI": "18",
-    "QA": "18",
-    "FVM": "85"
-  },
-  {
-    "Nome": "De Ketelaere",
-    "Squadra": "ATA",
-    "Ruolo_Classic": "A",
-    "QI": "17",
-    "QA": "17",
-    "FVM": "103"
-  },
-  {
-    "Nome": "Atta",
-    "Squadra": "FIO",
-    "Ruolo_Classic": "C",
-    "QI": "17",
-    "QA": "17",
-    "FVM": "87"
-  },
-  {
-    "Nome": "Martinez Jo.",
-    "Squadra": "INT",
-    "Ruolo_Classic": "P",
-    "QI": "17",
-    "QA": "17",
-    "FVM": "63"
-  },
-  {
-    "Nome": "Barella",
-    "Squadra": "INT",
-    "Ruolo_Classic": "C",
-    "QI": "17",
-    "QA": "17",
-    "FVM": "80"
+    "QI": "14",
+    "QA": "13",
+    "FVM": "75"
   },
   {
     "Nome": "McKennie",
@@ -256,28 +328,76 @@
     "FVM": "70"
   },
   {
-    "Nome": "Wesley",
-    "Squadra": "ROM",
-    "Ruolo_Classic": "D",
-    "QI": "17",
-    "QA": "17",
-    "FVM": "84"
+    "Nome": "Frattesi",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "C",
+    "QI": "7",
+    "QA": "9",
+    "FVM": "68"
   },
   {
-    "Nome": "Carnesecchi",
-    "Squadra": "ATA",
+    "Nome": "Conceicao",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "C",
+    "QI": "12",
+    "QA": "12",
+    "FVM": "67"
+  },
+  {
+    "Nome": "Martinez Jo.",
+    "Squadra": "INT",
+    "Ruolo_Classic": "P",
+    "QI": "17",
+    "QA": "17",
+    "FVM": "63"
+  },
+  {
+    "Nome": "Santos A.",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "A",
+    "QI": "14",
+    "QA": "14",
+    "FVM": "62"
+  },
+  {
+    "Nome": "Bremer",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "D",
+    "QI": "15",
+    "QA": "16",
+    "FVM": "60"
+  },
+  {
+    "Nome": "Vicario",
+    "Squadra": "JUV",
     "Ruolo_Classic": "P",
     "QI": "16",
     "QA": "16",
-    "FVM": "53"
+    "FVM": "58"
   },
   {
     "Nome": "Dovbyk",
     "Squadra": "BOL",
     "Ruolo_Classic": "A",
     "QI": "16",
-    "QA": "16",
-    "FVM": "63"
+    "QA": "15",
+    "FVM": "58"
+  },
+  {
+    "Nome": "Taylor K.",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "C",
+    "QI": "13",
+    "QA": "13",
+    "FVM": "57"
+  },
+  {
+    "Nome": "Colombo",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "A",
+    "QI": "11",
+    "QA": "11",
+    "FVM": "55"
   },
   {
     "Nome": "Butez",
@@ -285,7 +405,31 @@
     "Ruolo_Classic": "P",
     "QI": "16",
     "QA": "16",
-    "FVM": "55"
+    "FVM": "54"
+  },
+  {
+    "Nome": "Mastantuono",
+    "Squadra": "FIO",
+    "Ruolo_Classic": "C",
+    "QI": "12",
+    "QA": "12",
+    "FVM": "54"
+  },
+  {
+    "Nome": "Meret",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "P",
+    "QI": "11",
+    "QA": "11",
+    "FVM": "53"
+  },
+  {
+    "Nome": "Carnesecchi",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "P",
+    "QI": "16",
+    "QA": "16",
+    "FVM": "52"
   },
   {
     "Nome": "Akanji",
@@ -296,36 +440,20 @@
     "FVM": "51"
   },
   {
-    "Nome": "Esposito F.P.",
-    "Squadra": "INT",
-    "Ruolo_Classic": "A",
-    "QI": "16",
-    "QA": "16",
-    "FVM": "105"
-  },
-  {
-    "Nome": "Zaccagni",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "C",
-    "QI": "16",
-    "QA": "16",
-    "FVM": "91"
-  },
-  {
-    "Nome": "Vicario",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "P",
-    "QI": "16",
-    "QA": "16",
-    "FVM": "57"
-  },
-  {
-    "Nome": "Bremer",
-    "Squadra": "JUV",
+    "Nome": "Rrahmani",
+    "Squadra": "NAP",
     "Ruolo_Classic": "D",
-    "QI": "15",
-    "QA": "15",
-    "FVM": "60"
+    "QI": "14",
+    "QA": "14",
+    "FVM": "51"
+  },
+  {
+    "Nome": "Pinamonti",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "A",
+    "QI": "13",
+    "QA": "13",
+    "FVM": "51"
   },
   {
     "Nome": "Maignan",
@@ -336,19 +464,27 @@
     "FVM": "50"
   },
   {
-    "Nome": "De Bruyne",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "C",
-    "QI": "15",
-    "QA": "15",
-    "FVM": "107"
-  },
-  {
     "Nome": "Pellegrino M.",
     "Squadra": "FIO",
     "Ruolo_Classic": "A",
     "QI": "15",
-    "QA": "15",
+    "QA": "14",
+    "FVM": "50"
+  },
+  {
+    "Nome": "Alajbegovic",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "C",
+    "QI": "12",
+    "QA": "12",
+    "FVM": "50"
+  },
+  {
+    "Nome": "Moreira",
+    "Squadra": "MIL",
+    "Ruolo_Classic": "C",
+    "QI": "12",
+    "QA": "12",
     "FVM": "50"
   },
   {
@@ -360,28 +496,12 @@
     "FVM": "49"
   },
   {
-    "Nome": "Laurientè",
-    "Squadra": "SAS",
-    "Ruolo_Classic": "A",
-    "QI": "15",
-    "QA": "15",
-    "FVM": "86"
-  },
-  {
-    "Nome": "Simeone",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "A",
-    "QI": "15",
-    "QA": "15",
-    "FVM": "81"
-  },
-  {
-    "Nome": "Bastoni",
-    "Squadra": "INT",
-    "Ruolo_Classic": "D",
-    "QI": "14",
-    "QA": "14",
-    "FVM": "43"
+    "Nome": "Ederson D.S.",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "C",
+    "QI": "12",
+    "QA": "12",
+    "FVM": "49"
   },
   {
     "Nome": "Pavlovic",
@@ -392,76 +512,28 @@
     "FVM": "48"
   },
   {
-    "Nome": "Rrahmani",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "D",
-    "QI": "14",
-    "QA": "14",
-    "FVM": "51"
-  },
-  {
-    "Nome": "Santos A.",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "A",
-    "QI": "14",
-    "QA": "14",
-    "FVM": "62"
-  },
-  {
-    "Nome": "Dybala",
-    "Squadra": "ROM",
-    "Ruolo_Classic": "A",
-    "QI": "14",
-    "QA": "14",
-    "FVM": "70"
-  },
-  {
-    "Nome": "Castro S.",
-    "Squadra": "ROM",
-    "Ruolo_Classic": "A",
-    "QI": "14",
-    "QA": "14",
-    "FVM": "81"
-  },
-  {
-    "Nome": "Vlasic",
-    "Squadra": "TOR",
+    "Nome": "Jones C.",
+    "Squadra": "INT",
     "Ruolo_Classic": "C",
-    "QI": "14",
-    "QA": "14",
-    "FVM": "75"
+    "QI": "12",
+    "QA": "12",
+    "FVM": "48"
   },
   {
-    "Nome": "Raspadori",
-    "Squadra": "ATA",
+    "Nome": "Diao",
+    "Squadra": "COM",
     "Ruolo_Classic": "A",
-    "QI": "13",
-    "QA": "13",
-    "FVM": "70"
+    "QI": "11",
+    "QA": "11",
+    "FVM": "47"
   },
   {
-    "Nome": "Esposito Se.",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "A",
-    "QI": "13",
-    "QA": "13",
-    "FVM": "40"
-  },
-  {
-    "Nome": "De Gea",
-    "Squadra": "FIO",
-    "Ruolo_Classic": "P",
-    "QI": "13",
-    "QA": "13",
-    "FVM": "45"
-  },
-  {
-    "Nome": "Gudmundsson A.",
-    "Squadra": "FIO",
+    "Nome": "Zambo Anguissa",
+    "Squadra": "NAP",
     "Ruolo_Classic": "C",
-    "QI": "13",
-    "QA": "13",
-    "FVM": "60"
+    "QI": "11",
+    "QA": "11",
+    "FVM": "47"
   },
   {
     "Nome": "Kalulu",
@@ -472,20 +544,52 @@
     "FVM": "46"
   },
   {
-    "Nome": "Taylor K.",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "C",
+    "Nome": "Solet",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "D",
     "QI": "13",
     "QA": "13",
-    "FVM": "60"
+    "FVM": "46"
   },
   {
-    "Nome": "Nkunku",
+    "Nome": "Modric",
     "Squadra": "MIL",
+    "Ruolo_Classic": "C",
+    "QI": "12",
+    "QA": "12",
+    "FVM": "46"
+  },
+  {
+    "Nome": "Soulè",
+    "Squadra": "ROM",
     "Ruolo_Classic": "A",
-    "QI": "13",
-    "QA": "13",
-    "FVM": "20"
+    "QI": "12",
+    "QA": "12",
+    "FVM": "45"
+  },
+  {
+    "Nome": "Adams A.",
+    "Squadra": "VEN",
+    "Ruolo_Classic": "A",
+    "QI": "12",
+    "QA": "12",
+    "FVM": "45"
+  },
+  {
+    "Nome": "Zielinski",
+    "Squadra": "INT",
+    "Ruolo_Classic": "C",
+    "QI": "10",
+    "QA": "11",
+    "FVM": "45"
+  },
+  {
+    "Nome": "Ekkelenkamp",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "C",
+    "QI": "10",
+    "QA": "11",
+    "FVM": "45"
   },
   {
     "Nome": "N'Dicka",
@@ -496,164 +600,28 @@
     "FVM": "44"
   },
   {
-    "Nome": "Pinamonti",
-    "Squadra": "SAS",
-    "Ruolo_Classic": "A",
-    "QI": "13",
-    "QA": "13",
-    "FVM": "51"
-  },
-  {
-    "Nome": "Solet",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "D",
-    "QI": "13",
-    "QA": "13",
-    "FVM": "46"
-  },
-  {
-    "Nome": "Kevin Carlos",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "A",
-    "QI": "13",
-    "QA": "13",
-    "FVM": "37"
-  },
-  {
-    "Nome": "Ederson D.S.",
-    "Squadra": "ATA",
-    "Ruolo_Classic": "C",
-    "QI": "12",
-    "QA": "12",
-    "FVM": "50"
-  },
-  {
-    "Nome": "Samardzic",
-    "Squadra": "ATA",
-    "Ruolo_Classic": "C",
-    "QI": "12",
-    "QA": "12",
-    "FVM": "41"
-  },
-  {
-    "Nome": "Rodriguez Je.",
-    "Squadra": "COM",
-    "Ruolo_Classic": "C",
-    "QI": "12",
-    "QA": "12",
-    "FVM": "31"
-  },
-  {
-    "Nome": "Stones",
-    "Squadra": "INT",
-    "Ruolo_Classic": "D",
-    "QI": "12",
-    "QA": "12",
-    "FVM": "30"
-  },
-  {
-    "Nome": "Alajbegovic",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "C",
-    "QI": "12",
-    "QA": "12",
-    "FVM": "50"
-  },
-  {
-    "Nome": "Conceicao",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "C",
-    "QI": "12",
-    "QA": "12",
-    "FVM": "67"
-  },
-  {
-    "Nome": "Gila",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "D",
-    "QI": "12",
-    "QA": "12",
-    "FVM": "31"
-  },
-  {
-    "Nome": "Modric",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "C",
-    "QI": "12",
-    "QA": "12",
-    "FVM": "48"
-  },
-  {
-    "Nome": "Di Lorenzo",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "D",
-    "QI": "12",
-    "QA": "12",
-    "FVM": "40"
-  },
-  {
-    "Nome": "Soulè",
-    "Squadra": "ROM",
-    "Ruolo_Classic": "A",
-    "QI": "12",
-    "QA": "12",
-    "FVM": "50"
-  },
-  {
-    "Nome": "Adams A.",
-    "Squadra": "VEN",
-    "Ruolo_Classic": "A",
-    "QI": "12",
-    "QA": "12",
-    "FVM": "50"
-  },
-  {
-    "Nome": "Mastantuono",
-    "Squadra": "FIO",
-    "Ruolo_Classic": "C",
-    "QI": "12",
-    "QA": "12",
-    "FVM": "58"
-  },
-  {
-    "Nome": "Spence",
-    "Squadra": "INT",
-    "Ruolo_Classic": "D",
-    "QI": "12",
-    "QA": "12",
-    "FVM": "40"
-  },
-  {
-    "Nome": "Moreira",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "C",
-    "QI": "12",
-    "QA": "12",
-    "FVM": "50"
-  },
-  {
-    "Nome": "Jones C.",
-    "Squadra": "INT",
-    "Ruolo_Classic": "C",
-    "QI": "12",
-    "QA": "12",
-    "FVM": "48"
-  },
-  {
     "Nome": "Rowe",
     "Squadra": "BOL",
     "Ruolo_Classic": "C",
     "QI": "11",
     "QA": "11",
-    "FVM": "45"
+    "FVM": "44"
   },
   {
-    "Nome": "Diao",
-    "Squadra": "COM",
-    "Ruolo_Classic": "A",
-    "QI": "11",
-    "QA": "11",
-    "FVM": "48"
+    "Nome": "Diouf",
+    "Squadra": "INT",
+    "Ruolo_Classic": "C",
+    "QI": "8",
+    "QA": "9",
+    "FVM": "44"
+  },
+  {
+    "Nome": "Bastoni",
+    "Squadra": "INT",
+    "Ruolo_Classic": "D",
+    "QI": "14",
+    "QA": "14",
+    "FVM": "43"
   },
   {
     "Nome": "Ostigard",
@@ -664,46 +632,6 @@
     "FVM": "43"
   },
   {
-    "Nome": "Baldanzi",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "C",
-    "QI": "11",
-    "QA": "11",
-    "FVM": "30"
-  },
-  {
-    "Nome": "Colombo",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "A",
-    "QI": "11",
-    "QA": "11",
-    "FVM": "60"
-  },
-  {
-    "Nome": "Bisseck",
-    "Squadra": "INT",
-    "Ruolo_Classic": "D",
-    "QI": "11",
-    "QA": "11",
-    "FVM": "37"
-  },
-  {
-    "Nome": "Meret",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "P",
-    "QI": "11",
-    "QA": "11",
-    "FVM": "50"
-  },
-  {
-    "Nome": "Zambo Anguissa",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "C",
-    "QI": "11",
-    "QA": "11",
-    "FVM": "51"
-  },
-  {
     "Nome": "Tourè E.",
     "Squadra": "PAR",
     "Ruolo_Classic": "A",
@@ -712,84 +640,60 @@
     "FVM": "43"
   },
   {
-    "Nome": "Scalvini",
+    "Nome": "Konè M.",
+    "Squadra": "ROM",
+    "Ruolo_Classic": "C",
+    "QI": "10",
+    "QA": "10",
+    "FVM": "42"
+  },
+  {
+    "Nome": "Samardzic",
     "Squadra": "ATA",
-    "Ruolo_Classic": "D",
-    "QI": "10",
-    "QA": "10",
-    "FVM": "28"
-  },
-  {
-    "Nome": "Skorupski",
-    "Squadra": "BOL",
-    "Ruolo_Classic": "P",
-    "QI": "10",
-    "QA": "10",
-    "FVM": "37"
-  },
-  {
-    "Nome": "Ramon",
-    "Squadra": "COM",
-    "Ruolo_Classic": "D",
-    "QI": "10",
-    "QA": "10",
-    "FVM": "32"
-  },
-  {
-    "Nome": "Perrone",
-    "Squadra": "COM",
     "Ruolo_Classic": "C",
-    "QI": "10",
-    "QA": "10",
-    "FVM": "37"
+    "QI": "12",
+    "QA": "12",
+    "FVM": "41"
   },
   {
-    "Nome": "Dodò",
+    "Nome": "Esposito Se.",
+    "Squadra": "CAG",
+    "Ruolo_Classic": "A",
+    "QI": "13",
+    "QA": "13",
+    "FVM": "40"
+  },
+  {
+    "Nome": "Gudmundsson A.",
     "Squadra": "FIO",
+    "Ruolo_Classic": "C",
+    "QI": "13",
+    "QA": "13",
+    "FVM": "40"
+  },
+  {
+    "Nome": "De Gea",
+    "Squadra": "FIO",
+    "Ruolo_Classic": "P",
+    "QI": "13",
+    "QA": "12",
+    "FVM": "40"
+  },
+  {
+    "Nome": "Di Lorenzo",
+    "Squadra": "NAP",
     "Ruolo_Classic": "D",
-    "QI": "10",
-    "QA": "10",
-    "FVM": "20"
+    "QI": "12",
+    "QA": "12",
+    "FVM": "40"
   },
   {
-    "Nome": "Zielinski",
+    "Nome": "Spence",
     "Squadra": "INT",
-    "Ruolo_Classic": "C",
-    "QI": "10",
-    "QA": "10",
-    "FVM": "45"
-  },
-  {
-    "Nome": "Thuram K.",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "C",
-    "QI": "10",
-    "QA": "10",
-    "FVM": "35"
-  },
-  {
-    "Nome": "Dia",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "A",
-    "QI": "10",
-    "QA": "10",
-    "FVM": "30"
-  },
-  {
-    "Nome": "Ratkov",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "A",
-    "QI": "10",
-    "QA": "10",
-    "FVM": "26"
-  },
-  {
-    "Nome": "Saelemaekers",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "C",
-    "QI": "10",
-    "QA": "10",
-    "FVM": "35"
+    "Ruolo_Classic": "D",
+    "QI": "12",
+    "QA": "12",
+    "FVM": "40"
   },
   {
     "Nome": "Politano",
@@ -800,28 +704,12 @@
     "FVM": "40"
   },
   {
-    "Nome": "Lukaku",
+    "Nome": "Vergara",
     "Squadra": "NAP",
-    "Ruolo_Classic": "A",
-    "QI": "10",
-    "QA": "10",
-    "FVM": "45"
-  },
-  {
-    "Nome": "Hermoso",
-    "Squadra": "ROM",
-    "Ruolo_Classic": "D",
-    "QI": "10",
-    "QA": "10",
-    "FVM": "26"
-  },
-  {
-    "Nome": "Konè M.",
-    "Squadra": "ROM",
     "Ruolo_Classic": "C",
-    "QI": "10",
+    "QI": "8",
     "QA": "10",
-    "FVM": "42"
+    "FVM": "40"
   },
   {
     "Nome": "Thorstvedt",
@@ -840,28 +728,36 @@
     "FVM": "39"
   },
   {
-    "Nome": "Casadei",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "C",
-    "QI": "10",
-    "QA": "10",
-    "FVM": "32"
+    "Nome": "Bobcek",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "A",
+    "QI": "9",
+    "QA": "9",
+    "FVM": "38"
   },
   {
-    "Nome": "Ekkelenkamp",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "C",
-    "QI": "10",
-    "QA": "10",
-    "FVM": "45"
+    "Nome": "Kevin Carlos",
+    "Squadra": "CAG",
+    "Ruolo_Classic": "A",
+    "QI": "13",
+    "QA": "13",
+    "FVM": "37"
   },
   {
-    "Nome": "Pellegrini Lo.",
-    "Squadra": "ROM",
+    "Nome": "Bisseck",
+    "Squadra": "INT",
+    "Ruolo_Classic": "D",
+    "QI": "11",
+    "QA": "12",
+    "FVM": "37"
+  },
+  {
+    "Nome": "Perrone",
+    "Squadra": "COM",
     "Ruolo_Classic": "C",
     "QI": "10",
     "QA": "10",
-    "FVM": "25"
+    "FVM": "37"
   },
   {
     "Nome": "Romero D.",
@@ -872,12 +768,140 @@
     "FVM": "37"
   },
   {
-    "Nome": "Pasalic",
-    "Squadra": "ATA",
-    "Ruolo_Classic": "C",
+    "Nome": "David",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "A",
     "QI": "9",
     "QA": "9",
-    "FVM": "24"
+    "FVM": "37"
+  },
+  {
+    "Nome": "Piccoli",
+    "Squadra": "BOL",
+    "Ruolo_Classic": "A",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "37"
+  },
+  {
+    "Nome": "Skorupski",
+    "Squadra": "BOL",
+    "Ruolo_Classic": "P",
+    "QI": "10",
+    "QA": "10",
+    "FVM": "36"
+  },
+  {
+    "Nome": "Thuram K.",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "C",
+    "QI": "10",
+    "QA": "10",
+    "FVM": "35"
+  },
+  {
+    "Nome": "Saelemaekers",
+    "Squadra": "MIL",
+    "Ruolo_Classic": "C",
+    "QI": "10",
+    "QA": "10",
+    "FVM": "35"
+  },
+  {
+    "Nome": "Bernabè",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "C",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "35"
+  },
+  {
+    "Nome": "Adams C.",
+    "Squadra": "TOR",
+    "Ruolo_Classic": "A",
+    "QI": "9",
+    "QA": "10",
+    "FVM": "33"
+  },
+  {
+    "Nome": "Locatelli",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "C",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "33"
+  },
+  {
+    "Nome": "Ramon",
+    "Squadra": "COM",
+    "Ruolo_Classic": "D",
+    "QI": "10",
+    "QA": "10",
+    "FVM": "32"
+  },
+  {
+    "Nome": "Mandas",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "P",
+    "QI": "9",
+    "QA": "10",
+    "FVM": "32"
+  },
+  {
+    "Nome": "Casadei",
+    "Squadra": "TOR",
+    "Ruolo_Classic": "C",
+    "QI": "10",
+    "QA": "10",
+    "FVM": "32"
+  },
+  {
+    "Nome": "Vasquez",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "D",
+    "QI": "9",
+    "QA": "9",
+    "FVM": "32"
+  },
+  {
+    "Nome": "Rodriguez Je.",
+    "Squadra": "COM",
+    "Ruolo_Classic": "C",
+    "QI": "12",
+    "QA": "12",
+    "FVM": "31"
+  },
+  {
+    "Nome": "Gila",
+    "Squadra": "MIL",
+    "Ruolo_Classic": "D",
+    "QI": "12",
+    "QA": "12",
+    "FVM": "31"
+  },
+  {
+    "Nome": "Stones",
+    "Squadra": "INT",
+    "Ruolo_Classic": "D",
+    "QI": "12",
+    "QA": "12",
+    "FVM": "30"
+  },
+  {
+    "Nome": "Baldanzi",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "C",
+    "QI": "11",
+    "QA": "11",
+    "FVM": "30"
+  },
+  {
+    "Nome": "Dia",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "A",
+    "QI": "10",
+    "QA": "10",
+    "FVM": "30"
   },
   {
     "Nome": "Bernardeschi",
@@ -888,12 +912,244 @@
     "FVM": "30"
   },
   {
+    "Nome": "Falcone",
+    "Squadra": "LEC",
+    "Ruolo_Classic": "P",
+    "QI": "8",
+    "QA": "9",
+    "FVM": "30"
+  },
+  {
+    "Nome": "Cutrone",
+    "Squadra": "MON",
+    "Ruolo_Classic": "A",
+    "QI": "9",
+    "QA": "9",
+    "FVM": "30"
+  },
+  {
+    "Nome": "Chalobah T.",
+    "Squadra": "COM",
+    "Ruolo_Classic": "D",
+    "QI": "9",
+    "QA": "9",
+    "FVM": "30"
+  },
+  {
+    "Nome": "Gaetano",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "C",
+    "QI": "7",
+    "QA": "8",
+    "FVM": "30"
+  },
+  {
+    "Nome": "Osmajic",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "A",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "30"
+  },
+  {
+    "Nome": "Okoye",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "P",
+    "QI": "9",
+    "QA": "9",
+    "FVM": "29"
+  },
+  {
+    "Nome": "Cristante",
+    "Squadra": "ROM",
+    "Ruolo_Classic": "C",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "29"
+  },
+  {
+    "Nome": "Scalvini",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "D",
+    "QI": "10",
+    "QA": "10",
+    "FVM": "28"
+  },
+  {
     "Nome": "Caprile",
     "Squadra": "CAG",
     "Ruolo_Classic": "P",
     "QI": "9",
+    "QA": "10",
+    "FVM": "28"
+  },
+  {
+    "Nome": "Cancellieri",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "C",
+    "QI": "9",
     "QA": "9",
+    "FVM": "28"
+  },
+  {
+    "Nome": "Schmid",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "C",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "28"
+  },
+  {
+    "Nome": "Elmas",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "C",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "28"
+  },
+  {
+    "Nome": "Yeboah J.",
+    "Squadra": "VEN",
+    "Ruolo_Classic": "A",
+    "QI": "8",
+    "QA": "8",
     "FVM": "27"
+  },
+  {
+    "Nome": "Dragusin",
+    "Squadra": "FIO",
+    "Ruolo_Classic": "D",
+    "QI": "8",
+    "QA": "7",
+    "FVM": "27"
+  },
+  {
+    "Nome": "Ratkov",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "A",
+    "QI": "10",
+    "QA": "10",
+    "FVM": "26"
+  },
+  {
+    "Nome": "Hermoso",
+    "Squadra": "ROM",
+    "Ruolo_Classic": "D",
+    "QI": "10",
+    "QA": "10",
+    "FVM": "26"
+  },
+  {
+    "Nome": "Couto",
+    "Squadra": "COM",
+    "Ruolo_Classic": "D",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "26"
+  },
+  {
+    "Nome": "Boga",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "A",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "26"
+  },
+  {
+    "Nome": "Pellegrini Lo.",
+    "Squadra": "ROM",
+    "Ruolo_Classic": "C",
+    "QI": "10",
+    "QA": "10",
+    "FVM": "25"
+  },
+  {
+    "Nome": "Cambiaso",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "D",
+    "QI": "9",
+    "QA": "9",
+    "FVM": "25"
+  },
+  {
+    "Nome": "Ndour",
+    "Squadra": "FIO",
+    "Ruolo_Classic": "C",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "25"
+  },
+  {
+    "Nome": "Spinazzola",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "D",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "25"
+  },
+  {
+    "Nome": "Calò",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "C",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "25"
+  },
+  {
+    "Nome": "Carlos Augusto",
+    "Squadra": "INT",
+    "Ruolo_Classic": "D",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "25"
+  },
+  {
+    "Nome": "Cissè A.",
+    "Squadra": "MIL",
+    "Ruolo_Classic": "C",
+    "QI": "3",
+    "QA": "5",
+    "FVM": "25"
+  },
+  {
+    "Nome": "Pasalic",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "C",
+    "QI": "9",
+    "QA": "9",
+    "FVM": "24"
+  },
+  {
+    "Nome": "Miranda J.",
+    "Squadra": "BOL",
+    "Ruolo_Classic": "D",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "24"
+  },
+  {
+    "Nome": "Valeri",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "D",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "24"
+  },
+  {
+    "Nome": "Fazzini",
+    "Squadra": "CAG",
+    "Ruolo_Classic": "C",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "24"
+  },
+  {
+    "Nome": "Gabbia",
+    "Squadra": "MIL",
+    "Ruolo_Classic": "D",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "24"
   },
   {
     "Nome": "Mandragora",
@@ -909,63 +1165,7 @@
     "Ruolo_Classic": "A",
     "QI": "9",
     "QA": "9",
-    "FVM": "27"
-  },
-  {
-    "Nome": "Vasquez",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "D",
-    "QI": "9",
-    "QA": "9",
-    "FVM": "32"
-  },
-  {
-    "Nome": "Di Gregorio",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "P",
-    "QI": "9",
-    "QA": "9",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Cambiaso",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "D",
-    "QI": "9",
-    "QA": "9",
-    "FVM": "25"
-  },
-  {
-    "Nome": "David",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "A",
-    "QI": "9",
-    "QA": "9",
-    "FVM": "37"
-  },
-  {
-    "Nome": "Mandas",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "P",
-    "QI": "9",
-    "QA": "9",
-    "FVM": "30"
-  },
-  {
-    "Nome": "Cancellieri",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "C",
-    "QI": "9",
-    "QA": "9",
-    "FVM": "28"
-  },
-  {
-    "Nome": "Isaksen",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "C",
-    "QI": "9",
-    "QA": "9",
-    "FVM": "22"
+    "FVM": "23"
   },
   {
     "Nome": "Geubbels",
@@ -976,12 +1176,156 @@
     "FVM": "23"
   },
   {
-    "Nome": "Cutrone",
-    "Squadra": "MON",
-    "Ruolo_Classic": "A",
+    "Nome": "Jimenez A.",
+    "Squadra": "FIO",
+    "Ruolo_Classic": "D",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "23"
+  },
+  {
+    "Nome": "Volpato",
+    "Squadra": "SAS",
+    "Ruolo_Classic": "C",
+    "QI": "7",
+    "QA": "8",
+    "FVM": "23"
+  },
+  {
+    "Nome": "Ferguson",
+    "Squadra": "BOL",
+    "Ruolo_Classic": "C",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "23"
+  },
+  {
+    "Nome": "Isaksen",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "C",
     "QI": "9",
     "QA": "9",
-    "FVM": "33"
+    "FVM": "22"
+  },
+  {
+    "Nome": "Fagioli",
+    "Squadra": "FIO",
+    "Ruolo_Classic": "C",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "22"
+  },
+  {
+    "Nome": "Bartesaghi",
+    "Squadra": "MIL",
+    "Ruolo_Classic": "D",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "22"
+  },
+  {
+    "Nome": "Lobotka",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "C",
+    "QI": "7",
+    "QA": "8",
+    "FVM": "22"
+  },
+  {
+    "Nome": "Romagnoli",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "D",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "22"
+  },
+  {
+    "Nome": "Chukwueze",
+    "Squadra": "MIL",
+    "Ruolo_Classic": "C",
+    "QI": "6",
+    "QA": "7",
+    "FVM": "22"
+  },
+  {
+    "Nome": "Cambiaghi",
+    "Squadra": "BOL",
+    "Ruolo_Classic": "C",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "21"
+  },
+  {
+    "Nome": "Norton-Cuffy",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "D",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "21"
+  },
+  {
+    "Nome": "Sucic P.",
+    "Squadra": "INT",
+    "Ruolo_Classic": "C",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "21"
+  },
+  {
+    "Nome": "Delprato",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "D",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "21"
+  },
+  {
+    "Nome": "Badiashile",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "D",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "21"
+  },
+  {
+    "Nome": "Valle",
+    "Squadra": "COM",
+    "Ruolo_Classic": "D",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "21"
+  },
+  {
+    "Nome": "Liberali",
+    "Squadra": "COM",
+    "Ruolo_Classic": "C",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "21"
+  },
+  {
+    "Nome": "Maldini",
+    "Squadra": "CAG",
+    "Ruolo_Classic": "A",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "21"
+  },
+  {
+    "Nome": "Dodò",
+    "Squadra": "FIO",
+    "Ruolo_Classic": "D",
+    "QI": "10",
+    "QA": "10",
+    "FVM": "20"
+  },
+  {
+    "Nome": "Tiago Gabriel",
+    "Squadra": "LEC",
+    "Ruolo_Classic": "D",
+    "QI": "7",
+    "QA": "9",
+    "FVM": "20"
   },
   {
     "Nome": "Konè I.",
@@ -992,36 +1336,108 @@
     "FVM": "20"
   },
   {
-    "Nome": "Adams C.",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "A",
-    "QI": "9",
-    "QA": "9",
-    "FVM": "33"
-  },
-  {
-    "Nome": "Okoye",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "P",
-    "QI": "9",
-    "QA": "9",
-    "FVM": "29"
-  },
-  {
-    "Nome": "Chalobah T.",
-    "Squadra": "COM",
-    "Ruolo_Classic": "D",
-    "QI": "9",
-    "QA": "9",
-    "FVM": "30"
-  },
-  {
-    "Nome": "Hien",
-    "Squadra": "ATA",
+    "Nome": "Mina",
+    "Squadra": "CAG",
     "Ruolo_Classic": "D",
     "QI": "8",
     "QA": "8",
-    "FVM": "11"
+    "FVM": "20"
+  },
+  {
+    "Nome": "Romano",
+    "Squadra": "CAG",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "7",
+    "FVM": "20"
+  },
+  {
+    "Nome": "Frendrup",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "C",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "20"
+  },
+  {
+    "Nome": "Kristensen T.",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "D",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "20"
+  },
+  {
+    "Nome": "Karlstrom",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "C",
+    "QI": "6",
+    "QA": "7",
+    "FVM": "20"
+  },
+  {
+    "Nome": "Zalewski",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "C",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "20"
+  },
+  {
+    "Nome": "Milla",
+    "Squadra": "COM",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "6",
+    "FVM": "20"
+  },
+  {
+    "Nome": "Oulai",
+    "Squadra": "FIO",
+    "Ruolo_Classic": "C",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "20"
+  },
+  {
+    "Nome": "Zhegrova",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "C",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "20"
+  },
+  {
+    "Nome": "Marusic",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "D",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "20"
+  },
+  {
+    "Nome": "Camarda",
+    "Squadra": "MIL",
+    "Ruolo_Classic": "A",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "20"
+  },
+  {
+    "Nome": "Varela G.",
+    "Squadra": "MON",
+    "Ruolo_Classic": "A",
+    "QI": "3",
+    "QA": "5",
+    "FVM": "20"
+  },
+  {
+    "Nome": "Cacciamani",
+    "Squadra": "TOR",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "20"
   },
   {
     "Nome": "Zappacosta",
@@ -1029,6 +1445,54 @@
     "Ruolo_Classic": "D",
     "QI": "8",
     "QA": "8",
+    "FVM": "19"
+  },
+  {
+    "Nome": "Vojvoda",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "D",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "19"
+  },
+  {
+    "Nome": "Idzes",
+    "Squadra": "SAS",
+    "Ruolo_Classic": "D",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "19"
+  },
+  {
+    "Nome": "Sutalo J.",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "D",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "19"
+  },
+  {
+    "Nome": "Zortea",
+    "Squadra": "BOL",
+    "Ruolo_Classic": "D",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "19"
+  },
+  {
+    "Nome": "Pierotti",
+    "Squadra": "LEC",
+    "Ruolo_Classic": "C",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "19"
+  },
+  {
+    "Nome": "Basic",
+    "Squadra": "VEN",
+    "Ruolo_Classic": "C",
+    "QI": "6",
+    "QA": "6",
     "FVM": "19"
   },
   {
@@ -1040,348 +1504,12 @@
     "FVM": "18"
   },
   {
-    "Nome": "Miranda J.",
-    "Squadra": "BOL",
-    "Ruolo_Classic": "D",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "24"
-  },
-  {
-    "Nome": "Odgaard",
-    "Squadra": "BOL",
-    "Ruolo_Classic": "C",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "17"
-  },
-  {
-    "Nome": "Cambiaghi",
-    "Squadra": "BOL",
-    "Ruolo_Classic": "C",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "21"
-  },
-  {
-    "Nome": "Dallinga",
-    "Squadra": "BOL",
-    "Ruolo_Classic": "A",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Mina",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "D",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "20"
-  },
-  {
-    "Nome": "Dragusin",
-    "Squadra": "FIO",
-    "Ruolo_Classic": "D",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "27"
-  },
-  {
-    "Nome": "Jimenez A.",
-    "Squadra": "FIO",
-    "Ruolo_Classic": "D",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "23"
-  },
-  {
-    "Nome": "Fagioli",
-    "Squadra": "FIO",
-    "Ruolo_Classic": "C",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "23"
-  },
-  {
-    "Nome": "Ndour",
-    "Squadra": "FIO",
-    "Ruolo_Classic": "C",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "25"
-  },
-  {
-    "Nome": "Piccoli",
-    "Squadra": "BOL",
-    "Ruolo_Classic": "A",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "37"
-  },
-  {
-    "Nome": "Bijlow",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "P",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "18"
-  },
-  {
-    "Nome": "Norton-Cuffy",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "D",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "21"
-  },
-  {
-    "Nome": "Vitinha O.",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "A",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "16"
-  },
-  {
-    "Nome": "Diouf",
-    "Squadra": "INT",
-    "Ruolo_Classic": "C",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "44"
-  },
-  {
-    "Nome": "Sucic P.",
-    "Squadra": "INT",
-    "Ruolo_Classic": "C",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "21"
-  },
-  {
-    "Nome": "Celik",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "D",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "15"
-  },
-  {
-    "Nome": "Locatelli",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "C",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "33"
-  },
-  {
-    "Nome": "Falcone",
-    "Squadra": "LEC",
-    "Ruolo_Classic": "P",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "30"
-  },
-  {
-    "Nome": "Bartesaghi",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "D",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "22"
-  },
-  {
-    "Nome": "Colpani",
-    "Squadra": "MON",
-    "Ruolo_Classic": "C",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "25"
-  },
-  {
-    "Nome": "Gutierrez",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "D",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "26"
-  },
-  {
-    "Nome": "Spinazzola",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "D",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "25"
-  },
-  {
-    "Nome": "Vergara",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "C",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "40"
-  },
-  {
-    "Nome": "Delprato",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "D",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "21"
-  },
-  {
-    "Nome": "Valeri",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "D",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "24"
-  },
-  {
-    "Nome": "Koulierakis",
-    "Squadra": "ROM",
-    "Ruolo_Classic": "D",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "17"
-  },
-  {
-    "Nome": "Cristante",
-    "Squadra": "ROM",
-    "Ruolo_Classic": "C",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "29"
-  },
-  {
-    "Nome": "Vojvoda",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "D",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "19"
-  },
-  {
-    "Nome": "Yeboah J.",
-    "Squadra": "VEN",
-    "Ruolo_Classic": "A",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "27"
-  },
-  {
     "Nome": "Rrahmani Al.",
     "Squadra": "VEN",
     "Ruolo_Classic": "A",
     "QI": "8",
     "QA": "8",
     "FVM": "18"
-  },
-  {
-    "Nome": "Couto",
-    "Squadra": "COM",
-    "Ruolo_Classic": "D",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "26"
-  },
-  {
-    "Nome": "Schmid",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "C",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "28"
-  },
-  {
-    "Nome": "Djimsiti",
-    "Squadra": "ATA",
-    "Ruolo_Classic": "D",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "16"
-  },
-  {
-    "Nome": "Gaetano",
-    "Squadra": "ATA",
-    "Ruolo_Classic": "C",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "30"
-  },
-  {
-    "Nome": "Ferguson",
-    "Squadra": "BOL",
-    "Ruolo_Classic": "C",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "23"
-  },
-  {
-    "Nome": "Obert",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "D",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "15"
-  },
-  {
-    "Nome": "Fazzini",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "C",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "24"
-  },
-  {
-    "Nome": "Kaiki",
-    "Squadra": "COM",
-    "Ruolo_Classic": "D",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "16"
-  },
-  {
-    "Nome": "Calò",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "C",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "25"
-  },
-  {
-    "Nome": "Raimondo",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "A",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "22"
-  },
-  {
-    "Nome": "Frendrup",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "C",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "20"
-  },
-  {
-    "Nome": "Carlos Augusto",
-    "Squadra": "INT",
-    "Ruolo_Classic": "D",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "25"
-  },
-  {
-    "Nome": "Frattesi",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "C",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "55"
   },
   {
     "Nome": "Bonny",
@@ -1392,52 +1520,252 @@
     "FVM": "18"
   },
   {
+    "Nome": "Zapata D.",
+    "Squadra": "TOR",
+    "Ruolo_Classic": "A",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "18"
+  },
+  {
+    "Nome": "Bernasconi",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "D",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "18"
+  },
+  {
+    "Nome": "Valdepenas",
+    "Squadra": "FIO",
+    "Ruolo_Classic": "D",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "18"
+  },
+  {
+    "Nome": "Ellertsson",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "C",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "18"
+  },
+  {
+    "Nome": "Loftus-Cheek",
+    "Squadra": "MIL",
+    "Ruolo_Classic": "C",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "18"
+  },
+  {
+    "Nome": "El Aynaoui",
+    "Squadra": "ROM",
+    "Ruolo_Classic": "C",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "18"
+  },
+  {
+    "Nome": "Fitz-Jim",
+    "Squadra": "TOR",
+    "Ruolo_Classic": "C",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "18"
+  },
+  {
+    "Nome": "Odgaard",
+    "Squadra": "BOL",
+    "Ruolo_Classic": "C",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "17"
+  },
+  {
+    "Nome": "Bijlow",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "P",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "17"
+  },
+  {
+    "Nome": "Koulierakis",
+    "Squadra": "ROM",
+    "Ruolo_Classic": "D",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "17"
+  },
+  {
+    "Nome": "Coulibaly L.",
+    "Squadra": "LEC",
+    "Ruolo_Classic": "C",
+    "QI": "6",
+    "QA": "7",
+    "FVM": "17"
+  },
+  {
+    "Nome": "Pisilli",
+    "Squadra": "ROM",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "7",
+    "FVM": "17"
+  },
+  {
+    "Nome": "Unai Gomez",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "C",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "17"
+  },
+  {
+    "Nome": "Bellanova",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "D",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "17"
+  },
+  {
+    "Nome": "Caqueret",
+    "Squadra": "COM",
+    "Ruolo_Classic": "C",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "17"
+  },
+  {
+    "Nome": "Viery",
+    "Squadra": "FIO",
+    "Ruolo_Classic": "D",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "17"
+  },
+  {
+    "Nome": "Noslin",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "A",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "17"
+  },
+  {
+    "Nome": "Neres",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "A",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "17"
+  },
+  {
+    "Nome": "Kvernadze",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "A",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "17"
+  },
+  {
+    "Nome": "Folorunsho",
+    "Squadra": "MON",
+    "Ruolo_Classic": "C",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "17"
+  },
+  {
+    "Nome": "Fatah",
+    "Squadra": "LEC",
+    "Ruolo_Classic": "A",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "17"
+  },
+  {
+    "Nome": "Vitinha O.",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "A",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "16"
+  },
+  {
     "Nome": "Doekhi",
     "Squadra": "LAZ",
+    "Ruolo_Classic": "D",
+    "QI": "7",
+    "QA": "8",
+    "FVM": "16"
+  },
+  {
+    "Nome": "Kaiki",
+    "Squadra": "COM",
     "Ruolo_Classic": "D",
     "QI": "7",
     "QA": "7",
     "FVM": "16"
   },
   {
-    "Nome": "Romagnoli",
+    "Nome": "Rovella",
     "Squadra": "LAZ",
+    "Ruolo_Classic": "C",
+    "QI": "6",
+    "QA": "7",
+    "FVM": "16"
+  },
+  {
+    "Nome": "Nicolussi Caviglia",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "C",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "16"
+  },
+  {
+    "Nome": "Adzic",
+    "Squadra": "SAS",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "16"
+  },
+  {
+    "Nome": "Celik",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "D",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "15"
+  },
+  {
+    "Nome": "Colpani",
+    "Squadra": "MON",
+    "Ruolo_Classic": "C",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "15"
+  },
+  {
+    "Nome": "Obert",
+    "Squadra": "CAG",
     "Ruolo_Classic": "D",
     "QI": "7",
     "QA": "7",
-    "FVM": "22"
+    "FVM": "15"
   },
   {
-    "Nome": "Tiago Gabriel",
-    "Squadra": "LEC",
-    "Ruolo_Classic": "D",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "20"
-  },
-  {
-    "Nome": "Stulic",
-    "Squadra": "LEC",
+    "Nome": "Raimondo",
+    "Squadra": "FRO",
     "Ruolo_Classic": "A",
     "QI": "7",
     "QA": "7",
-    "FVM": "12"
-  },
-  {
-    "Nome": "Gabbia",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "D",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "24"
-  },
-  {
-    "Nome": "Tomori",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "D",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "8"
+    "FVM": "15"
   },
   {
     "Nome": "Pessina",
@@ -1456,108 +1784,12 @@
     "FVM": "15"
   },
   {
-    "Nome": "Lobotka",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "C",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "22"
-  },
-  {
-    "Nome": "Daffara",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "P",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Suzuki",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "P",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "20"
-  },
-  {
-    "Nome": "Bernabè",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "C",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "35"
-  },
-  {
     "Nome": "Muric",
     "Squadra": "SAS",
     "Ruolo_Classic": "P",
     "QI": "7",
     "QA": "7",
     "FVM": "15"
-  },
-  {
-    "Nome": "Idzes",
-    "Squadra": "SAS",
-    "Ruolo_Classic": "D",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "19"
-  },
-  {
-    "Nome": "Volpato",
-    "Squadra": "SAS",
-    "Ruolo_Classic": "C",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "23"
-  },
-  {
-    "Nome": "Coco",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "D",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "14"
-  },
-  {
-    "Nome": "Ismajli",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "D",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "13"
-  },
-  {
-    "Nome": "Oristanio",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "C",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "12"
-  },
-  {
-    "Nome": "Zapata D.",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "A",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "18"
-  },
-  {
-    "Nome": "Kristensen T.",
-    "Squadra": "ATA",
-    "Ruolo_Classic": "D",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "20"
-  },
-  {
-    "Nome": "Unai Gomez",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "C",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "17"
   },
   {
     "Nome": "Sow",
@@ -1568,100 +1800,12 @@
     "FVM": "15"
   },
   {
-    "Nome": "Elmas",
-    "Squadra": "ATA",
-    "Ruolo_Classic": "C",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "28"
-  },
-  {
-    "Nome": "Badiashile",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "D",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "21"
-  },
-  {
-    "Nome": "Sutalo J.",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "D",
-    "QI": "7",
-    "QA": "7",
-    "FVM": "19"
-  },
-  {
-    "Nome": "Ahanor",
-    "Squadra": "ATA",
-    "Ruolo_Classic": "D",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "14"
-  },
-  {
-    "Nome": "Bellanova",
-    "Squadra": "ATA",
-    "Ruolo_Classic": "D",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "17"
-  },
-  {
-    "Nome": "Bernasconi",
-    "Squadra": "ATA",
-    "Ruolo_Classic": "D",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "18"
-  },
-  {
-    "Nome": "Zalewski",
-    "Squadra": "ATA",
-    "Ruolo_Classic": "C",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "20"
-  },
-  {
-    "Nome": "Sulemana K.",
-    "Squadra": "ATA",
-    "Ruolo_Classic": "A",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "10"
-  },
-  {
     "Nome": "Heggem",
     "Squadra": "BOL",
     "Ruolo_Classic": "D",
     "QI": "6",
     "QA": "6",
     "FVM": "15"
-  },
-  {
-    "Nome": "Zortea",
-    "Squadra": "BOL",
-    "Ruolo_Classic": "D",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "19"
-  },
-  {
-    "Nome": "Pobega",
-    "Squadra": "BOL",
-    "Ruolo_Classic": "C",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "13"
-  },
-  {
-    "Nome": "Adopo",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "C",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "13"
   },
   {
     "Nome": "Winks",
@@ -1672,68 +1816,100 @@
     "FVM": "15"
   },
   {
-    "Nome": "Mutandwa",
-    "Squadra": "CAG",
+    "Nome": "Mangas",
+    "Squadra": "MON",
+    "Ruolo_Classic": "D",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "15"
+  },
+  {
+    "Nome": "Matic",
+    "Squadra": "SAS",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "6",
+    "FVM": "15"
+  },
+  {
+    "Nome": "Obrador",
+    "Squadra": "SAS",
+    "Ruolo_Classic": "D",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "15"
+  },
+  {
+    "Nome": "Pedraza",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "D",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "15"
+  },
+  {
+    "Nome": "Keita M.",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "15"
+  },
+  {
+    "Nome": "Piotrowski",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "15"
+  },
+  {
+    "Nome": "Perez K.",
+    "Squadra": "VEN",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "15"
+  },
+  {
+    "Nome": "Douglas Luiz",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "C",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "15"
+  },
+  {
+    "Nome": "N'Dri",
+    "Squadra": "LEC",
     "Ruolo_Classic": "A",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "10"
+    "QI": "3",
+    "QA": "3",
+    "FVM": "15"
   },
   {
-    "Nome": "Valle",
-    "Squadra": "COM",
-    "Ruolo_Classic": "D",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "21"
-  },
-  {
-    "Nome": "Caqueret",
-    "Squadra": "COM",
+    "Nome": "Musah",
+    "Squadra": "MIL",
     "Ruolo_Classic": "C",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "17"
+    "QI": "2",
+    "QA": "3",
+    "FVM": "15"
   },
   {
-    "Nome": "Liberali",
-    "Squadra": "COM",
-    "Ruolo_Classic": "C",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "21"
+    "Nome": "Coco",
+    "Squadra": "TOR",
+    "Ruolo_Classic": "D",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "14"
   },
   {
-    "Nome": "Valdepenas",
-    "Squadra": "FIO",
+    "Nome": "Ahanor",
+    "Squadra": "ATA",
     "Ruolo_Classic": "D",
     "QI": "6",
     "QA": "6",
-    "FVM": "18"
-  },
-  {
-    "Nome": "Viery",
-    "Squadra": "FIO",
-    "Ruolo_Classic": "D",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "17"
-  },
-  {
-    "Nome": "Oulai",
-    "Squadra": "FIO",
-    "Ruolo_Classic": "C",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "20"
-  },
-  {
-    "Nome": "Monterisi",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "D",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "13"
+    "FVM": "14"
   },
   {
     "Nome": "Marcandalli",
@@ -1744,14 +1920,6 @@
     "FVM": "14"
   },
   {
-    "Nome": "Ellertsson",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "C",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "18"
-  },
-  {
     "Nome": "Pavard",
     "Squadra": "INT",
     "Ruolo_Classic": "D",
@@ -1760,60 +1928,132 @@
     "FVM": "14"
   },
   {
-    "Nome": "Perin",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "P",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "5"
-  },
-  {
-    "Nome": "Zhegrova",
-    "Squadra": "JUV",
+    "Nome": "Tourè I.",
+    "Squadra": "MON",
     "Ruolo_Classic": "C",
     "QI": "6",
     "QA": "6",
-    "FVM": "20"
+    "FVM": "14"
   },
   {
-    "Nome": "Boga",
-    "Squadra": "JUV",
+    "Nome": "Rensch",
+    "Squadra": "ROM",
+    "Ruolo_Classic": "D",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "14"
+  },
+  {
+    "Nome": "Bakola",
+    "Squadra": "SAS",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "14"
+  },
+  {
+    "Nome": "Njie",
+    "Squadra": "TOR",
+    "Ruolo_Classic": "C",
+    "QI": "4",
+    "QA": "5",
+    "FVM": "14"
+  },
+  {
+    "Nome": "Busio",
+    "Squadra": "VEN",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "14"
+  },
+  {
+    "Nome": "Birligea",
+    "Squadra": "FRO",
     "Ruolo_Classic": "A",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "26"
+    "QI": "5",
+    "QA": "5",
+    "FVM": "14"
   },
   {
-    "Nome": "Tavares N.",
+    "Nome": "Moro N.",
+    "Squadra": "BOL",
+    "Ruolo_Classic": "C",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "14"
+  },
+  {
+    "Nome": "Rodriguez Ju.",
+    "Squadra": "CAG",
+    "Ruolo_Classic": "D",
+    "QI": "3",
+    "QA": "4",
+    "FVM": "14"
+  },
+  {
+    "Nome": "Mendy P.",
+    "Squadra": "CAG",
+    "Ruolo_Classic": "A",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "14"
+  },
+  {
+    "Nome": "Troilo",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "D",
+    "QI": "3",
+    "QA": "4",
+    "FVM": "14"
+  },
+  {
+    "Nome": "Provstgaard",
     "Squadra": "LAZ",
     "Ruolo_Classic": "D",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "12"
+    "QI": "3",
+    "QA": "3",
+    "FVM": "14"
   },
   {
-    "Nome": "Marusic",
-    "Squadra": "LAZ",
+    "Nome": "Kouadio",
+    "Squadra": "MON",
     "Ruolo_Classic": "D",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "20"
+    "QI": "3",
+    "QA": "3",
+    "FVM": "14"
   },
   {
-    "Nome": "Rovella",
-    "Squadra": "LAZ",
+    "Nome": "Adopo",
+    "Squadra": "CAG",
+    "Ruolo_Classic": "C",
+    "QI": "6",
+    "QA": "7",
+    "FVM": "13"
+  },
+  {
+    "Nome": "Ismajli",
+    "Squadra": "TOR",
+    "Ruolo_Classic": "D",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "13"
+  },
+  {
+    "Nome": "Pobega",
+    "Squadra": "BOL",
     "Ruolo_Classic": "C",
     "QI": "6",
     "QA": "6",
-    "FVM": "16"
+    "FVM": "13"
   },
   {
-    "Nome": "Noslin",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "A",
+    "Nome": "Monterisi",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "D",
     "QI": "6",
     "QA": "6",
-    "FVM": "17"
+    "FVM": "13"
   },
   {
     "Nome": "Gallo",
@@ -1824,113 +2064,9 @@
     "FVM": "13"
   },
   {
-    "Nome": "Coulibaly L.",
-    "Squadra": "LEC",
-    "Ruolo_Classic": "C",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "17"
-  },
-  {
-    "Nome": "Pierotti",
-    "Squadra": "LEC",
-    "Ruolo_Classic": "C",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "19"
-  },
-  {
-    "Nome": "Chukwueze",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "C",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "22"
-  },
-  {
-    "Nome": "Gimenez",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "A",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Mangas",
-    "Squadra": "MON",
-    "Ruolo_Classic": "D",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "15"
-  },
-  {
-    "Nome": "Akinsanmiro",
-    "Squadra": "MON",
-    "Ruolo_Classic": "C",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "16"
-  },
-  {
-    "Nome": "Beukema",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "D",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "12"
-  },
-  {
-    "Nome": "Neres",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "A",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "17"
-  },
-  {
-    "Nome": "Circati",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "D",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "18"
-  },
-  {
-    "Nome": "Nicolussi Caviglia",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "C",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "16"
-  },
-  {
     "Nome": "Comuzzo",
     "Squadra": "TOR",
     "Ruolo_Classic": "D",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "13"
-  },
-  {
-    "Nome": "Kamara H.",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "D",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "12"
-  },
-  {
-    "Nome": "Karlstrom",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "C",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "20"
-  },
-  {
-    "Nome": "Stankovic F.",
-    "Squadra": "VEN",
-    "Ruolo_Classic": "P",
     "QI": "6",
     "QA": "6",
     "FVM": "13"
@@ -1944,76 +2080,12 @@
     "FVM": "13"
   },
   {
-    "Nome": "Basic",
-    "Squadra": "VEN",
-    "Ruolo_Classic": "C",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "19"
-  },
-  {
-    "Nome": "Obrador",
-    "Squadra": "SAS",
-    "Ruolo_Classic": "D",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "15"
-  },
-  {
-    "Nome": "Tourè I.",
-    "Squadra": "MON",
-    "Ruolo_Classic": "C",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "15"
-  },
-  {
-    "Nome": "Kolasinac",
-    "Squadra": "ATA",
-    "Ruolo_Classic": "D",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "8"
-  },
-  {
-    "Nome": "Maldini",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "A",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "21"
-  },
-  {
-    "Nome": "Vitik",
-    "Squadra": "BOL",
-    "Ruolo_Classic": "D",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "10"
-  },
-  {
     "Nome": "Holm",
     "Squadra": "BOL",
     "Ruolo_Classic": "D",
     "QI": "5",
     "QA": "5",
     "FVM": "13"
-  },
-  {
-    "Nome": "Amondarain",
-    "Squadra": "BOL",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "12"
-  },
-  {
-    "Nome": "Kofler",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "D",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "8"
   },
   {
     "Nome": "Zè Pedro",
@@ -2024,116 +2096,12 @@
     "FVM": "13"
   },
   {
-    "Nome": "Romano",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "20"
-  },
-  {
-    "Nome": "Felici",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "8"
-  },
-  {
     "Nome": "Kempf",
     "Squadra": "COM",
     "Ruolo_Classic": "D",
     "QI": "5",
     "QA": "5",
     "FVM": "13"
-  },
-  {
-    "Nome": "Milla",
-    "Squadra": "COM",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "20"
-  },
-  {
-    "Nome": "Addai",
-    "Squadra": "COM",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Parisi",
-    "Squadra": "FIO",
-    "Ruolo_Classic": "D",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Bracaglia",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "D",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "12"
-  },
-  {
-    "Nome": "Oyono A.",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "D",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Zerbin",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "12"
-  },
-  {
-    "Nome": "Martin",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "D",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "8"
-  },
-  {
-    "Nome": "Meichtry",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "11"
-  },
-  {
-    "Nome": "Traorè Hj.",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "11"
-  },
-  {
-    "Nome": "Mkhitaryan",
-    "Squadra": "INT",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Kelly L.",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "D",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "12"
   },
   {
     "Nome": "Koopmeiners",
@@ -2144,14 +2112,6 @@
     "FVM": "13"
   },
   {
-    "Nome": "Pedraza",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "D",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "15"
-  },
-  {
     "Nome": "Dele-Bashiru",
     "Squadra": "LAZ",
     "Ruolo_Classic": "C",
@@ -2160,11 +2120,107 @@
     "FVM": "13"
   },
   {
+    "Nome": "Jashari",
+    "Squadra": "MIL",
+    "Ruolo_Classic": "C",
+    "QI": "4",
+    "QA": "5",
+    "FVM": "13"
+  },
+  {
+    "Nome": "Olivera",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "D",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "13"
+  },
+  {
+    "Nome": "Milik",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "A",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "13"
+  },
+  {
+    "Nome": "Ngonge",
+    "Squadra": "MON",
+    "Ruolo_Classic": "A",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "13"
+  },
+  {
+    "Nome": "Fini",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "C",
+    "QI": "3",
+    "QA": "4",
+    "FVM": "13"
+  },
+  {
+    "Nome": "Ngom",
+    "Squadra": "LEC",
+    "Ruolo_Classic": "C",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "13"
+  },
+  {
+    "Nome": "Estupinan",
+    "Squadra": "MIL",
+    "Ruolo_Classic": "D",
+    "QI": "3",
+    "QA": "4",
+    "FVM": "13"
+  },
+  {
+    "Nome": "Mascardi",
+    "Squadra": "TOR",
+    "Ruolo_Classic": "P",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "13"
+  },
+  {
+    "Nome": "Kamara H.",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "D",
+    "QI": "6",
+    "QA": "8",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Stulic",
+    "Squadra": "LEC",
+    "Ruolo_Classic": "A",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Oristanio",
+    "Squadra": "TOR",
+    "Ruolo_Classic": "C",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Tavares N.",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "D",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "12"
+  },
+  {
     "Nome": "Gaspar K.",
     "Squadra": "LEC",
     "Ruolo_Classic": "D",
     "QI": "5",
-    "QA": "5",
+    "QA": "6",
     "FVM": "12"
   },
   {
@@ -2172,6 +2228,86 @@
     "Squadra": "LEC",
     "Ruolo_Classic": "D",
     "QI": "5",
+    "QA": "6",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Akinsanmiro",
+    "Squadra": "MON",
+    "Ruolo_Classic": "C",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Beukema",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "D",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Gineitis",
+    "Squadra": "TOR",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "6",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Stankovic F.",
+    "Squadra": "VEN",
+    "Ruolo_Classic": "P",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Amondarain",
+    "Squadra": "BOL",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Palmisani",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "P",
+    "QI": "4",
+    "QA": "5",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Bracaglia",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "D",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Zerbin",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Kelly L.",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "D",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Siebert",
+    "Squadra": "LEC",
+    "Ruolo_Classic": "D",
+    "QI": "4",
     "QA": "5",
     "FVM": "12"
   },
@@ -2184,126 +2320,6 @@
     "FVM": "12"
   },
   {
-    "Nome": "Gandelman",
-    "Squadra": "LEC",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Fofana Y.",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Camarda",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "A",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "20"
-  },
-  {
-    "Nome": "Thiam",
-    "Squadra": "MON",
-    "Ruolo_Classic": "P",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "12"
-  },
-  {
-    "Nome": "Mota",
-    "Squadra": "MON",
-    "Ruolo_Classic": "A",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "18"
-  },
-  {
-    "Nome": "Milinkovic-Savic V.",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "P",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "7"
-  },
-  {
-    "Nome": "Olivera",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "D",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "13"
-  },
-  {
-    "Nome": "Keita M.",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "15"
-  },
-  {
-    "Nome": "Ondrejka",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "18"
-  },
-  {
-    "Nome": "Frigan",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "A",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Rensch",
-    "Squadra": "ROM",
-    "Ruolo_Classic": "D",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "14"
-  },
-  {
-    "Nome": "Pisilli",
-    "Squadra": "ROM",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "17"
-  },
-  {
-    "Nome": "Matic",
-    "Squadra": "SAS",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "15"
-  },
-  {
-    "Nome": "Adzic",
-    "Squadra": "SAS",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "16"
-  },
-  {
-    "Nome": "Bakola",
-    "Squadra": "SAS",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "14"
-  },
-  {
     "Nome": "Pedersen",
     "Squadra": "TOR",
     "Ruolo_Classic": "D",
@@ -2312,68 +2328,12 @@
     "FVM": "12"
   },
   {
-    "Nome": "Cacciamani",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "20"
-  },
-  {
-    "Nome": "Gineitis",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "C",
-    "QI": "5",
+    "Nome": "Correia T.",
+    "Squadra": "VEN",
+    "Ruolo_Classic": "D",
+    "QI": "4",
     "QA": "5",
     "FVM": "12"
-  },
-  {
-    "Nome": "Piotrowski",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "15"
-  },
-  {
-    "Nome": "Moreno M.",
-    "Squadra": "VEN",
-    "Ruolo_Classic": "D",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "6"
-  },
-  {
-    "Nome": "Haps",
-    "Squadra": "VEN",
-    "Ruolo_Classic": "D",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Busio",
-    "Squadra": "VEN",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "14"
-  },
-  {
-    "Nome": "Sohm",
-    "Squadra": "VEN",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "11"
-  },
-  {
-    "Nome": "Perez K.",
-    "Squadra": "VEN",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "15"
   },
   {
     "Nome": "Adorante",
@@ -2382,22 +2342,6 @@
     "QI": "5",
     "QA": "5",
     "FVM": "12"
-  },
-  {
-    "Nome": "Grillitsch",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Milik",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "A",
-    "QI": "5",
-    "QA": "5",
-    "FVM": "13"
   },
   {
     "Nome": "Fortini",
@@ -2416,90 +2360,10 @@
     "FVM": "12"
   },
   {
-    "Nome": "De Roon",
-    "Squadra": "ATA",
+    "Nome": "Dominguez B.",
+    "Squadra": "SAS",
     "Ruolo_Classic": "C",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "8"
-  },
-  {
-    "Nome": "Moro N.",
-    "Squadra": "BOL",
-    "Ruolo_Classic": "C",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "14"
-  },
-  {
-    "Nome": "Zappa",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "7"
-  },
-  {
-    "Nome": "Prati",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "C",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "7"
-  },
-  {
-    "Nome": "Borrelli",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "A",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "9"
-  },
-  {
-    "Nome": "Mendy P.",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "A",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "14"
-  },
-  {
-    "Nome": "Smolcic I.",
-    "Squadra": "COM",
-    "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Morata",
-    "Squadra": "COM",
-    "Ruolo_Classic": "A",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "7"
-  },
-  {
-    "Nome": "Pongracic",
-    "Squadra": "FIO",
-    "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "8"
-  },
-  {
-    "Nome": "Fabbian",
-    "Squadra": "FIO",
-    "Ruolo_Classic": "C",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "8"
-  },
-  {
-    "Nome": "Palmisani",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "P",
-    "QI": "4",
+    "QI": "3",
     "QA": "4",
     "FVM": "12"
   },
@@ -2520,68 +2384,12 @@
     "FVM": "12"
   },
   {
-    "Nome": "Koutsoupias",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "C",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "11"
-  },
-  {
-    "Nome": "Kvernadze",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "A",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "16"
-  },
-  {
-    "Nome": "Mitaj",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Amorim",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "C",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "11"
-  },
-  {
-    "Nome": "Havel",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "A",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "9"
-  },
-  {
     "Nome": "Luis Henrique",
     "Squadra": "INT",
     "Ruolo_Classic": "C",
     "QI": "4",
     "QA": "4",
     "FVM": "12"
-  },
-  {
-    "Nome": "Gatti",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Douglas Luiz",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "C",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "15"
   },
   {
     "Nome": "Cataldi",
@@ -2592,58 +2400,10 @@
     "FVM": "12"
   },
   {
-    "Nome": "Siebert",
-    "Squadra": "LEC",
-    "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "12"
-  },
-  {
-    "Nome": "Ngom",
-    "Squadra": "LEC",
-    "Ruolo_Classic": "C",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "13"
-  },
-  {
-    "Nome": "Ricci S.",
+    "Nome": "De Winter",
     "Squadra": "MIL",
-    "Ruolo_Classic": "C",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Jashari",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "C",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "13"
-  },
-  {
-    "Nome": "Loftus-Cheek",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "C",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "18"
-  },
-  {
-    "Nome": "Delli Carri",
-    "Squadra": "MON",
     "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "11"
-  },
-  {
-    "Nome": "Lucchesi",
-    "Squadra": "MON",
-    "Ruolo_Classic": "D",
-    "QI": "4",
+    "QI": "3",
     "QA": "4",
     "FVM": "12"
   },
@@ -2656,68 +2416,20 @@
     "FVM": "12"
   },
   {
-    "Nome": "Folorunsho",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "C",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "5"
-  },
-  {
-    "Nome": "Giovane",
+    "Nome": "Lang",
     "Squadra": "NAP",
     "Ruolo_Classic": "A",
-    "QI": "4",
+    "QI": "3",
     "QA": "4",
-    "FVM": "10"
+    "FVM": "12"
   },
   {
-    "Nome": "Valenti",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Almqvist",
+    "Nome": "Diallo O.",
     "Squadra": "PAR",
     "Ruolo_Classic": "C",
-    "QI": "4",
+    "QI": "3",
     "QA": "4",
-    "FVM": "11"
-  },
-  {
-    "Nome": "Ghilardi",
-    "Squadra": "ROM",
-    "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "10"
-  },
-  {
-    "Nome": "El Aynaoui",
-    "Squadra": "ROM",
-    "Ruolo_Classic": "C",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "18"
-  },
-  {
-    "Nome": "Walukiewicz",
-    "Squadra": "SAS",
-    "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Doig",
-    "Squadra": "SAS",
-    "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "10"
+    "FVM": "12"
   },
   {
     "Nome": "Comert",
@@ -2728,38 +2440,6 @@
     "FVM": "12"
   },
   {
-    "Nome": "Fitz-Jim",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "C",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "18"
-  },
-  {
-    "Nome": "Ilkhan",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "C",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Njie",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "C",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "14"
-  },
-  {
-    "Nome": "Kulenovic",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "A",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "9"
-  },
-  {
     "Nome": "Kabasele",
     "Squadra": "UDI",
     "Ruolo_Classic": "D",
@@ -2768,76 +2448,12 @@
     "FVM": "12"
   },
   {
-    "Nome": "Bertola",
+    "Nome": "Miller L.",
     "Squadra": "UDI",
-    "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Zanoli",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Arizala",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "8"
-  },
-  {
-    "Nome": "Gueye",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "A",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "7"
-  },
-  {
-    "Nome": "Halhal",
-    "Squadra": "VEN",
-    "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Correia T.",
-    "Squadra": "VEN",
-    "Ruolo_Classic": "D",
-    "QI": "4",
+    "Ruolo_Classic": "C",
+    "QI": "3",
     "QA": "4",
     "FVM": "12"
-  },
-  {
-    "Nome": "Robinson J.",
-    "Squadra": "MON",
-    "Ruolo_Classic": "A",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Terzic",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "8"
-  },
-  {
-    "Nome": "Favasuli",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "D",
-    "QI": "4",
-    "QA": "4",
-    "FVM": "11"
   },
   {
     "Nome": "Kossounou",
@@ -2848,68 +2464,12 @@
     "FVM": "12"
   },
   {
-    "Nome": "Sulemana I.",
-    "Squadra": "ATA",
-    "Ruolo_Classic": "C",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "7"
-  },
-  {
-    "Nome": "Casale",
+    "Nome": "Helland",
     "Squadra": "BOL",
     "Ruolo_Classic": "D",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "5"
-  },
-  {
-    "Nome": "Dominguez B.",
-    "Squadra": "SAS",
-    "Ruolo_Classic": "C",
-    "QI": "3",
+    "QI": "2",
     "QA": "3",
     "FVM": "12"
-  },
-  {
-    "Nome": "Rodriguez Ju.",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "D",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "14"
-  },
-  {
-    "Nome": "Idrissi R.",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "D",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "3"
-  },
-  {
-    "Nome": "Deiola",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "C",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "8"
-  },
-  {
-    "Nome": "Kuhn",
-    "Squadra": "COM",
-    "Ruolo_Classic": "A",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "5"
-  },
-  {
-    "Nome": "Ranieri L.",
-    "Squadra": "FIO",
-    "Ruolo_Classic": "D",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "10"
   },
   {
     "Nome": "Joao Mario",
@@ -2928,12 +2488,588 @@
     "FVM": "12"
   },
   {
-    "Nome": "Akpoguma",
-    "Squadra": "FRO",
+    "Nome": "Gorter",
+    "Squadra": "LEC",
+    "Ruolo_Classic": "C",
+    "QI": "1",
+    "QA": "3",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Sorensen O.",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "C",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Hainaut",
+    "Squadra": "VEN",
     "Ruolo_Classic": "D",
     "QI": "3",
     "QA": "3",
-    "FVM": "6"
+    "FVM": "12"
+  },
+  {
+    "Nome": "Fadera",
+    "Squadra": "CAG",
+    "Ruolo_Classic": "C",
+    "QI": "2",
+    "QA": "2",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Mout",
+    "Squadra": "MON",
+    "Ruolo_Classic": "C",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "12"
+  },
+  {
+    "Nome": "Hien",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "D",
+    "QI": "8",
+    "QA": "8",
+    "FVM": "11"
+  },
+  {
+    "Nome": "Amorim",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "C",
+    "QI": "4",
+    "QA": "5",
+    "FVM": "11"
+  },
+  {
+    "Nome": "Meichtry",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "11"
+  },
+  {
+    "Nome": "Traorè Hj.",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "11"
+  },
+  {
+    "Nome": "Thiam",
+    "Squadra": "MON",
+    "Ruolo_Classic": "P",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "11"
+  },
+  {
+    "Nome": "Sohm",
+    "Squadra": "VEN",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "11"
+  },
+  {
+    "Nome": "Koutsoupias",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "C",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "11"
+  },
+  {
+    "Nome": "Delli Carri",
+    "Squadra": "MON",
+    "Ruolo_Classic": "D",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "11"
+  },
+  {
+    "Nome": "Lucchesi",
+    "Squadra": "MON",
+    "Ruolo_Classic": "D",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "11"
+  },
+  {
+    "Nome": "Almqvist",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "C",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "11"
+  },
+  {
+    "Nome": "Favasuli",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "D",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "11"
+  },
+  {
+    "Nome": "Elphege",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "A",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "11"
+  },
+  {
+    "Nome": "Palma",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "D",
+    "QI": "2",
+    "QA": "3",
+    "FVM": "11"
+  },
+  {
+    "Nome": "Daffara",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "P",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Sulemana K.",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "A",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Mutandwa",
+    "Squadra": "CAG",
+    "Ruolo_Classic": "A",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Gimenez",
+    "Squadra": "MIL",
+    "Ruolo_Classic": "A",
+    "QI": "6",
+    "QA": "6",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Vitik",
+    "Squadra": "BOL",
+    "Ruolo_Classic": "D",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Addai",
+    "Squadra": "COM",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Parisi",
+    "Squadra": "FIO",
+    "Ruolo_Classic": "D",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Oyono A.",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "D",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Mkhitaryan",
+    "Squadra": "INT",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Gandelman",
+    "Squadra": "LEC",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Fofana Y.",
+    "Squadra": "MIL",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Mota",
+    "Squadra": "MON",
+    "Ruolo_Classic": "A",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Frigan",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "A",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Haps",
+    "Squadra": "VEN",
+    "Ruolo_Classic": "D",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Grillitsch",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Smolcic I.",
+    "Squadra": "COM",
+    "Ruolo_Classic": "D",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Mitaj",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "D",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Gatti",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "D",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Ricci S.",
+    "Squadra": "MIL",
+    "Ruolo_Classic": "C",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Giovane",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "A",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Lucca",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "A",
+    "QI": "3",
+    "QA": "4",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Valenti",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "D",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Ghilardi",
+    "Squadra": "ROM",
+    "Ruolo_Classic": "D",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Walukiewicz",
+    "Squadra": "SAS",
+    "Ruolo_Classic": "D",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Doig",
+    "Squadra": "SAS",
+    "Ruolo_Classic": "D",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Ilkhan",
+    "Squadra": "TOR",
+    "Ruolo_Classic": "C",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Bertola",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "D",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Zanoli",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "D",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Halhal",
+    "Squadra": "VEN",
+    "Ruolo_Classic": "D",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Ranieri L.",
+    "Squadra": "FIO",
+    "Ruolo_Classic": "D",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Ekhator",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "A",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Floriani Mussolini",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "D",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Gilmour",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "C",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Britschgi",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "D",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Schingtienne",
+    "Squadra": "VEN",
+    "Ruolo_Classic": "D",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "10"
+  },
+  {
+    "Nome": "El Azzouzi O.",
+    "Squadra": "BOL",
+    "Ruolo_Classic": "C",
+    "QI": "2",
+    "QA": "2",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Abankwah",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "D",
+    "QI": "1",
+    "QA": "2",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Lontani",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "A",
+    "QI": "1",
+    "QA": "2",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Corvi",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "P",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "10"
+  },
+  {
+    "Nome": "Borrelli",
+    "Squadra": "CAG",
+    "Ruolo_Classic": "A",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "9"
+  },
+  {
+    "Nome": "Havel",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "A",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "9"
+  },
+  {
+    "Nome": "Kulenovic",
+    "Squadra": "TOR",
+    "Ruolo_Classic": "A",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "9"
+  },
+  {
+    "Nome": "Carboni A.",
+    "Squadra": "MON",
+    "Ruolo_Classic": "D",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "9"
+  },
+  {
+    "Nome": "Tomori",
+    "Squadra": "MIL",
+    "Ruolo_Classic": "D",
+    "QI": "7",
+    "QA": "7",
+    "FVM": "8"
+  },
+  {
+    "Nome": "Kolasinac",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "D",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "8"
+  },
+  {
+    "Nome": "Kofler",
+    "Squadra": "CAG",
+    "Ruolo_Classic": "D",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "8"
+  },
+  {
+    "Nome": "Felici",
+    "Squadra": "CAG",
+    "Ruolo_Classic": "C",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "8"
+  },
+  {
+    "Nome": "Martin",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "D",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "8"
+  },
+  {
+    "Nome": "De Roon",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "C",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "8"
+  },
+  {
+    "Nome": "Deiola",
+    "Squadra": "CAG",
+    "Ruolo_Classic": "C",
+    "QI": "3",
+    "QA": "4",
+    "FVM": "8"
+  },
+  {
+    "Nome": "Pongracic",
+    "Squadra": "FIO",
+    "Ruolo_Classic": "D",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "8"
+  },
+  {
+    "Nome": "Fabbian",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "C",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "8"
+  },
+  {
+    "Nome": "Messias",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "C",
+    "QI": "3",
+    "QA": "4",
+    "FVM": "8"
+  },
+  {
+    "Nome": "Arizala",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "D",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "8"
+  },
+  {
+    "Nome": "Terzic",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "D",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "8"
   },
   {
     "Nome": "Cittadini",
@@ -2952,20 +3088,84 @@
     "FVM": "8"
   },
   {
-    "Nome": "Fini",
+    "Nome": "Masini",
     "Squadra": "FRO",
     "Ruolo_Classic": "C",
-    "QI": "3",
+    "QI": "2",
     "QA": "3",
-    "FVM": "13"
+    "FVM": "8"
   },
   {
-    "Nome": "Messias",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "C",
+    "Nome": "Odenthal",
+    "Squadra": "SAS",
+    "Ruolo_Classic": "D",
+    "QI": "1",
+    "QA": "3",
+    "FVM": "8"
+  },
+  {
+    "Nome": "Tchato",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "D",
     "QI": "3",
     "QA": "3",
     "FVM": "8"
+  },
+  {
+    "Nome": "Kambwala",
+    "Squadra": "COM",
+    "Ruolo_Classic": "D",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "8"
+  },
+  {
+    "Nome": "Marin R.",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "D",
+    "QI": "2",
+    "QA": "2",
+    "FVM": "8"
+  },
+  {
+    "Nome": "Ndiaye",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "D",
+    "QI": "1",
+    "QA": "2",
+    "FVM": "8"
+  },
+  {
+    "Nome": "Ilic",
+    "Squadra": "LEC",
+    "Ruolo_Classic": "C",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "8"
+  },
+  {
+    "Nome": "Milinkovic-Savic V.",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "P",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "7"
+  },
+  {
+    "Nome": "Gueye",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "A",
+    "QI": "4",
+    "QA": "4",
+    "FVM": "7"
+  },
+  {
+    "Nome": "Sulemana I.",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "C",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "7"
   },
   {
     "Nome": "Stankovic A.",
@@ -2976,172 +3176,12 @@
     "FVM": "7"
   },
   {
-    "Nome": "Miretti",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "C",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "7"
-  },
-  {
-    "Nome": "Ekhator",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "A",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Provstgaard",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "D",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "14"
-  },
-  {
-    "Nome": "Floriani Mussolini",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "D",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "10"
-  },
-  {
-    "Nome": "N'Dri",
+    "Nome": "Maleh",
     "Squadra": "LEC",
-    "Ruolo_Classic": "A",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "15"
-  },
-  {
-    "Nome": "De Winter",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "D",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "12"
-  },
-  {
-    "Nome": "Athekame",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "D",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "8"
-  },
-  {
-    "Nome": "Estupinan",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "D",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "13"
-  },
-  {
-    "Nome": "Kouadio",
-    "Squadra": "MON",
-    "Ruolo_Classic": "D",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "9"
-  },
-  {
-    "Nome": "Carboni A.",
-    "Squadra": "MON",
-    "Ruolo_Classic": "D",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "9"
-  },
-  {
-    "Nome": "Colombo L.",
-    "Squadra": "MON",
     "Ruolo_Classic": "C",
-    "QI": "3",
+    "QI": "2",
     "QA": "3",
     "FVM": "7"
-  },
-  {
-    "Nome": "Varela G.",
-    "Squadra": "MON",
-    "Ruolo_Classic": "A",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "7"
-  },
-  {
-    "Nome": "Gilmour",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "C",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Lang",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "A",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "12"
-  },
-  {
-    "Nome": "Lucca",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "A",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Troilo",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "D",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "14"
-  },
-  {
-    "Nome": "Britschgi",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "D",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Sorensen O.",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "C",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "12"
-  },
-  {
-    "Nome": "Diallo O.",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "C",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "12"
-  },
-  {
-    "Nome": "Elphege",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "A",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "11"
-  },
-  {
-    "Nome": "Angelino",
-    "Squadra": "ROM",
-    "Ruolo_Classic": "D",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "12"
   },
   {
     "Nome": "Candè",
@@ -3152,30 +3192,6 @@
     "FVM": "7"
   },
   {
-    "Nome": "Aboukhlal",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "C",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "5"
-  },
-  {
-    "Nome": "Miller L.",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "C",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "12"
-  },
-  {
-    "Nome": "Schingtienne",
-    "Squadra": "VEN",
-    "Ruolo_Classic": "D",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "10"
-  },
-  {
     "Nome": "Sverko",
     "Squadra": "VEN",
     "Ruolo_Classic": "D",
@@ -3184,36 +3200,36 @@
     "FVM": "7"
   },
   {
-    "Nome": "Hainaut",
-    "Squadra": "VEN",
-    "Ruolo_Classic": "D",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "12"
-  },
-  {
-    "Nome": "Helgason",
-    "Squadra": "VEN",
-    "Ruolo_Classic": "C",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "3"
-  },
-  {
-    "Nome": "Cissè A.",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "C",
-    "QI": "3",
-    "QA": "3",
-    "FVM": "25"
-  },
-  {
-    "Nome": "Helland",
-    "Squadra": "BOL",
+    "Nome": "Pellegrini Lu.",
+    "Squadra": "LAZ",
     "Ruolo_Classic": "D",
     "QI": "2",
     "QA": "2",
-    "FVM": "12"
+    "FVM": "7"
+  },
+  {
+    "Nome": "Franjic",
+    "Squadra": "VEN",
+    "Ruolo_Classic": "D",
+    "QI": "2",
+    "QA": "2",
+    "FVM": "7"
+  },
+  {
+    "Nome": "Moreno M.",
+    "Squadra": "VEN",
+    "Ruolo_Classic": "D",
+    "QI": "5",
+    "QA": "5",
+    "FVM": "6"
+  },
+  {
+    "Nome": "Akpoguma",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "D",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "6"
   },
   {
     "Nome": "Alhassane",
@@ -3224,41 +3240,81 @@
     "FVM": "6"
   },
   {
-    "Nome": "El Azzouzi O.",
-    "Squadra": "BOL",
+    "Nome": "Ciurria",
+    "Squadra": "MON",
     "Ruolo_Classic": "C",
     "QI": "2",
     "QA": "2",
-    "FVM": "10"
+    "FVM": "6"
   },
   {
-    "Nome": "Van Der Brempt",
-    "Squadra": "COM",
-    "Ruolo_Classic": "D",
+    "Nome": "Chakvetadze",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "C",
     "QI": "2",
     "QA": "2",
+    "FVM": "6"
+  },
+  {
+    "Nome": "Robinson J.",
+    "Squadra": "MON",
+    "Ruolo_Classic": "A",
+    "QI": "4",
+    "QA": "4",
     "FVM": "5"
   },
   {
-    "Nome": "Fadera",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "C",
-    "QI": "2",
-    "QA": "2",
-    "FVM": "12"
+    "Nome": "Casale",
+    "Squadra": "BOL",
+    "Ruolo_Classic": "D",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "5"
   },
   {
-    "Nome": "Desplanches",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "P",
-    "QI": "2",
-    "QA": "2",
-    "FVM": "3"
+    "Nome": "Kuhn",
+    "Squadra": "COM",
+    "Ruolo_Classic": "A",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "5"
   },
   {
     "Nome": "Hasa",
     "Squadra": "FRO",
     "Ruolo_Classic": "C",
+    "QI": "2",
+    "QA": "3",
+    "FVM": "5"
+  },
+  {
+    "Nome": "Ordonez C.",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "C",
+    "QI": "2",
+    "QA": "3",
+    "FVM": "5"
+  },
+  {
+    "Nome": "Aboukhlal",
+    "Squadra": "TOR",
+    "Ruolo_Classic": "C",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "5"
+  },
+  {
+    "Nome": "Ebosse",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "D",
+    "QI": "2",
+    "QA": "3",
+    "FVM": "5"
+  },
+  {
+    "Nome": "Van Der Brempt",
+    "Squadra": "COM",
+    "Ruolo_Classic": "D",
     "QI": "2",
     "QA": "2",
     "FVM": "5"
@@ -3272,36 +3328,12 @@
     "FVM": "5"
   },
   {
-    "Nome": "Puczka",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "D",
-    "QI": "2",
-    "QA": "2",
-    "FVM": "3"
-  },
-  {
     "Nome": "Sabelli",
     "Squadra": "GEN",
     "Ruolo_Classic": "D",
     "QI": "2",
     "QA": "2",
     "FVM": "5"
-  },
-  {
-    "Nome": "Masini",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "C",
-    "QI": "2",
-    "QA": "2",
-    "FVM": "8"
-  },
-  {
-    "Nome": "Venturino",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "C",
-    "QI": "2",
-    "QA": "2",
-    "FVM": "4"
   },
   {
     "Nome": "Provedel",
@@ -3320,74 +3352,10 @@
     "FVM": "5"
   },
   {
-    "Nome": "Pellegrini Lu.",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "D",
-    "QI": "2",
-    "QA": "2",
-    "FVM": "7"
-  },
-  {
-    "Nome": "Jean",
+    "Nome": "Ndaba",
     "Squadra": "LEC",
     "Ruolo_Classic": "D",
-    "QI": "2",
-    "QA": "2",
-    "FVM": "4"
-  },
-  {
-    "Nome": "Maleh",
-    "Squadra": "LEC",
-    "Ruolo_Classic": "C",
-    "QI": "2",
-    "QA": "2",
-    "FVM": "7"
-  },
-  {
-    "Nome": "Diawara S.",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "D",
-    "QI": "2",
-    "QA": "2",
-    "FVM": "4"
-  },
-  {
-    "Nome": "Musah",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "C",
-    "QI": "2",
-    "QA": "2",
-    "FVM": "15"
-  },
-  {
-    "Nome": "Ciurria",
-    "Squadra": "MON",
-    "Ruolo_Classic": "C",
-    "QI": "2",
-    "QA": "2",
-    "FVM": "6"
-  },
-  {
-    "Nome": "Petagna",
-    "Squadra": "MON",
-    "Ruolo_Classic": "A",
-    "QI": "2",
-    "QA": "2",
-    "FVM": "5"
-  },
-  {
-    "Nome": "Marin R.",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "D",
-    "QI": "2",
-    "QA": "2",
-    "FVM": "8"
-  },
-  {
-    "Nome": "Ordonez C.",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "C",
-    "QI": "2",
+    "QI": "1",
     "QA": "2",
     "FVM": "5"
   },
@@ -3416,44 +3384,60 @@
     "FVM": "5"
   },
   {
-    "Nome": "Palma",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "D",
-    "QI": "2",
-    "QA": "2",
-    "FVM": "11"
-  },
-  {
-    "Nome": "Ebosse",
-    "Squadra": "UDI",
+    "Nome": "Aurelio",
+    "Squadra": "CAG",
     "Ruolo_Classic": "D",
     "QI": "2",
     "QA": "2",
     "FVM": "5"
   },
   {
-    "Nome": "Chakvetadze",
-    "Squadra": "UDI",
+    "Nome": "Przyborek",
+    "Squadra": "LAZ",
     "Ruolo_Classic": "C",
-    "QI": "2",
-    "QA": "2",
-    "FVM": "6"
+    "QI": "1",
+    "QA": "1",
+    "FVM": "5"
   },
   {
-    "Nome": "Buksa",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "A",
+    "Nome": "Colombo L.",
+    "Squadra": "MON",
+    "Ruolo_Classic": "C",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "4"
+  },
+  {
+    "Nome": "Venturino",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "C",
     "QI": "2",
     "QA": "2",
     "FVM": "4"
   },
   {
-    "Nome": "Franjic",
-    "Squadra": "VEN",
+    "Nome": "Jean",
+    "Squadra": "LEC",
     "Ruolo_Classic": "D",
     "QI": "2",
     "QA": "2",
-    "FVM": "7"
+    "FVM": "4"
+  },
+  {
+    "Nome": "Diawara S.",
+    "Squadra": "MIL",
+    "Ruolo_Classic": "D",
+    "QI": "2",
+    "QA": "2",
+    "FVM": "4"
+  },
+  {
+    "Nome": "Bakoune",
+    "Squadra": "MON",
+    "Ruolo_Classic": "D",
+    "QI": "1",
+    "QA": "2",
+    "FVM": "4"
   },
   {
     "Nome": "Sagrado",
@@ -3472,12 +3456,12 @@
     "FVM": "4"
   },
   {
-    "Nome": "Aurelio",
-    "Squadra": "CAG",
+    "Nome": "Cinquegrano",
+    "Squadra": "SAS",
     "Ruolo_Classic": "D",
-    "QI": "2",
+    "QI": "1",
     "QA": "2",
-    "FVM": "5"
+    "FVM": "4"
   },
   {
     "Nome": "Terracciano F.",
@@ -3488,11 +3472,211 @@
     "FVM": "4"
   },
   {
-    "Nome": "Rossi F.",
-    "Squadra": "ATA",
-    "Ruolo_Classic": "P",
+    "Nome": "De Silvestri",
+    "Squadra": "BOL",
+    "Ruolo_Classic": "D",
     "QI": "1",
     "QA": "1",
+    "FVM": "4"
+  },
+  {
+    "Nome": "Cabal",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "D",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "4"
+  },
+  {
+    "Nome": "Vaz",
+    "Squadra": "ROM",
+    "Ruolo_Classic": "A",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "4"
+  },
+  {
+    "Nome": "Anjorin",
+    "Squadra": "TOR",
+    "Ruolo_Classic": "C",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "4"
+  },
+  {
+    "Nome": "Zarraga",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "C",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "4"
+  },
+  {
+    "Nome": "Idrissi R.",
+    "Squadra": "CAG",
+    "Ruolo_Classic": "D",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "3"
+  },
+  {
+    "Nome": "Helgason",
+    "Squadra": "VEN",
+    "Ruolo_Classic": "C",
+    "QI": "3",
+    "QA": "3",
+    "FVM": "3"
+  },
+  {
+    "Nome": "Desplanches",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "P",
+    "QI": "2",
+    "QA": "2",
+    "FVM": "3"
+  },
+  {
+    "Nome": "Puczka",
+    "Squadra": "GEN",
+    "Ruolo_Classic": "D",
+    "QI": "2",
+    "QA": "2",
+    "FVM": "3"
+  },
+  {
+    "Nome": "Kone B.",
+    "Squadra": "FRO",
+    "Ruolo_Classic": "C",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "3"
+  },
+  {
+    "Nome": "Rugani",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "D",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "3"
+  },
+  {
+    "Nome": "Belahyane",
+    "Squadra": "LAZ",
+    "Ruolo_Classic": "C",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "3"
+  },
+  {
+    "Nome": "Marianucci",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "D",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "3"
+  },
+  {
+    "Nome": "Mazzocchi",
+    "Squadra": "NAP",
+    "Ruolo_Classic": "D",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "3"
+  },
+  {
+    "Nome": "Carboni F.",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "D",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "3"
+  },
+  {
+    "Nome": "Cremaschi",
+    "Squadra": "PAR",
+    "Ruolo_Classic": "C",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "3"
+  },
+  {
+    "Nome": "Mlacic",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "D",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "3"
+  },
+  {
+    "Nome": "Bayo V.",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "A",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "3"
+  },
+  {
+    "Nome": "Lulli",
+    "Squadra": "ROM",
+    "Ruolo_Classic": "D",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "3"
+  },
+  {
+    "Nome": "Trepy",
+    "Squadra": "CAG",
+    "Ruolo_Classic": "A",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "2"
+  },
+  {
+    "Nome": "Kaba",
+    "Squadra": "LEC",
+    "Ruolo_Classic": "C",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "2"
+  },
+  {
+    "Nome": "Antov",
+    "Squadra": "MON",
+    "Ruolo_Classic": "D",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "2"
+  },
+  {
+    "Nome": "Ziolkowski",
+    "Squadra": "ROM",
+    "Ruolo_Classic": "D",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "2"
+  },
+  {
+    "Nome": "Missori",
+    "Squadra": "SAS",
+    "Ruolo_Classic": "D",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "2"
+  },
+  {
+    "Nome": "Foe Ondoa",
+    "Squadra": "MON",
+    "Ruolo_Classic": "C",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "2"
+  },
+  {
+    "Nome": "Forson O.",
+    "Squadra": "MON",
+    "Ruolo_Classic": "C",
+    "QI": "1",
+    "QA": "2",
     "FVM": "1"
   },
   {
@@ -3520,33 +3704,9 @@
     "FVM": "1"
   },
   {
-    "Nome": "De Silvestri",
-    "Squadra": "BOL",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "4"
-  },
-  {
-    "Nome": "Ciocci",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "P",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "1"
-  },
-  {
     "Nome": "Sherri",
     "Squadra": "CAG",
     "Ruolo_Classic": "P",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "1"
-  },
-  {
-    "Nome": "Raterink",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "D",
     "QI": "1",
     "QA": "1",
     "FVM": "1"
@@ -3558,22 +3718,6 @@
     "QI": "1",
     "QA": "1",
     "FVM": "1"
-  },
-  {
-    "Nome": "Albarracin",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "A",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "1"
-  },
-  {
-    "Nome": "Trepy",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "A",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "2"
   },
   {
     "Nome": "Tornqvist",
@@ -3598,14 +3742,6 @@
     "QI": "1",
     "QA": "1",
     "FVM": "1"
-  },
-  {
-    "Nome": "Cuenca A.",
-    "Squadra": "COM",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "8"
   },
   {
     "Nome": "Lahdo",
@@ -3656,44 +3792,12 @@
     "FVM": "1"
   },
   {
-    "Nome": "Gelli J.",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "1"
-  },
-  {
-    "Nome": "Oyono J.",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "2"
-  },
-  {
-    "Nome": "Corrado",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "1"
-  },
-  {
     "Nome": "El Azzouzi A.",
     "Squadra": "FRO",
     "Ruolo_Classic": "C",
     "QI": "1",
     "QA": "1",
     "FVM": "1"
-  },
-  {
-    "Nome": "Kone B.",
-    "Squadra": "FRO",
-    "Ruolo_Classic": "C",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "3"
   },
   {
     "Nome": "Sommariva",
@@ -3712,22 +3816,6 @@
     "FVM": "1"
   },
   {
-    "Nome": "Vogliacco",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "2"
-  },
-  {
-    "Nome": "Matturro",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "2"
-  },
-  {
     "Nome": "Di Gennaro",
     "Squadra": "INT",
     "Ruolo_Classic": "P",
@@ -3742,22 +3830,6 @@
     "QI": "1",
     "QA": "1",
     "FVM": "1"
-  },
-  {
-    "Nome": "Rugani",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "3"
-  },
-  {
-    "Nome": "Cabal",
-    "Squadra": "JUV",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "4"
   },
   {
     "Nome": "Motta",
@@ -3784,70 +3856,6 @@
     "FVM": "1"
   },
   {
-    "Nome": "Belahyane",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "C",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "3"
-  },
-  {
-    "Nome": "Przyborek",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "C",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "5"
-  },
-  {
-    "Nome": "Fruchtl",
-    "Squadra": "LEC",
-    "Ruolo_Classic": "P",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "1"
-  },
-  {
-    "Nome": "Samooja",
-    "Squadra": "LEC",
-    "Ruolo_Classic": "P",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "1"
-  },
-  {
-    "Nome": "Perez M.",
-    "Squadra": "LEC",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "1"
-  },
-  {
-    "Nome": "Ndaba",
-    "Squadra": "LEC",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "5"
-  },
-  {
-    "Nome": "Gorter",
-    "Squadra": "LEC",
-    "Ruolo_Classic": "C",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "12"
-  },
-  {
-    "Nome": "Kaba",
-    "Squadra": "LEC",
-    "Ruolo_Classic": "C",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "2"
-  },
-  {
     "Nome": "Fofana Sa.",
     "Squadra": "LEC",
     "Ruolo_Classic": "C",
@@ -3872,14 +3880,6 @@
     "FVM": "1"
   },
   {
-    "Nome": "Pizzignacco",
-    "Squadra": "MON",
-    "Ruolo_Classic": "P",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "1"
-  },
-  {
     "Nome": "Strajnar",
     "Squadra": "MON",
     "Ruolo_Classic": "P",
@@ -3888,76 +3888,12 @@
     "FVM": "1"
   },
   {
-    "Nome": "Antov",
-    "Squadra": "MON",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "2"
-  },
-  {
-    "Nome": "Bakoune",
-    "Squadra": "MON",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "4"
-  },
-  {
     "Nome": "Contini",
     "Squadra": "NAP",
     "Ruolo_Classic": "P",
     "QI": "1",
     "QA": "1",
     "FVM": "1"
-  },
-  {
-    "Nome": "Marianucci",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "3"
-  },
-  {
-    "Nome": "Mazzocchi",
-    "Squadra": "NAP",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "3"
-  },
-  {
-    "Nome": "Corvi",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "P",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Ndiaye",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "8"
-  },
-  {
-    "Nome": "Carboni F.",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "3"
-  },
-  {
-    "Nome": "Cremaschi",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "C",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "3"
   },
   {
     "Nome": "De Marzi",
@@ -3976,22 +3912,6 @@
     "FVM": "1"
   },
   {
-    "Nome": "Ziolkowski",
-    "Squadra": "ROM",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "2"
-  },
-  {
-    "Nome": "Vaz",
-    "Squadra": "ROM",
-    "Ruolo_Classic": "A",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "4"
-  },
-  {
     "Nome": "Russo A.",
     "Squadra": "SAS",
     "Ruolo_Classic": "P",
@@ -4006,14 +3926,6 @@
     "QI": "1",
     "QA": "1",
     "FVM": "1"
-  },
-  {
-    "Nome": "Missori",
-    "Squadra": "SAS",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "2"
   },
   {
     "Nome": "Pieragnolo",
@@ -4032,22 +3944,6 @@
     "FVM": "1"
   },
   {
-    "Nome": "Moro L.",
-    "Squadra": "SAS",
-    "Ruolo_Classic": "A",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "1"
-  },
-  {
-    "Nome": "Mascardi",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "P",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "13"
-  },
-  {
     "Nome": "Paleari",
     "Squadra": "TOR",
     "Ruolo_Classic": "P",
@@ -4064,22 +3960,6 @@
     "FVM": "1"
   },
   {
-    "Nome": "Ilic",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "C",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "8"
-  },
-  {
-    "Nome": "Anjorin",
-    "Squadra": "TOR",
-    "Ruolo_Classic": "C",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "4"
-  },
-  {
     "Nome": "Padelli",
     "Squadra": "UDI",
     "Ruolo_Classic": "P",
@@ -4094,46 +3974,6 @@
     "QI": "1",
     "QA": "1",
     "FVM": "1"
-  },
-  {
-    "Nome": "Mlacic",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "3"
-  },
-  {
-    "Nome": "Abankwah",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Camara A.",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "C",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "3"
-  },
-  {
-    "Nome": "Zarraga",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "C",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "4"
-  },
-  {
-    "Nome": "Bayo V.",
-    "Squadra": "UDI",
-    "Ruolo_Classic": "A",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "3"
   },
   {
     "Nome": "Grandi",
@@ -4158,14 +3998,6 @@
     "QI": "1",
     "QA": "1",
     "FVM": "1"
-  },
-  {
-    "Nome": "Bjarkason",
-    "Squadra": "VEN",
-    "Ruolo_Classic": "C",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "3"
   },
   {
     "Nome": "Dagasso",
@@ -4232,30 +4064,6 @@
     "FVM": "1"
   },
   {
-    "Nome": "Lontani",
-    "Squadra": "PAR",
-    "Ruolo_Classic": "A",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "10"
-  },
-  {
-    "Nome": "Odenthal",
-    "Squadra": "SAS",
-    "Ruolo_Classic": "D",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "8"
-  },
-  {
-    "Nome": "Forson O.",
-    "Squadra": "MON",
-    "Ruolo_Classic": "C",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "1"
-  },
-  {
     "Nome": "De Martis",
     "Squadra": "PAR",
     "Ruolo_Classic": "A",
@@ -4304,11 +4112,35 @@
     "FVM": "1"
   },
   {
-    "Nome": "Cinquegrano",
+    "Nome": "Macchioni",
     "Squadra": "SAS",
     "Ruolo_Classic": "D",
     "QI": "1",
     "QA": "1",
-    "FVM": "4"
+    "FVM": "1"
+  },
+  {
+    "Nome": "Grabara",
+    "Squadra": "JUV",
+    "Ruolo_Classic": "P",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "1"
+  },
+  {
+    "Nome": "Maye",
+    "Squadra": "MON",
+    "Ruolo_Classic": "D",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "1"
+  },
+  {
+    "Nome": "Mrozek",
+    "Squadra": "UDI",
+    "Ruolo_Classic": "P",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "1"
   }
 ]
