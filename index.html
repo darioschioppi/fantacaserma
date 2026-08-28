@@ -2711,12 +2711,39 @@ function exportRoseToExcel() {
     sheets +
     `</Workbook>`;
 
+  const today = new Date().toISOString().slice(0, 10);
+  const filename = `rose_squadre_${today}.xls`;
   const blob = new Blob([xml], { type: 'application/vnd.ms-excel' });
+
+  // Su Android, dentro una PWA/WebView, il classico trucco <a download> con un
+  // blob URL spesso NON salva davvero nulla in Download (nessun errore, ma il
+  // file non esiste) — bug segnalato: "mi dice che è stato esportato ma non
+  // salva il file". La Web Share API con un vero File apre il foglio di
+  // condivisione nativo di Android ("Salva in File", Drive, ecc.), che
+  // funziona in modo affidabile anche dentro le PWA. La usiamo come metodo
+  // primario quando disponibile; altrimenti si ricade sul download classico
+  // (che resta il percorso giusto su desktop, dove funziona sempre).
+  const file = new File([blob], filename, { type: 'application/vnd.ms-excel' });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    navigator.share({ files: [file], title: filename })
+      .then(() => toast('📥 Rose esportate in Excel', 'success'))
+      .catch(err => {
+        if (err && err.name === 'AbortError') return; // utente ha annullato la condivisione: nessun errore da mostrare
+        downloadRoseBlob(blob, filename);
+      });
+    return;
+  }
+  downloadRoseBlob(blob, filename);
+}
+
+/** Fallback di download classico (funziona su desktop; su alcune WebView
+ * Android il file può non comparire realmente in Download — vedi commento
+ * sopra in exportRoseToExcel). */
+function downloadRoseBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  const today = new Date().toISOString().slice(0, 10);
   a.href = url;
-  a.download = `rose_squadre_${today}.xls`;
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
