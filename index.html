@@ -1689,7 +1689,7 @@ function handleGameStateChange() {
 function updateParticipantPhase(phase) {
   const badge = document.getElementById('participantPhaseBadge');
   badge.className = 'phase-badge ' + (phase === 'waiting' ? '' : phase);
-  const labels = { waiting: 'In attesa', bidding: '⚡ Asta', reveal: '🎯 Esito', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ In pausa' };
+  const labels = { waiting: 'In attesa', bidding: '⚡ Asta', reveal: 'Esito', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ In pausa' };
   badge.textContent = '';
   const dot = document.createElement('span'); dot.className = 'phase-dot'; badge.appendChild(dot);
   badge.appendChild(document.createTextNode(' ' + (labels[phase] || phase)));
@@ -1788,10 +1788,9 @@ function renderRevealOverlay(isAssigned) {
     row.className = 'reveal-bid-row' + (isWinner ? ' winner' : '');
     row.style.animationDelay = (idx * 0.12) + 's';
 
-    const emojiEl = document.createElement('span');
-    emojiEl.className = 'reveal-bid-emoji';
-    emojiEl.textContent = r.team ? r.team.emoji : '?';
-
+    // Niente emoji identificativa della squadra in questa riga: il nome per
+    // intero è già scritto subito sotto, l'emoji era ridondante (richiesta
+    // esplicita: "Elimina l'emoji durante la Rivelazione").
     const infoEl = document.createElement('div');
     infoEl.className = 'reveal-bid-info';
 
@@ -1805,7 +1804,6 @@ function renderRevealOverlay(isAssigned) {
 
     infoEl.appendChild(teamNameEl);
     infoEl.appendChild(amtEl);
-    row.appendChild(emojiEl);
     row.appendChild(infoEl);
     if (isWinner) {
       const lbl = document.createElement('span');
@@ -2282,7 +2280,7 @@ function renderPresidentAuction() {
   panel.style.display = 'block';
   setText('paPlayerName', cp.nome);
   setText('paPlayerMeta', cp.squadra + ' · ' + cp.ruolo + ' · QI ' + cp.qi);
-  const phaseLabels = { bidding: '⚡ Asta in corso', reveal: '🎯 Esito', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ Asta in pausa' };
+  const phaseLabels = { bidding: '⚡ Asta in corso', reveal: 'Esito', tiebreaker: '⚖️ Spareggio', assigned: '✅ Assegnato', paused: '⏸ Asta in pausa' };
   setText('paPhaseLabel', phaseLabels[phase] || phase);
   // Aggiorna pulsanti Pausa/Riprendi
   const btnPause = document.getElementById('paBtnPause');
