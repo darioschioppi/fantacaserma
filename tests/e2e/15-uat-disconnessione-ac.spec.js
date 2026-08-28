@@ -26,6 +26,14 @@ const TEAMS = ['t1', 't2', 't3', 't4', 't5', 't6', 't7', 't8', 't9', 't10']; // 
 const BUDGET_START = 500;
 const P = () => ({ nome: '__UAT_DISC_' + Math.random().toString(36).slice(2, 8) + '__', squadra: 'TestFC', ruolo: 'A', qi: 1 });
 
+// Nomi reali delle squadre (da TEAMS array in index.html) — usati per verificare
+// che il banner UI mostri i nomi corretti delle squadre disconnesse.
+const TEAMS_META = {
+  t1: { name: 'Barça' }, t2: { name: 'Benfiga' }, t3: { name: 'Frattese1985' },
+  t4: { name: 'Morpheus' }, t5: { name: 'Paris San Giuann' }, t6: { name: 'REAL' },
+  t7: { name: 'Sharktar' }, t8: { name: 'SoxTeam' }, t9: { name: 'Vincan' }, t10: { name: 'giomammo' },
+};
+
 const FB_API_KEY = 'AIzaSyCOTpDSNMVvK8kYNw11OfBIQm3JaAx9kIM';
 const FB_DB_URL  = 'https://fantacaserma-f2fe2-default-rtdb.europe-west1.firebasedatabase.app';
 
@@ -463,6 +471,109 @@ test.describe.serial('UAT — Disconnessione durante l\'asta (AC01-AC12)', () =>
 
     await Promise.all([pres, t3reconnect, t6reconnect].map(p => p.close()));
   });
+
+  // ── AC11b — Regola generale: N squadre qualsiasi, in ordine arbitrario ──────
+  // Il caso AC11 sopra copre solo t3+t6 (2 squadre) nell'ordine specifico che
+  // aveva innescato il bug originale (Paris + SoxTeam). Dario ha chiesto
+  // esplicitamente di generalizzare: la regola "il banner mostra TUTTE le
+  // squadre offline" deve valere per qualunque combinazione/numero di squadre,
+  // non solo per quel caso particolare — altrimenti si rischia di aver
+  // "riparato" solo lo scenario osservato senza validare la regola vera.
+  // Parametrizzato su 3 combinazioni diverse (2, 3 e 4 squadre disconnesse,
+  // con id non consecutivi e ordine di disconnessione variabile) e verifica
+  // sia lo stato Firebase (disconnectedTeamIds) sia il BANNER UI reale
+  // (#disconnectTeamLabel), che è dove si era manifestato il bug — un test
+  // che controllasse solo Firebase non lo avrebbe catturato.
+  const multiDisconnectScenarios = [
+    { label: '2 squadre (t4, t9)', ids: ['t4', 't9'] },
+    { label: '3 squadre (t1, t7, t10)', ids: ['t1', 't7', 't10'] },
+    { label: '4 squadre (t3, t5, t6, t8)', ids: ['t3', 't5', 't6', 't8'] },
+  ];
+  for (const scenario of multiDisconnectScenarios) {
+    test(`AC11b — regola generale con ${scenario.label}: banner e stato mostrano SEMPRE tutte le squadre offline`, async ({ browser }) => {
+      const player = P(); usedPlayerNames.push(player.nome);
+      const teamIds = scenario.ids;
+      const pres = await browser.newPage();
+      const teamPages = {};
+      await loginTeam(pres, 't2');
+      await Promise.all(teamIds.map(async tid => { teamPages[tid] = await browser.newPage(); await loginTeam(teamPages[tid], tid); }));
+      await fakeOnlineAllExcept(['t2', ...teamIds]);
+
+      await startTestAuction(pres, player, 30);
+      await Promise.all([pres, ...Object.values(teamPages)].map(p => waitForPhase(p, 'bidding', 10000)));
+
+      // Disconnette le squadre UNA ALLA VOLTA, in sequenza, con una piccola pausa
+      // tra ognuna — replica il caso reale (disconnessioni non simultanee) ed
+      // esercita il ramo "aggiorna la lista mentre l'asta è già in pausa" per
+      // ogni squadra successiva alla prima.
+      const disconnectedSoFar = [];
+      for (const tid of teamIds) {
+        await teamPages[tid].close();
+        disconnectedSoFar.push(tid);
+        // Timeout ampio: oltre al debounce (~3s) di checkDisconnectionPause, con
+        // più squadre in sequenza la propagazione Firebase può richiedere qualche
+        // secondo in più per ogni round.
+        await pres.waitForFunction(
+          () => (typeof gameState !== 'undefined' ? gameState : {}).phase === 'paused',
+          undefined, { timeout: 15000 }
+        );
+        // Attende che il client presidente abbia ricalcolato e scritto l'elenco
+        // aggiornato (checkDisconnectionPause gira sul listener /teams).
+        await pres.waitForTimeout(1500);
+
+        const gs = await getGameState();
+        const idsNow = (gs.disconnectedTeamIds || []).slice().sort();
+        const expected = [...disconnectedSoFar].sort();
+        // Verifica sullo STATO: deve contenere esattamente tutte le squadre
+        // disconnesse finora, non solo la prima o le ultime N-1.
+        expect(idsNow).toEqual(expected);
+
+        // Verifica sul BANNER REALE lato UI (non solo Firebase) — è qui che si
+        // era manifestato il bug: lo stato era corretto ma il banner mostrava
+        // solo una squadra. Controllato dal client presidente stesso, che vede
+        // il proprio banner di disconnessione durante la pausa.
+        await pres.waitForFunction(
+          () => document.getElementById('disconnectBanner')?.classList.contains('visible'),
+          undefined, { timeout: 5000 }
+        );
+        const bannerText = await pres.locator('#disconnectTeamLabel').textContent();
+        for (const expectedId of disconnectedSoFar) {
+          const team = TEAMS_META[expectedId];
+          expect(bannerText).toContain(team.name);
+        }
+        // Il banner non deve contenere nomi di squadre NON ancora disconnesse.
+        const notYetDisconnected = teamIds.filter(id => !disconnectedSoFar.includes(id));
+        for (const notYetId of notYetDisconnected) {
+          expect(bannerText).not.toContain(TEAMS_META[notYetId].name);
+        }
+      }
+
+      // Riconnette tutte: l'asta deve riprendere solo quando TUTTE sono di nuovo online.
+      const reconnectPages = [];
+      for (let i = 0; i < teamIds.length; i++) {
+        const tid = teamIds[i];
+        const reconnectPage = await browser.newPage();
+        await loginTeam(reconnectPage, tid);
+        reconnectPages.push(reconnectPage);
+        if (i < teamIds.length - 1) {
+          // Ancora ne manca almeno una: l'asta deve restare in pausa.
+          await pres.waitForTimeout(1500);
+          const gs = await getGameState();
+          expect(gs.phase).toBe('paused');
+        }
+      }
+      await pres.waitForFunction(
+        () => (typeof gameState !== 'undefined' ? gameState : {}).phase === 'bidding',
+        undefined, { timeout: 10000 }
+      );
+      const gsFinal = await getGameState();
+      expect(gsFinal.pausedReason == null).toBe(true);
+      expect(gsFinal.disconnectedTeamIds == null || gsFinal.disconnectedTeamIds.length === 0).toBe(true);
+
+      await pres.close();
+      await Promise.all(reconnectPages.map(p => p.close()));
+    });
+  }
 
   // ── AC12 — Disconnessione dell'ultima squadra connessa (caso limite) ────────
   // Nel comportamento A, questo caso non è concettualmente diverso da una
