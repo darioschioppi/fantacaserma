@@ -373,10 +373,14 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
             <button class="btn-stepper" onclick="stepBid(1)">+</button>
             <span style="font-size:.68rem;color:var(--text-m);white-space:nowrap;flex-shrink:0;">min <strong id="bidMinLabel">1</strong>cr</span>
           </div>
-          <!-- Azione: offerta + passa -->
-          <div style="display:flex;gap:8px;">
-            <button class="btn-bid" id="btnBid" onclick="submitBid()" style="flex:1;">💰 OFFERTA</button>
-            <button class="btn-pass" id="btnPass" onclick="passAuction()">🤚 Passa</button>
+          <!-- Separatore: distanza visiva e funzionale dal campo prezzo, per evitare
+               che un tap sul campo/stepper attivi per errore Offerta o Passa. -->
+          <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:14px;">
+            <!-- Azione: offerta + passa -->
+            <div style="display:flex;gap:8px;">
+              <button class="btn-bid" id="btnBid" onclick="submitBid()" style="flex:1;">💰 OFFERTA</button>
+              <button class="btn-pass" id="btnPass" onclick="passAuction()">🤚 Passa</button>
+            </div>
           </div>
           <div class="bid-sent" id="bidSent">✅ Offerta inviata! Attendi la rivelazione.</div>
         </div>
@@ -482,11 +486,17 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
       <div id="paBidArea" style="display:none;flex-shrink:0;padding:10px 14px;border-top:2px solid var(--border);background:var(--bg2);">
         <div style="font-size:.72rem;color:var(--text-m);margin-bottom:6px;">🦅 Tua offerta come <strong style="color:var(--gold)">Benfiga</strong> · Budget: <strong id="paBudgetLabel" style="color:var(--gold)">500</strong> cr</div>
         <div id="paRosterFullMsg" class="roster-full-msg" style="margin-bottom:6px;">🚫 Rosa completa per questo ruolo — devi passare</div>
-        <div class="bid-row">
-          <input class="bid-input" type="number" id="paBidInput" min="1" value="1" step="1">
-          <button class="btn-bid" id="paBidBtn" onclick="presidentSubmitBid()">💰 OFFERTA</button>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <button class="btn-stepper" onclick="stepBid(-1, 'paBidInput')">−</button>
+          <input class="bid-input" type="number" id="paBidInput" min="1" value="1" step="1" style="flex:1;min-width:0;text-align:center;">
+          <button class="btn-stepper" onclick="stepBid(1, 'paBidInput')">+</button>
         </div>
-        <button class="btn-pass" id="paBtnPass" onclick="presidentPass()" style="width:100%;margin-top:6px;">🤚 Passa</button>
+        <!-- Separatore: distanza visiva e funzionale dal campo prezzo, per evitare
+             che un tap sul campo attivi per errore Offerta o Passa. -->
+        <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:10px;">
+          <button class="btn-bid" id="paBidBtn" onclick="presidentSubmitBid()" style="width:100%;">💰 OFFERTA</button>
+          <button class="btn-pass" id="paBtnPass" onclick="presidentPass()" style="width:100%;margin-top:6px;">🤚 Passa</button>
+        </div>
         <div class="bid-sent" id="paBidSent">✅ Offerta inviata!</div>
       </div>
     </div>
@@ -1864,8 +1874,8 @@ function renderRecentList() {
 }
 
 // ─── BID STEPPER ───
-function stepBid(delta) {
-  const input = document.getElementById('bidInput');
+function stepBid(delta, inputId) {
+  const input = document.getElementById(inputId || 'bidInput');
   if (!input) return;
   const minBid = parseInt(gameState.minBid || 1);
   const current = parseInt(input.value) || minBid;
