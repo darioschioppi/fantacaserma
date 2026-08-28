@@ -389,13 +389,13 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
       <div class="connected-bar" id="connectedBar" style="width:100%;margin-top:auto;flex-shrink:0;">👥 Caricamento…</div>
       <!-- Overlay rivelazione: dentro poker-area così non copre Rosa/Acquisti -->
       <div class="reveal-overlay" id="revealOverlay">
-        <div class="reveal-title">🎯 RIVELAZIONE</div>
+        <div class="reveal-title">RIVELAZIONE</div>
         <div style="font-size:.9rem;color:var(--text-m);" id="revealPlayerLabel">—</div>
         <div class="reveal-bids" id="revealBidsList"></div>
         <div class="reveal-assigned" id="revealAssigned" style="display:none;"></div>
         <div id="revealPresActions" style="display:none;gap:10px;margin-top:12px;flex-wrap:wrap;justify-content:center;width:100%;max-width:320px;">
           <!-- Assegna/Salta rimossi: tutto automatico -->
-          <button class="btn-assign" id="btnRevealNext" onclick="presidentNextAuction()" style="display:none;width:100%;background:var(--blue);">⚡ Prossima asta →</button>
+          <button class="btn-assign" id="btnRevealNext" onclick="presidentNextAuction()" style="display:none;width:100%;background:var(--blue);">Prossima asta →</button>
         </div>
       </div>
     </div>
@@ -416,40 +416,47 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
     </div>
     <!-- ASTA PANEL (solo Presidente) -->
     <div class="players-panel" id="presidentAstaPanel">
-      <!-- Timer duration stepper -->
-      <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;">
-        <span style="font-size:.72rem;color:var(--text-m);flex:1;">⏱ Durata timer:</span>
-        <button onclick="changeAuctionTimer(-5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">−</button>
-        <span id="paTimerDuration" style="font-size:.9rem;font-weight:700;color:var(--gold);min-width:40px;text-align:center;">30s</span>
-        <button onclick="changeAuctionTimer(+5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">+</button>
-      </div>
-      <!-- Durata rivelazione prezzi stepper -->
-      <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;">
-        <span style="font-size:.72rem;color:var(--text-m);flex:1;">🎯 Durata rivelazione:</span>
-        <button onclick="changeRevealDuration(-5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">−</button>
-        <span id="paRevealDuration" style="font-size:.9rem;font-weight:700;color:var(--gold);min-width:40px;text-align:center;">10s</span>
-        <button onclick="changeRevealDuration(+5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">+</button>
-      </div>
-      <div class="pp-search-bar">
-        <input class="pp-search-input" id="paSearch" placeholder="🔍 Scegli giocatore da mettere all'asta…" oninput="filterAstaPlayers()">
-        <select class="pp-select" id="paFilterRuolo" onchange="filterAstaPlayers()">
-          <option value="">Tutti</option>
-          <option value="P">🧤 P</option>
-          <option value="D">🛡️ D</option>
-          <option value="C">⚙️ C</option>
-          <option value="A">⚽ A</option>
-        </select>
-        <select class="pp-select" id="paSort" onchange="filterAstaPlayers()">
-          <option value="az">A→Z</option>
-          <option value="qa_desc">💰 QA ↓</option>
-          <option value="qi_desc">📊 QI ↓</option>
-        </select>
-      </div>
-      <div class="pp-table-wrap" id="paPlayersWrap">
-        <table class="pp-table">
-          <thead><tr><th>Nome</th><th>Sq.</th><th>R</th><th>QA</th><th></th></tr></thead>
-          <tbody id="paTableBody"></tbody>
-        </table>
+      <!-- Timer duration stepper, ricerca giocatore e tabella: nascosti mentre
+           un'asta è attiva (vedi renderPresidentAuction) per liberare spazio
+           verticale al pannello offerta sottostante — non servono durante
+           un'asta in corso e la loro presenza spingeva il bottone PASSA fuori
+           dallo schermo su mobile (bug: "Benfiga non vede più il tasto Passa"). -->
+      <div id="paPreAuctionControls">
+        <!-- Timer duration stepper -->
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;">
+          <span style="font-size:.72rem;color:var(--text-m);flex:1;">⏱ Durata timer:</span>
+          <button onclick="changeAuctionTimer(-5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">−</button>
+          <span id="paTimerDuration" style="font-size:.9rem;font-weight:700;color:var(--gold);min-width:40px;text-align:center;">30s</span>
+          <button onclick="changeAuctionTimer(+5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">+</button>
+        </div>
+        <!-- Durata rivelazione prezzi stepper -->
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;">
+          <span style="font-size:.72rem;color:var(--text-m);flex:1;">🎯 Durata rivelazione:</span>
+          <button onclick="changeRevealDuration(-5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">−</button>
+          <span id="paRevealDuration" style="font-size:.9rem;font-weight:700;color:var(--gold);min-width:40px;text-align:center;">10s</span>
+          <button onclick="changeRevealDuration(+5)" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;cursor:pointer;flex-shrink:0;">+</button>
+        </div>
+        <div class="pp-search-bar">
+          <input class="pp-search-input" id="paSearch" placeholder="🔍 Scegli giocatore da mettere all'asta…" oninput="filterAstaPlayers()">
+          <select class="pp-select" id="paFilterRuolo" onchange="filterAstaPlayers()">
+            <option value="">Tutti</option>
+            <option value="P">🧤 P</option>
+            <option value="D">🛡️ D</option>
+            <option value="C">⚙️ C</option>
+            <option value="A">⚽ A</option>
+          </select>
+          <select class="pp-select" id="paSort" onchange="filterAstaPlayers()">
+            <option value="az">A→Z</option>
+            <option value="qa_desc">💰 QA ↓</option>
+            <option value="qi_desc">📊 QI ↓</option>
+          </select>
+        </div>
+        <div class="pp-table-wrap" id="paPlayersWrap">
+          <table class="pp-table">
+            <thead><tr><th>Nome</th><th>Sq.</th><th>R</th><th>QA</th><th></th></tr></thead>
+            <tbody id="paTableBody"></tbody>
+          </table>
+        </div>
       </div>
       <!-- Pannello asta corrente -->
       <div id="paAuctionPanel" style="display:none;padding:12px 16px;background:var(--bg2);border-top:2px solid var(--green2);flex-shrink:0;">
@@ -491,11 +498,15 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <input class="bid-input" type="number" id="paBidInput" min="1" value="1" step="1" style="flex:1;min-width:0;text-align:center;">
           <button class="btn-stepper" onclick="stepBid(1, 'paBidInput')">+</button>
         </div>
-        <!-- Separatore: distanza visiva e funzionale AMPIA dal campo prezzo, per
-             evitare che un tap sul campo attivi per errore Offerta o Passa. -->
-        <div style="border-top:2px solid var(--border);margin-top:22px;padding-top:22px;">
-          <button class="btn-bid" id="paBidBtn" onclick="presidentSubmitBid()" style="width:100%;">OFFERTA</button>
-          <button class="btn-pass" id="paBtnPass" onclick="presidentPass()" style="width:100%;margin-top:6px;">PASSA</button>
+        <!-- Separatore dal campo prezzo (moderato, non ampio come nel pannello
+             partecipante): questo pannello ha già molto contenuto sopra
+             (stepper timer/rivelazione, filtri, lista, azioni admin) — un
+             margine troppo ampio qui spingeva il bottone PASSA fuori dallo
+             schermo su mobile (bug segnalato: "Benfiga non vede più il tasto
+             Passa"). OFFERTA/PASSA restano affiancati per risparmiare altezza. -->
+        <div style="border-top:2px solid var(--border);margin-top:10px;padding-top:10px;display:flex;gap:8px;">
+          <button class="btn-bid" id="paBidBtn" onclick="presidentSubmitBid()" style="flex:1;">OFFERTA</button>
+          <button class="btn-pass" id="paBtnPass" onclick="presidentPass()" style="flex:1;">PASSA</button>
         </div>
         <div class="bid-sent" id="paBidSent">✅ Offerta inviata!</div>
       </div>
@@ -1799,13 +1810,13 @@ function renderRevealOverlay(isAssigned) {
     if (isWinner) {
       const lbl = document.createElement('span');
       lbl.className = 'reveal-winner-label';
-      lbl.textContent = '🏆 VINCITORE';
+      lbl.textContent = 'VINCITORE';
       row.appendChild(lbl);
     } else if (isTiedTop) {
       const lbl = document.createElement('span');
       lbl.className = 'reveal-winner-label';
       lbl.style.background = 'var(--red)';
-      lbl.textContent = '⚖️ PARITÀ — SPAREGGIO';
+      lbl.textContent = 'PARITÀ — SPAREGGIO';
       row.appendChild(lbl);
     }
     listEl.appendChild(row);
@@ -1813,7 +1824,7 @@ function renderRevealOverlay(isAssigned) {
   const assignedEl = document.getElementById('revealAssigned');
   if (isAssigned && rows.length && rows[0].amount > 0) {
     assignedEl.style.display = 'block';
-    assignedEl.textContent = '✅ ' + cp.nome + ' assegnato a ' + (rows[0].team ? rows[0].team.name : rows[0].tid);
+    assignedEl.textContent = cp.nome + ' assegnato a ' + (rows[0].team ? rows[0].team.name : rows[0].tid);
   } else {
     assignedEl.style.display = 'none';
   }
@@ -2258,7 +2269,16 @@ function renderPresidentAuction() {
   if (!panel) return;
   const phase = gameState.phase || 'waiting';
   const cp = gameState.currentPlayer;
-  if (!cp || phase === 'waiting') { panel.style.display = 'none'; return; }
+  const preControls = document.getElementById('paPreAuctionControls');
+  if (!cp || phase === 'waiting') {
+    panel.style.display = 'none';
+    if (preControls) preControls.style.display = '';
+    return;
+  }
+  // Asta attiva (bidding/tiebreaker/reveal/assigned/paused): nasconde stepper
+  // timer/rivelazione + ricerca/tabella giocatori per liberare spazio verticale
+  // al pannello offerta in fondo — evita che PASSA finisca fuori dallo schermo.
+  if (preControls) preControls.style.display = 'none';
   panel.style.display = 'block';
   setText('paPlayerName', cp.nome);
   setText('paPlayerMeta', cp.squadra + ' · ' + cp.ruolo + ' · QI ' + cp.qi);
