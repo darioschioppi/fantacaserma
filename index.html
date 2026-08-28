@@ -537,11 +537,14 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
         </div>
       </div>
     </div>
-    <!-- Panel rosa squadre (solo presidente) -->
+    <!-- Panel rose squadre (solo presidente) -->
     <div class="players-panel" id="presidentRosaPanel" style="display:none;flex-direction:column;">
-      <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;">
-        <span style="font-size:.8rem;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:1px;">🏅 Rosa Squadre</span>
-        <span id="presRosaLastUpdate" style="font-size:.72rem;color:var(--text-s);"></span>
+      <div style="padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--border);flex-shrink:0;">
+        <span style="font-size:.8rem;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:1px;">🏅 Rose Squadre</span>
+        <span style="display:flex;align-items:center;gap:8px;">
+          <span id="presRosaLastUpdate" style="font-size:.72rem;color:var(--text-s);"></span>
+          <button id="btnExportRose" onclick="exportRoseToExcel()" style="padding:6px 10px;border-radius:7px;border:1px solid var(--green2);background:rgba(34,197,94,.12);color:var(--green);font-weight:700;font-size:.72rem;cursor:pointer;white-space:nowrap;">📥 Esporta Excel</button>
+        </span>
       </div>
       <div id="presRosaList" style="flex:1;overflow-y:auto;padding:8px 12px;"></div>
       <!-- Reset Stagione — solo Benfiga, azione irreversibile -->
@@ -617,7 +620,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
     <button class="mobile-nav-btn" id="tabPlanBtn" onclick="participantMobileTab('plan',this)"><span class="icon">📅</span>Piano</button>
     <button class="mobile-nav-btn hidden" id="tabAstaBtn" onclick="participantMobileTab('asta',this)"><span class="icon">⚡</span>Asta</button>
     <button class="mobile-nav-btn hidden" id="tabAssignBtn" onclick="participantMobileTab('assign',this)"><span class="icon">📝</span>Assegn.</button>
-    <button class="mobile-nav-btn hidden" id="tabRosaBtn" onclick="participantMobileTab('rosa',this)"><span class="icon">🏅</span>Rosa</button>
+    <button class="mobile-nav-btn hidden" id="tabRosaBtn" onclick="participantMobileTab('rosa',this)"><span class="icon">🏅</span>Rose</button>
     <button class="mobile-nav-btn hidden" id="tabStorBtn" onclick="participantMobileTab('stor',this)"><span class="icon">📋</span>Storico</button>
   </div>
 </div>
@@ -2650,6 +2653,75 @@ function renderRosaPanel(containerId, updateTsId) {
   const now = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
   const tsEl = document.getElementById(updateTsId || 'rosaLastUpdate');
   if (tsEl) tsEl.textContent = 'aggiornato ' + now;
+}
+
+// ─── EXPORT ROSE IN EXCEL ───
+/**
+ * Esporta le rose di tutte le squadre in un file .xls (formato SpreadsheetML,
+ * apribile nativamente da Excel senza warning, senza dover caricare librerie
+ * esterne come SheetJS). Un foglio per squadra: ruolo, giocatore, squadra
+ * Serie A, prezzo pagato; riga di riepilogo con budget residuo e totale spesi.
+ * Genera il file lato client e lo scarica subito con un click, come richiesto.
+ */
+function xmlEsc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
+function excelSheetName(name) {
+  // I nomi foglio Excel non possono contenere : \ / ? * [ ] e sono limitati a 31 caratteri.
+  return String(name || 'Squadra').replace(/[:\\/?*\[\]]/g, '_').slice(0, 31);
+}
+function exportRoseToExcel() {
+  const ROLE_ORDER = { P: 0, D: 1, C: 2, A: 3 };
+  const cellStr = (v) => `<Cell><Data ss:Type="String">${xmlEsc(v)}</Data></Cell>`;
+  const cellNum = (v) => `<Cell><Data ss:Type="Number">${Number(v) || 0}</Data></Cell>`;
+
+  const sheets = TEAMS.map(team => {
+    const td = teamsState[team.id] || {};
+    const budget = td.budget != null ? td.budget : BUDGET_START;
+    const teamAssigns = assignmentsState.filter(a => a.teamId === team.id);
+    const sorted = [...teamAssigns].sort((a, b) => {
+      const ra = ROLE_ORDER[(a.ruolo || '').charAt(0)];
+      const rb = ROLE_ORDER[(b.ruolo || '').charAt(0)];
+      return (ra != null ? ra : 99) - (rb != null ? rb : 99) ||
+        (a.player || '').localeCompare(b.player || '');
+    });
+    const totalSpent = sorted.reduce((sum, a) => sum + (a.amount || 0), 0);
+
+    const headerRow = `<Row><Cell><Data ss:Type="String">Ruolo</Data></Cell>` +
+      `<Cell><Data ss:Type="String">Giocatore</Data></Cell>` +
+      `<Cell><Data ss:Type="String">Squadra Serie A</Data></Cell>` +
+      `<Cell><Data ss:Type="String">Prezzo (cr)</Data></Cell></Row>`;
+    const playerRows = sorted.map(a =>
+      `<Row>${cellStr((a.ruolo || '').charAt(0) || '?')}${cellStr(a.player || '—')}${cellStr(a.squadra || '')}${cellNum(a.amount || 0)}</Row>`
+    ).join('');
+    const summaryRow = `<Row><Cell/><Cell/><Cell><Data ss:Type="String">Budget residuo / Spesi totali</Data></Cell>` +
+      `<Cell><Data ss:Type="String">${budget} cr / ${totalSpent} cr</Data></Cell></Row>`;
+
+    return `<Worksheet ss:Name="${xmlEsc(excelSheetName(team.name))}"><Table>` +
+      headerRow + playerRows + `<Row/>` + summaryRow + `</Table></Worksheet>`;
+  }).join('');
+
+  const xml = `<?xml version="1.0"?>` +
+    `<?mso-application progid="Excel.Sheet"?>` +
+    `<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" ` +
+    `xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">` +
+    `<Styles><Style ss:ID="Default" ss:Name="Normal"/></Styles>` +
+    sheets +
+    `</Workbook>`;
+
+  const blob = new Blob([xml], { type: 'application/vnd.ms-excel' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const today = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `rose_squadre_${today}.xls`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  toast('📥 Rose esportate in Excel', 'success');
 }
 
 // ─── FEATURE 5: STORICO OPERAZIONI ───
