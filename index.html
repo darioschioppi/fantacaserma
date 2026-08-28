@@ -1394,7 +1394,14 @@ function initParticipantFirebase() {
     teamsState = snap.val() || {};
     updateBudgetDisplay();
     updateConnectedChips();
-    if (currentUser && currentUser.isPresident) checkDisconnectionPause();
+    // Il rilevamento della disconnessione/riconnessione è affidato a OGNI squadra
+    // collegata, non solo al presidente: se Benfiga non ha l'app aperta in quel
+    // momento (o il suo listener non fira), nessuno rileverebbe più la
+    // riconnessione e l'asta resterebbe bloccata per sempre nonostante tutti
+    // fossero di nuovo online. La scrittura di resume è idempotente (adminResumeAuction
+    // ritorna subito se phase non è più 'paused'), quindi non c'è rischio di
+    // scritture concorrenti dannose anche se più client la rilevano insieme.
+    checkDisconnectionPause();
   });
   db.ref('/assignments').on('value', snap => {
     const raw = snap.val();
@@ -1980,7 +1987,13 @@ function checkAutoReveal() {
 // Benfiga). Il presidente (unico client con potere di scrittura su /game) fa da
 // "autorità server": osserva lo stato presenza di /teams e decide blocco/ripresa.
 function checkDisconnectionPause() {
-  if (!canManageAuction()) return;
+  // NOTA: nessun gate su canManageAuction()/isPresident — questa funzione deve
+  // girare su OGNI client collegato (non solo quello di Benfiga), altrimenti se
+  // il presidente non ha l'app aperta nel momento in cui tutti si riconnettono,
+  // nessuno rileverebbe più la ripresa e l'asta resterebbe bloccata per sempre
+  // anche a fronte di una situazione di rete già del tutto risolta. Le regole
+  // Firebase permettono già la scrittura su /game a qualunque utente autenticato
+  // (auth != null), quindi non serve un ruolo speciale per eseguire il resume/pause.
   const phase = gameState.phase || 'waiting';
 
   // Ripresa automatica: TUTTE le squadre sono di nuovo online.
