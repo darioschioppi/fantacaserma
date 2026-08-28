@@ -2688,16 +2688,30 @@ function renderRosaPanel(containerId, updateTsId) {
         rBadge.style.cssText += 'flex-shrink:0;font-size:.62rem;padding:1px 4px;';
         rBadge.textContent = r || '?';
 
-        const pName = document.createElement('span');
-        pName.style.cssText = 'flex:1;font-size:.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+        // Il record di assegnazione non salva la squadra di Serie A del
+        // giocatore: va ricavata dall'elenco ufficiale incrociando per nome,
+        // stesso pattern già usato in "Mia rosa" (richiesta esplicita: "anche
+        // qui devono comparire accanto ai giocatori il nome delle squadre").
+        const pd = allPlayers.find(p => p.Nome && p.Nome.toLowerCase() === (a.player || '').toLowerCase());
+        const nameWrap = document.createElement('div');
+        nameWrap.style.cssText = 'flex:1;min-width:0;';
+        const pName = document.createElement('div');
+        pName.style.cssText = 'font-size:.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
         pName.textContent = a.player || '—';
+        nameWrap.appendChild(pName);
+        if (pd && pd.Squadra) {
+          const pTeam = document.createElement('div');
+          pTeam.style.cssText = 'font-size:.62rem;color:var(--text-s);margin-top:1px;';
+          pTeam.textContent = pd.Squadra;
+          nameWrap.appendChild(pTeam);
+        }
 
         const pAmt = document.createElement('span');
         pAmt.style.cssText = 'font-size:.72rem;color:var(--gold);flex-shrink:0;';
         pAmt.textContent = a.amount + ' cr';
 
         row.appendChild(rBadge);
-        row.appendChild(pName);
+        row.appendChild(nameWrap);
         row.appendChild(pAmt);
         list.appendChild(row);
       });
