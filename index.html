@@ -373,9 +373,9 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
             <button class="btn-stepper" onclick="stepBid(1)">+</button>
             <span style="font-size:.68rem;color:var(--text-m);white-space:nowrap;flex-shrink:0;">min <strong id="bidMinLabel">1</strong>cr</span>
           </div>
-          <!-- Separatore: distanza visiva e funzionale dal campo prezzo, per evitare
-               che un tap sul campo/stepper attivi per errore Offerta o Passa. -->
-          <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:14px;">
+          <!-- Separatore: distanza visiva e funzionale AMPIA dal campo prezzo, per
+               evitare che un tap sul campo/stepper attivi per errore Offerta o Passa. -->
+          <div style="border-top:2px solid var(--border);margin-top:22px;padding-top:22px;">
             <!-- Azione: offerta + passa -->
             <div style="display:flex;gap:8px;">
               <button class="btn-bid" id="btnBid" onclick="submitBid()" style="flex:1;">💰 OFFERTA</button>
@@ -491,9 +491,9 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
           <input class="bid-input" type="number" id="paBidInput" min="1" value="1" step="1" style="flex:1;min-width:0;text-align:center;">
           <button class="btn-stepper" onclick="stepBid(1, 'paBidInput')">+</button>
         </div>
-        <!-- Separatore: distanza visiva e funzionale dal campo prezzo, per evitare
-             che un tap sul campo attivi per errore Offerta o Passa. -->
-        <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:10px;">
+        <!-- Separatore: distanza visiva e funzionale AMPIA dal campo prezzo, per
+             evitare che un tap sul campo attivi per errore Offerta o Passa. -->
+        <div style="border-top:2px solid var(--border);margin-top:22px;padding-top:22px;">
           <button class="btn-bid" id="paBidBtn" onclick="presidentSubmitBid()" style="width:100%;">💰 OFFERTA</button>
           <button class="btn-pass" id="paBtnPass" onclick="presidentPass()" style="width:100%;margin-top:6px;">🤚 Passa</button>
         </div>
