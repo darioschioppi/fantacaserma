@@ -390,7 +390,10 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
       <!-- Overlay rivelazione: dentro poker-area così non copre Rosa/Acquisti -->
       <div class="reveal-overlay" id="revealOverlay">
         <div class="reveal-title">RIVELAZIONE</div>
-        <div style="font-size:.9rem;color:var(--text-m);" id="revealPlayerLabel">—</div>
+        <!-- Nome giocatore: stessa classe/dimensione usata nell'header durante
+             l'asta (.auction-header-name), su richiesta esplicita di Dario. -->
+        <div class="auction-header-name" id="revealPlayerLabel" style="text-align:center;max-width:min(480px,100%);">—</div>
+        <div class="auction-header-meta" id="revealPlayerMeta" style="text-align:center;"></div>
         <div class="reveal-bids" id="revealBidsList"></div>
         <div class="reveal-assigned" id="revealAssigned" style="display:none;"></div>
         <div id="revealPresActions" style="display:none;gap:10px;margin-top:12px;flex-wrap:wrap;justify-content:center;width:100%;max-width:320px;">
@@ -1768,7 +1771,13 @@ function renderRevealOverlay(isAssigned) {
   const overlay = document.getElementById('revealOverlay');
   const cp = gameState.currentPlayer;
   if (!cp) return;
-  setText('revealPlayerLabel', cp.nome + ' · ' + cp.squadra);
+  // Stessa dimensione/stile del nome mostrato durante l'asta (header sopra il
+  // campo offerta): nome grande, dettagli squadra/ruolo/QI sotto in piccolo —
+  // richiesta esplicita di Dario. Niente emoji ruolo qui (a differenza
+  // dell'header d'asta): erano già state rimosse dalla Rivelazione su
+  // richiesta esplicita precedente ("Elimina l'emoji durante la Rivelazione").
+  setText('revealPlayerLabel', cp.nome);
+  setText('revealPlayerMeta', cp.squadra + ' · ' + cp.ruolo + ' · QI ' + cp.qi);
   const tiebreakers = gameState.tiebreakers || null;
   const eligible = tiebreakers ? tiebreakers : TEAMS.map(t => t.id);
   const rows = eligible.map(tid => {
