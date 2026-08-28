@@ -2047,11 +2047,19 @@ function checkDisconnectionPause() {
       });
     } else {
       // Aggiorna la lista delle squadre ancora offline man mano che si riconnettono
-      // una alla volta (mostra sempre TUTTE quelle mancanti, non solo la prima).
-      const stillOfflineIds = stillOffline.map(t => t.id);
-      const current = gameState.disconnectedTeamIds || [];
-      if (JSON.stringify(current) !== JSON.stringify(stillOfflineIds)) {
-        db.ref('/game/disconnectedTeamIds').set(stillOfflineIds);
+      // (o si disconnettono altre) una alla volta (mostra sempre TUTTE quelle
+      // mancanti, non solo la prima). Ogni client che osserva /teams ricalcola qui
+      // l'elenco COMPLETO dallo stato corrente (non da una copia locale vecchia),
+      // quindi anche se due client scrivono quasi in contemporanea il valore
+      // finale converge sempre al set reale rilevato più di recente (bug
+      // segnalato: il banner mostrava solo SoxTeam nonostante anche Paris fosse
+      // offline — il fix garantisce che ad ogni cambiamento di /teams ricevuto,
+      // il client aggiorni SEMPRE l'elenco, senza guardie che potrebbero saltare
+      // la scrittura per una differenza di ordinamento o timing).
+      const stillOfflineIds = stillOffline.map(t => t.id).sort();
+      const currentIds = (gameState.disconnectedTeamIds || []).slice().sort();
+      if (JSON.stringify(currentIds) !== JSON.stringify(stillOfflineIds)) {
+        db.ref('/game/disconnectedTeamIds').set(stillOffline.map(t => t.id));
       }
     }
     return;

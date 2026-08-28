@@ -440,6 +440,11 @@ test.describe.serial('UAT — Disconnessione durante l\'asta (AC01-AC12)', () =>
     await pres.waitForTimeout(4000);
     gs = await getGameState();
     expect(gs.phase).toBe('paused');
+    // Bug segnalato: il banner mostrava solo la PRIMA squadra disconnessa (t3)
+    // anche dopo che una seconda (t6) si era disconnessa mentre l'asta era già
+    // in pausa — disconnectedTeamIds deve contenere ENTRAMBE, non solo la prima.
+    const idsAfterSecond = (gs.disconnectedTeamIds || []).slice().sort();
+    expect(idsAfterSecond).toEqual(['t3', 't6']);
 
     // Riconnessione di t3 (t6 resta offline): l'asta NON riprende ancora,
     // perché il comportamento A richiede TUTTE le squadre online.
