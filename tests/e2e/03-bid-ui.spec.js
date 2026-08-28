@@ -1,7 +1,8 @@
 /**
  * 03 - Bid Area UI
- * Testa i componenti dell'area di offerta: stepper, pulsanti quick bid,
- * input numerico, label budget/slot, comportamento sealed-bid.
+ * Testa i componenti dell'area di offerta: stepper, input numerico,
+ * label budget/slot, comportamento sealed-bid. (I pulsanti "quick bid"
+ * +1/+5/+10/+25 sono stati rimossi dal front-end su richiesta esplicita.)
  */
 const { test, expect } = require('@playwright/test');
 const { gotoAndLogin } = require('./helpers');
@@ -24,8 +25,9 @@ test.describe('Bid Area - Componenti UI (fuori asta)', () => {
     await expect(page.locator('.btn-stepper').first()).toBeHidden();
   });
 
-  test('i pulsanti quick bid non sono visibili fuori dall\'asta', async ({ page }) => {
-    await expect(page.locator('.btn-quick').first()).toBeHidden();
+  test('i pulsanti quick bid non esistono più (rimossi dal front-end)', async ({ page }) => {
+    // Rimossi su richiesta esplicita: il campo prezzo usa solo lo stepper +/-.
+    await expect(page.locator('.btn-quick')).toHaveCount(0);
   });
 
   test('il pulsante OFFERTA non è visibile fuori dall\'asta', async ({ page }) => {
@@ -60,16 +62,6 @@ test.describe('Bid Area - Struttura HTML', () => {
     const text = await btn.textContent();
     // Fix: era "Passa questo giocatore", ora è "Passa"
     expect(text?.trim()).toBe('🤚 Passa');
-  });
-
-  test('esistono 4 pulsanti quick bid (+1 +5 +10 +25)', async ({ page }) => {
-    const quickBtns = page.locator('.btn-quick');
-    await expect(quickBtns).toHaveCount(4);
-    const texts = await quickBtns.allTextContents();
-    expect(texts).toContain('+1');
-    expect(texts).toContain('+5');
-    expect(texts).toContain('+10');
-    expect(texts).toContain('+25');
   });
 
   test('esistono 2 pulsanti stepper (+ e -)', async ({ page }) => {
