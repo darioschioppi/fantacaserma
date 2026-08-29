@@ -577,47 +577,14 @@ test.describe.serial('Simulazione Asta — Flussi Completi', () => {
 
   // ── SCENARIO 9: Reset stagione ────────────────────────────────────────────
   //
-  // Testa lo schema dati del reset (browser-less): crea assegnazione + budget
-  // ridotto, poi esegue la sequenza atomica di reset via REST API (stessa
-  // logica di adminResetSeason()), verifica che lo stato sia pulito.
-  // Una volta deployato, il test può essere esteso per invocare adminResetSeason()
-  // direttamente dalla pagina browser.
-
-  test('SC9 — reset stagione: cancella assegnazioni e ripristina tutti i budget', async () => {
-    // Setup: assegnazione test su t3 con budget ridotto
-    await fbRest('/assignments/__reset_sc9__', 'PUT', {
-      player: '__RESET_SC9__', ruolo: 'C',
-      teamId: 't3', teamName: 'Frattese1985', amount: 60, timestamp: Date.now(),
-    });
-    await fbRest('/teams/t3', 'PATCH', { budget: 440, rosterCount: 1 });
-    await new Promise(r => setTimeout(r, 400));
-
-    // Reset atomico (stesso schema di adminResetSeason)
-    const teamOps = TEAMS.map(id =>
-      fbRest('/teams/' + id, 'PATCH', { budget: BUDGET_START, rosterCount: 0 })
-    );
-    await Promise.all([
-      ...teamOps,
-      fbRest('/game',         'PUT',    { phase: 'waiting', round: 1, minBid: 1 }),
-      fbRest('/assignments',  'DELETE'),
-      fbRest('/bids',         'DELETE'),
-      fbRest('/bidSubmitted', 'DELETE'),
-      fbRest('/log',          'DELETE'),
-    ]);
-    await new Promise(r => setTimeout(r, 500));
-
-    // Verifica: tutti i team a budget pieno, nessuna assegnazione
-    const t3After    = (await fbRest('/teams/t3', 'GET')) || {};
-    const t5After    = (await fbRest('/teams/t5', 'GET')) || {};
-    const asgnAfter  = await getAssignments();
-    const gsAfter    = await getGameState();
-
-    expect(gsAfter.phase).toBe('waiting');
-    expect(t3After.budget).toBe(BUDGET_START);
-    expect(t3After.rosterCount).toBe(0);
-    expect(t5After.budget).toBe(BUDGET_START);
-    expect(asgnAfter.find(a => a.player === '__RESET_SC9__')).toBeUndefined();
-  });
+  // RIMOSSO su richiesta esplicita di Dario (29/08/2026): questo scenario
+  // cancellava DAVVERO /assignments, /log e azzerava i budget di TUTTE le
+  // squadre sul database Firebase di PRODUZIONE (lo stesso usato dall'asta
+  // reale — questa suite non ha un database di test separato). Eseguito per
+  // errore durante una sessione d'asta live in corso, ha cancellato le
+  // assegnazioni reali già fatte dai partecipanti. Non riaggiungere una
+  // versione di questo test senza prima isolarlo su un progetto/database
+  // Firebase dedicato ai test, separato da quello di produzione.
 
   // ── SCENARIO 10: Storico operazioni ───────────────────────────────────────
   //
