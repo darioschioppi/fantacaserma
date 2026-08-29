@@ -15,7 +15,9 @@ test.describe('Login Screen', () => {
 
   test('visualizza titolo FANTACASERMA e logo', async ({ page }) => {
     await expect(page.locator('.login-title')).toContainText('FANTACASERMA');
-    await expect(page.locator('.login-logo')).toContainText('🏆');
+    // Il logo è un'immagine (icons/logo-fantacaserma.jpg), non più un'emoji
+    // (rimossa su richiesta esplicita insieme alle altre emoji del login).
+    await expect(page.locator('.login-logo img')).toBeVisible();
   });
 
   test('visualizza sottotitolo con info asta', async ({ page }) => {

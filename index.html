@@ -315,7 +315,7 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
 <div class="screen" id="screen-login">
   <div class="login-logo"><img src="icons/logo-fantacaserma.jpg" alt="Fantacaserma"></div>
   <div class="login-title">FANTACASERMA</div>
-  <div class="login-sub">Asta alla cieca · 10 squadre · 663 giocatori</div>
+  <div class="login-sub" id="loginSub">Asta alla cieca · 10 squadre · <span id="loginPlayerCount">—</span> giocatori</div>
   <div class="login-box">
     <div class="login-form" id="formSquadra">
       <div><label>Seleziona la tua squadra</label><select id="teamSelect"><option value="">— scegli —</option></select></div>
@@ -852,6 +852,13 @@ function loadPlayers() {
 
 function afterLoad() {
   document.getElementById('loader').classList.add('hidden');
+  // Il numero di giocatori mostrato in login era scritto a mano nell'HTML
+  // ("663 giocatori") e non veniva mai aggiornato insieme al file
+  // data/players.json — segnalato: dopo l'ultimo aggiornamento della lista
+  // (518 giocatori) il testo statico era rimasto quello vecchio. Ora si
+  // calcola dal reale allPlayers.length, così resta sempre corretto.
+  const countEl = document.getElementById('loginPlayerCount');
+  if (countEl) countEl.textContent = allPlayers.length || '—';
   const saved = sessionStorage.getItem('fcUser');
   if (saved) {
     try {

@@ -11,7 +11,51 @@ const { gotoAndLogin, BASE_URL } = require('./helpers');
 
 // ─── Helper ──────────────────────────────────────────────────────────────────
 
+// Reset dello stato asta prima di ogni test di questo file: senza di esso, un
+// altro file eseguito in parallelo (playwright.config.js usa workers:2) può
+// lasciare un'asta di test a metà (es. in fase reveal/tiebreaker) sullo stesso
+// database di produzione condiviso — il click su "Asta" mostrerebbe quella
+// schermata residua invece del pannello atteso, facendo fallire il test per
+// una collisione tra suite, non per un problema applicativo reale (osservato:
+// #presidentAstaPanel restava "hidden" perché la UI era sull'overlay di
+// rivelazione di un'asta __TEST_PLAYER__ lasciata da 08-auction-simulation).
+const FB_API_KEY = 'AIzaSyCOTpDSNMVvK8kYNw11OfBIQm3JaAx9kIM';
+const FB_DB_URL  = 'https://fantacaserma-f2fe2-default-rtdb.europe-west1.firebasedatabase.app';
+let _fbTokenCache = null;
+let _fbTokenExpiry = 0;
+async function getFbToken() {
+  if (_fbTokenCache && Date.now() < _fbTokenExpiry) return _fbTokenCache;
+  const resp = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FB_API_KEY}`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ returnSecureToken: true }),
+  });
+  const data = await resp.json();
+  if (!data.idToken) throw new Error('getFbToken failed: ' + JSON.stringify(data));
+  _fbTokenCache = data.idToken;
+  _fbTokenExpiry = Date.now() + 55 * 60 * 1000;
+  return _fbTokenCache;
+}
+async function fbRest(path, method = 'GET', body) {
+  const token = await getFbToken();
+  const url = `${FB_DB_URL}${path}.json?auth=${token}`;
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body !== undefined) opts.body = JSON.stringify(body);
+  const resp = await fetch(url, opts);
+  if (!resp.ok) throw new Error(`fbRest ${method} ${path} → HTTP ${resp.status}: ${await resp.text()}`);
+  return resp.json();
+}
+async function resetGameStateIfStale() {
+  const game = (await fbRest('/game', 'GET')) || {};
+  if (game.phase && game.phase !== 'waiting') {
+    await fbRest('/game', 'PUT', { phase: 'waiting' });
+    await fbRest('/bids', 'DELETE');
+    await fbRest('/bidSubmitted', 'DELETE');
+    await new Promise(r => setTimeout(r, 400));
+  }
+}
+
 async function loginAsPresident(page) {
+  await resetGameStateIfStale();
   await gotoAndLogin(page, 't2'); // Benfiga = isPresident
 }
 

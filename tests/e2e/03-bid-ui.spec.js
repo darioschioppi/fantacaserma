@@ -64,8 +64,12 @@ test.describe('Bid Area - Struttura HTML', () => {
     expect(text?.trim()).toBe('PASSA');
   });
 
-  test('esistono 2 pulsanti stepper (+ e -)', async ({ page }) => {
-    const steppers = page.locator('.btn-stepper');
+  test('esistono 2 pulsanti stepper (+ e -) nell\'area offerta del partecipante', async ({ page }) => {
+    // Scoped a #bidInputArea: il DOM contiene anche i 2 stepper del pannello
+    // presidente (#paBidArea, sempre presenti anche se non applicabili a
+    // questa squadra/nascosti), quindi un conteggio globale sulla pagina
+    // risulterebbe 4, non 2.
+    const steppers = page.locator('#bidInputArea .btn-stepper');
     await expect(steppers).toHaveCount(2);
     const texts = await steppers.allTextContents();
     expect(texts).toContain('−');
