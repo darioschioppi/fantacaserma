@@ -7,6 +7,12 @@
     "assignments":  { ".read": "auth != null", ".write": "auth != null" },
     "avatars":      { ".read": "auth != null", ".write": "auth != null" },
     "log":          { ".read": "auth != null", ".write": "auth != null" },
-    "plans":        { ".read": "auth != null", ".write": "auth != null" }
+    "plans":        { ".read": "auth != null", ".write": "auth != null" },
+    "auditLog": {
+      ".read": "auth != null",
+      "$entryId": {
+        ".write": "auth != null && !data.exists()"
+      }
+    }
   }
 }

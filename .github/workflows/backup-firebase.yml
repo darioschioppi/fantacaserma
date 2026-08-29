@@ -1,0 +1,103 @@
+name: Backup Firebase Data
+
+# Scarica periodicamente lo stato di /assignments, /teams, /log e /game dal
+# database Firebase di produzione e lo salva come snapshot JSON versionato nel
+# repository (cartella backups/). Non richiede segreti aggiuntivi: usa
+# l'autenticazione anonima già usata dalla suite di test E2E (stessa API key
+# pubblica lato client, presente anche nel front-end index.html).
+#
+# Motivazione: introdotto dopo un incidente (29/08/2026) in cui un test E2E
+# eseguito per errore contro il database di produzione ha cancellato le
+# assegnazioni reali di una sessione d'asta live, senza alcun backup da cui
+# recuperarle. Questo workflow fornisce uno storico di snapshot recuperabili
+# in qualsiasi momento (ogni commit in backups/ è una versione).
+
+on:
+  schedule:
+    # Ogni 15 minuti. GitHub Actions non garantisce puntualità esatta sugli
+    # schedule (può ritardare di alcuni minuti sotto carico), accettabile per
+    # uno snapshot di sicurezza.
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
+
+jobs:
+  backup:
+    name: Snapshot dati Firebase
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Scarica snapshot da Firebase e salva su repo
+        env:
+          FB_API_KEY: 'AIzaSyCOTpDSNMVvK8kYNw11OfBIQm3JaAx9kIM'
+          FB_DB_URL: 'https://fantacaserma-f2fe2-default-rtdb.europe-west1.firebasedatabase.app'
+        run: |
+          set -euo pipefail
+
+          # Autenticazione anonima: stesso pattern usato da tests/e2e/*.spec.js
+          # (getFbToken/fbRest) per interrogare il DB via REST senza SDK.
+          TOKEN=$(curl -sf -X POST \
+            "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FB_API_KEY}" \
+            -H 'Content-Type: application/json' \
+            -d '{"returnSecureToken":true}' | python3 -c "import json,sys;print(json.load(sys.stdin)['idToken'])")
+
+          mkdir -p backups
+          TMPDIR_RAW=$(mktemp -d)
+          STAMP=$(date -u +"%Y%m%dT%H%M%SZ")
+          OUT="backups/${STAMP}.json"
+
+          fetch_path() {
+            # Scrive la risposta grezza su file: evita di far transitare JSON
+            # arbitrario (apici, backslash) per variabili/heredoc di shell.
+            curl -sf "${FB_DB_URL}/$1.json?auth=${TOKEN}" -o "${TMPDIR_RAW}/$1.json"
+          }
+
+          fetch_path assignments
+          fetch_path teams
+          fetch_path log
+          fetch_path game
+
+          python3 - "$OUT" "$TMPDIR_RAW" "$STAMP" <<'PYEOF'
+          import json, sys, os
+          out_path, raw_dir, stamp = sys.argv[1], sys.argv[2], sys.argv[3]
+
+          def load(name):
+              path = os.path.join(raw_dir, name + ".json")
+              with open(path) as f:
+                  content = f.read().strip()
+              return json.loads(content) if content else None
+
+          data = {
+              "exportedAt": stamp,
+              "assignments": load("assignments"),
+              "teams": load("teams"),
+              "log": load("log"),
+              "game": load("game"),
+          }
+          with open(out_path, "w") as f:
+              json.dump(data, f, indent=2, ensure_ascii=False)
+          PYEOF
+
+          # Aggiorna anche un puntatore "ultimo backup" a nome fisso, comodo
+          # per un ripristino rapido senza dover cercare il file più recente.
+          cp "$OUT" backups/latest.json
+
+          echo "Snapshot salvato in $OUT"
+
+      - name: Commit e push dello snapshot (solo se cambiato)
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add backups/
+          if git diff --cached --quiet; then
+            echo "Nessuna modifica rispetto all'ultimo backup, skip commit."
+            exit 0
+          fi
+          git commit -m "backup: snapshot automatico dati Firebase"
+          git push

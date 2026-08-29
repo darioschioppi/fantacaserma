@@ -526,7 +526,10 @@ input,select{font-family:inherit;font-size:inherit;outline:none;border:none;}
     </div>
     <!-- ASSIGN PANEL (solo Presidente) -->
     <div class="players-panel" id="presidentAssignPanel" style="display:none;flex-direction:column;">
-      <div style="padding:10px 14px;font-size:.8rem;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);flex-shrink:0;">📝 Gestione Assegnazioni</div>
+      <div style="padding:10px 14px;font-size:.8rem;font-weight:700;color:var(--text-m);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <span>📝 Gestione Assegnazioni</span>
+        <button onclick="exportBackupJson()" title="Scarica un backup JSON dello stato attuale (assegnazioni, squadre, asta)" style="flex-shrink:0;padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);color:var(--text-m);font-size:.68rem;font-weight:700;cursor:pointer;text-transform:none;letter-spacing:0;">💾 Backup</button>
+      </div>
       <!-- Lista assegnati -->
       <div id="assignListContainer" style="flex:1;overflow-y:auto;padding:8px 12px;"></div>
       <!-- Assegna giocatore libero -->
@@ -1019,6 +1022,13 @@ function writeLog(type, data) {
   if (!db) return;
   const entry = Object.assign({ type: type, ts: Date.now() }, data);
   db.ref('/log').push(entry);
+  // Specchio su /auditLog: registro parallelo immutabile. Le regole Firebase
+  // (database.rules.json) permettono qui SOLO la creazione di una entry mai
+  // esistita prima — nessuna funzione applicativa (incluso adminResetSeason)
+  // può cancellarlo o sovrascriverlo. Serve da traccia di recupero anche se
+  // /log o /assignments vengono azzerati per errore (vedi incidente del
+  // 29/08/2026 causato da un test E2E eseguito contro il DB di produzione).
+  db.ref('/auditLog').push(entry).catch(() => {});
 }
 
 function adminStartAuction(playerData) {
@@ -2910,6 +2920,69 @@ function downloadRoseBlob(blob, filename) {
   document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 2000);
   toast('📥 Rose esportate in Excel', 'success');
+}
+
+// ─── FEATURE 9: BACKUP MANUALE ASSEGNAZIONI ───
+/**
+ * Scarica un backup JSON dello stato corrente (assegnazioni, squadre, partita,
+ * storico) con un timestamp nel nome file. Rete di sicurezza aggiuntiva da
+ * usare a discrezione del presidente (es. prima di operazioni rischiose come
+ * reset stagione, o periodicamente durante l'asta) — non sostituisce il
+ * backup automatico su GitHub, ma è immediato e sotto controllo diretto.
+ * Riusa lo stesso pattern di salvataggio multi-percorso di exportRoseToExcel
+ * (Android nativo → Web Share API → <a download>), perché anche qui una
+ * WebView Android pura non garantisce che <a download> scriva un file reale.
+ */
+async function exportBackupJson() {
+  if (!currentUser || !currentUser.isPresident) { toast('⛔ Solo il presidente può esportare il backup', 'error'); return; }
+  const backup = {
+    exportedAt: new Date().toISOString(),
+    game: gameState || null,
+    teams: teamsState || null,
+    assignments: assignmentsState || null,
+    log: logState || null,
+  };
+  const json = JSON.stringify(backup, null, 2);
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const filename = `fantacaserma_backup_${stamp}.json`;
+  const mimeType = 'application/json';
+
+  if (typeof AndroidFileSaver !== 'undefined' && AndroidFileSaver.saveFile) {
+    try {
+      const bytes = new TextEncoder().encode(json);
+      const base64 = arrayBufferToBase64(bytes);
+      AndroidFileSaver.saveFile(base64, filename, mimeType);
+      toast('💾 Backup salvato', 'success');
+    } catch (e) {
+      toast('❌ Errore backup: ' + e.message, 'error');
+    }
+    return;
+  }
+
+  const blob = new Blob([json], { type: mimeType });
+  const file = new File([blob], filename, { type: mimeType });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    navigator.share({ files: [file], title: filename })
+      .then(() => toast('💾 Backup salvato', 'success'))
+      .catch(err => {
+        if (err && err.name === 'AbortError') return;
+        downloadBackupBlob(blob, filename);
+      });
+    return;
+  }
+  downloadBackupBlob(blob, filename);
+}
+
+function downloadBackupBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  toast('💾 Backup salvato', 'success');
 }
 
 // ─── FEATURE 5: STORICO OPERAZIONI ───
