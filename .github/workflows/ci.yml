@@ -1,10 +1,16 @@
 name: CI — E2E Tests
 
+# Trigger automatico (push/pull_request) disattivato su richiesta esplicita
+# di Dario (30/08/2026): questa suite scrive/legge sul database Firebase di
+# PRODUZIONE (non esiste un DB di test separato), quindi farla girare ad ogni
+# push rischia di interferire con una sessione d'asta reale in corso — è
+# proprio quello che ha causato l'incidente del 29/08/2026 (vedi commit
+# 25a3b23, che ha rimosso lo scenario SC9 più distruttivo, ma il rischio
+# residuo di eseguire l'intera suite contro il DB live resta). Resta
+# disponibile solo workflow_dispatch: lanciarla manualmente, e SOLO fuori da
+# una sessione d'asta live, da Actions → "CI — E2E Tests" → "Run workflow".
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch: {}
 
 jobs:
   e2e:
