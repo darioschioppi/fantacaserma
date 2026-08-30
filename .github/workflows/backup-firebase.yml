@@ -20,6 +20,15 @@ on:
     - cron: '*/15 * * * *'
   workflow_dispatch: {}
 
+# Necessario esplicitamente: senza questo, il token automatico GITHUB_TOKEN
+# usato da github-actions[bot] per il push ha di default permessi di sola
+# lettura sui repository con "Read repository contents and packages
+# permissions" impostato come default a livello di organizzazione/repo —
+# osservato in produzione: "Permission to darioschioppi/fantacaserma.git
+# denied to github-actions[bot]" (403) al momento del push dello snapshot.
+permissions:
+  contents: write
+
 jobs:
   backup:
     name: Snapshot dati Firebase
