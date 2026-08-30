@@ -1,0 +1,1056 @@
+{
+  "exportedAt": "20260830T193301Z",
+  "assignments": null,
+  "teams": {
+    "t1": {
+      "budget": 500,
+      "connected": false,
+      "emoji": "⚓",
+      "name": "Barca",
+      "rosterCount": 0
+    },
+    "t10": {
+      "budget": 500,
+      "connected": false,
+      "emoji": "🎮",
+      "name": "giomammo",
+      "rosterCount": 0
+    },
+    "t2": {
+      "budget": 500,
+      "connected": false,
+      "emoji": "🦅",
+      "name": "Benfiga",
+      "rosterCount": 0
+    },
+    "t3": {
+      "budget": 500,
+      "connected": false,
+      "emoji": "🔴",
+      "name": "Frattese1985",
+      "rosterCount": 0
+    },
+    "t4": {
+      "budget": 500,
+      "connected": false,
+      "emoji": "💊",
+      "name": "Morpheus",
+      "rosterCount": 0
+    },
+    "t5": {
+      "budget": 500,
+      "connected": false,
+      "emoji": "🗼",
+      "name": "Paris San Giuann",
+      "rosterCount": 0
+    },
+    "t6": {
+      "budget": 500,
+      "connected": false,
+      "emoji": "👑",
+      "name": "REAL",
+      "rosterCount": 0
+    },
+    "t7": {
+      "budget": 500,
+      "connected": false,
+      "emoji": "🦈",
+      "name": "Sharktar",
+      "rosterCount": 0
+    },
+    "t8": {
+      "budget": 500,
+      "connected": false,
+      "emoji": "🧦",
+      "name": "SoxTeam",
+      "rosterCount": 0
+    },
+    "t9": {
+      "budget": 500,
+      "connected": false,
+      "emoji": "🍷",
+      "name": "Vincan",
+      "rosterCount": 0
+    }
+  },
+  "log": {
+    "-P0BiGRD2KIKAHeLcC08": {
+      "player": "__TEST_PLAYER__",
+      "qi": 1,
+      "ruolo": "A",
+      "squadra": "TestFC",
+      "ts": 1787993593621,
+      "type": "auction_start"
+    },
+    "-P0BiHW3XVvfC_DnkjMo": {
+      "player": "__TEST_PLAYER__",
+      "ruolo": "A",
+      "squadra": "TestFC",
+      "ts": 1787993598027,
+      "type": "reveal"
+    },
+    "-P0BiNdeVC4Cne371SwO": {
+      "player": "__TEST_PLAYER__",
+      "ruolo": "A",
+      "squadra": "TestFC",
+      "ts": 1787993623152,
+      "type": "reveal"
+    },
+    "-P0BiQ58pKRCRk0H_OLU": {
+      "minBid": 65,
+      "player": "__TEST_PLAYER__",
+      "teams": [
+        "t2",
+        "t4"
+      ],
+      "ts": 1787993633176,
+      "type": "tiebreaker"
+    },
+    "-P0BiQ5GaBl0PwOcySRN": {
+      "minBid": 65,
+      "player": "__TEST_PLAYER__",
+      "teams": [
+        "t2",
+        "t4"
+      ],
+      "ts": 1787993633175,
+      "type": "tiebreaker"
+    },
+    "-P0BiRm6FOu1yV6Gr8d-": {
+      "player": "__TEST_PLAYER__",
+      "ruolo": "A",
+      "squadra": "TestFC",
+      "ts": 1787993640078,
+      "type": "reveal"
+    },
+    "-P0BiUFsC2YSs5jkkrPF": {
+      "player": "__TEST_PLAYER__",
+      "price": 90,
+      "ruolo": "A",
+      "squadra": "TestFC",
+      "teamEmoji": "👑",
+      "teamId": "t6",
+      "teamName": "REAL",
+      "ts": 1787993650240,
+      "type": "assigned"
+    },
+    "-P0BicxVd21rp9uMU3RQ": {
+      "player": "__FULLTABLE_P1__",
+      "ruolo": "A",
+      "squadra": "TestFC",
+      "ts": 1787993690036,
+      "type": "reveal"
+    },
+    "-P0BifRrZn5fIrXpCe06": {
+      "player": "__FULLTABLE_P1__",
+      "price": 70,
+      "ruolo": "A",
+      "squadra": "TestFC",
+      "teamEmoji": "🔴",
+      "teamId": "t3",
+      "teamName": "Frattese1985",
+      "ts": 1787993700234,
+      "type": "assigned"
+    },
+    "-P0Bijc6wiWEG6K1T_cc": {
+      "player": "__FULLTABLE_P2__",
+      "ruolo": "D",
+      "squadra": "TestFC",
+      "ts": 1787993717339,
+      "type": "reveal"
+    },
+    "-P0Bim4ihW1wbYB5efYD": {
+      "minBid": 55,
+      "player": "__FULLTABLE_P2__",
+      "teams": [
+        "t5",
+        "t8"
+      ],
+      "ts": 1787993727426,
+      "type": "tiebreaker"
+    },
+    "-P0BimsIsz40wMEzAUfD": {
+      "player": "__FULLTABLE_P2__",
+      "ruolo": "D",
+      "squadra": "TestFC",
+      "ts": 1787993730663,
+      "type": "reveal"
+    },
+    "-P0BipPN_OOv5GJCWGrx": {
+      "player": "__FULLTABLE_P2__",
+      "price": 60,
+      "ruolo": "D",
+      "squadra": "TestFC",
+      "teamEmoji": "🗼",
+      "teamId": "t5",
+      "teamName": "Paris San Giuann",
+      "ts": 1787993741036,
+      "type": "assigned"
+    },
+    "-P0BiuobUKn-oE463ZyL": {
+      "pausedAt": 1787993763175,
+      "teamIds": [
+        "t9"
+      ],
+      "teamNames": "Vincan",
+      "ts": 1787993763175,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BiwIJ3YQBz9aOODBw": {
+      "ts": 1787993769244,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BiwIc7y3QE8zcwpaV": {
+      "ts": 1787993769276,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BiwLNh9a5j75DUmHR": {
+      "ts": 1787993769433,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BiwLpLx0Bh37aPcoS": {
+      "ts": 1787993769449,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BiwNNk7QFvoska16l": {
+      "ts": 1787993769572,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BiwNjee9jzANtETpK": {
+      "ts": 1787993769542,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BiwOf31EovevmRuC3": {
+      "ts": 1787993769646,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BiwPCngeYebXRjcHy": {
+      "ts": 1787993769677,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BiwTuzBOiLqyToWY7": {
+      "ts": 1787993769977,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BiwUK87y0X4MrfgwQ": {
+      "ts": 1787993769963,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bj2zyegNMWmGxgdUh": {
+      "player": "__UAT_BENFIGA_TIMER__",
+      "ruolo": "A",
+      "squadra": "TestFC",
+      "ts": 1787993800708,
+      "type": "reveal"
+    },
+    "-P0Bj5RSMDdseuIecZgm": {
+      "player": "__UAT_BENFIGA_TIMER__",
+      "price": 42,
+      "ruolo": "A",
+      "squadra": "TestFC",
+      "teamEmoji": "🦅",
+      "teamId": "t2",
+      "teamName": "Benfiga",
+      "ts": 1787993810722,
+      "type": "assigned"
+    },
+    "-P0Bj88o0_TGWPXI3SH_": {
+      "pausedAt": 1787993821820,
+      "teamIds": [
+        "t4"
+      ],
+      "teamNames": "Morpheus",
+      "ts": 1787993821820,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BjA_LItmE1cu5tFXu": {
+      "pausedAt": 1787993831771,
+      "teamIds": [
+        "t5"
+      ],
+      "teamNames": "Paris San Giuann",
+      "ts": 1787993831772,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BjCCtc8eFS_UuPRhU": {
+      "pausedAt": 1787993838466,
+      "teamIds": [
+        "t7"
+      ],
+      "teamNames": "Sharktar",
+      "ts": 1787993838466,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BjCjbw6S8olR3xgKW": {
+      "ts": 1787993840623,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjCkZVEcEuyXMpFx6": {
+      "ts": 1787993840683,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjEWVoetkDHbo-Tsb": {
+      "pausedAt": 1787993847911,
+      "teamIds": [
+        "t8"
+      ],
+      "teamNames": "SoxTeam",
+      "ts": 1787993847911,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BjGXLEK74LkH4iwoT": {
+      "pausedAt": 1787993856191,
+      "teamIds": [
+        "t9"
+      ],
+      "teamNames": "Vincan",
+      "ts": 1787993856191,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BjIoMx5c3YHoAgdG5": {
+      "pausedAt": 1787993865502,
+      "teamIds": [
+        "t1"
+      ],
+      "teamNames": "Barça",
+      "ts": 1787993865502,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BjJ9oaIeIOkXC0aOu": {
+      "ts": 1787993866939,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjJBTGzwg03Xsp9nS": {
+      "ts": 1787993867044,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjKwssPgqmw5DMbEg": {
+      "pausedAt": 1787993874271,
+      "teamIds": [
+        "t3"
+      ],
+      "teamNames": "Frattese1985",
+      "ts": 1787993874271,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BjLJ0WB5GhLwVgstP": {
+      "ts": 1787993875753,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjLL0S-xCX90Pjj4s": {
+      "ts": 1787993875848,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjN56q0aGvT5-OA6w": {
+      "pausedAt": 1787993883024,
+      "teamIds": [
+        "t6"
+      ],
+      "teamNames": "REAL",
+      "ts": 1787993883024,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BjNTYeEg4zBnkGeV_": {
+      "ts": 1787993884588,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjNVtaJ1IEGqu2ZVd": {
+      "ts": 1787993884735,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjPLh7RF9EMjRzwcN": {
+      "pausedAt": 1787993892276,
+      "teamIds": [
+        "t10"
+      ],
+      "teamNames": "giomammo",
+      "ts": 1787993892276,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BjPhxB-GVVk8c-7rI": {
+      "ts": 1787993893764,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjPj3lf9_uzn1yPP7": {
+      "ts": 1787993893835,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjR_8nQQFPFdTGT1o": {
+      "pausedAt": 1787993901392,
+      "teamIds": [
+        "t1"
+      ],
+      "teamNames": "Barça",
+      "ts": 1787993901392,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BjRzO1nnDFVk6XPLL": {
+      "ts": 1787993903072,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjS0hrdisR4PqMbWm": {
+      "ts": 1787993903239,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjU-CdwFL9UjxDTA_": {
+      "pausedAt": 1787993911358,
+      "teamIds": [
+        "t3"
+      ],
+      "teamNames": "Frattese1985",
+      "ts": 1787993911358,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BjWmf7AB1abWyjgvK": {
+      "ts": 1787993922741,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjWo64xigr_xvMS2e": {
+      "ts": 1787993922830,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjWpld-Lc4YAVr_0k": {
+      "ts": 1787993922936,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjZA1tGlfh55Vui7k": {
+      "pausedAt": 1787993932491,
+      "teamIds": [
+        "t4"
+      ],
+      "teamNames": "Morpheus",
+      "ts": 1787993932491,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0Bja5217lvULshgsOK": {
+      "ts": 1787993940362,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bja6bPn1QS2kva7XP": {
+      "ts": 1787993940461,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bja8JXfLJW108Vh-J": {
+      "ts": 1787993940571,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bjcs_DAiS4IIxKlmj": {
+      "pausedAt": 1787993951793,
+      "teamIds": [
+        "t1"
+      ],
+      "teamNames": "Barça",
+      "ts": 1787993951793,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BjfyHD4QioIE4KNH0": {
+      "ts": 1787993964440,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bjfyee9IAxf_IO_gm": {
+      "ts": 1787993964465,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bjg-Fgd4rHi9gEdty": {
+      "ts": 1787993964567,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bjg0D_7tSCf-HHa9n": {
+      "ts": 1787993964577,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bjj6NzJ_Mq3hYoUpA": {
+      "pausedAt": 1787993977312,
+      "teamIds": [
+        "t3"
+      ],
+      "teamNames": "Frattese1985",
+      "ts": 1787993977312,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BjnPtr637V5PUOQ9f": {
+      "ts": 1787993994944,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjnTBtITbO9tMR7AW": {
+      "ts": 1787993995154,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjnTMOIXnsJEcETnd": {
+      "ts": 1787993995166,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bjnj6ExiIzKQdROtN": {
+      "ts": 1787993996237,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjnkeKdw7mgXdzr8_": {
+      "ts": 1787993996338,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjphP0iUS-_H0gUGx": {
+      "pausedAt": 1787994004363,
+      "teamIds": [
+        "t10"
+      ],
+      "teamNames": "giomammo",
+      "ts": 1787994004363,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0Bjq9N44lg5r1ahscN": {
+      "ts": 1787994006217,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjqBkBEOqiji3p_st": {
+      "ts": 1787994006337,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjsPGpJSLgOX6BD5J": {
+      "pausedAt": 1787994015384,
+      "teamIds": [
+        "t3",
+        "t4",
+        "t9"
+      ],
+      "teamNames": "Frattese1985, Morpheus, Vincan",
+      "ts": 1787994015384,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0Bjt60oNbBDLL4AAXa": {
+      "ts": 1787994018248,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bjt6LiedbLzIC7izB": {
+      "ts": 1787994018269,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bju5rLeVAMO4AnV2a": {
+      "pausedAt": 1787994022334,
+      "teamIds": [
+        "t3"
+      ],
+      "teamNames": "Frattese1985",
+      "ts": 1787994022334,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BjumuxdaHUGmWJXTm": {
+      "ts": 1787994025151,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjunGzNc4Dk9hyslo": {
+      "ts": 1787994025176,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjvnmS_TlV4O8oo7l": {
+      "pausedAt": 1787994029305,
+      "teamIds": [
+        "t6"
+      ],
+      "teamNames": "REAL",
+      "ts": 1787994029305,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0Bjvq6FkO41ofCSVTH": {
+      "ts": 1787994029454,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjvrWHvA2U6WIB-vg": {
+      "ts": 1787994029544,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjwamwvBZ84mUTPG9": {
+      "pausedAt": 1787994032569,
+      "teamIds": [
+        "t6"
+      ],
+      "teamNames": "REAL",
+      "ts": 1787994032569,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BjwdBrbupcCQUGvEg": {
+      "ts": 1787994032723,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjwdtcC-VQNj2kQOH": {
+      "ts": 1787994032768,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjxOtV4ga6fPWUi5Z": {
+      "pausedAt": 1787994035840,
+      "teamIds": [
+        "t6"
+      ],
+      "teamNames": "REAL",
+      "ts": 1787994035840,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BjxQlHA6MWWHHR-Jx": {
+      "ts": 1787994035960,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjxRk6xv480xsLPO7": {
+      "ts": 1787994036023,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BjyZkz_snB3xt5idN": {
+      "pausedAt": 1787994040631,
+      "teamIds": [
+        "t5"
+      ],
+      "teamNames": "Paris San Giuann",
+      "ts": 1787994040631,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0Bjz_T04iI76FZVkM3": {
+      "ts": 1787994044773,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bjzac-LwygwA99GB5": {
+      "ts": 1787994044847,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bk-a_oeSd6J2P7SIq": {
+      "pausedAt": 1787994048940,
+      "teamIds": [
+        "t7"
+      ],
+      "teamNames": "Sharktar",
+      "ts": 1787994048940,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0Bk-s1RtP7xvMtMXZV": {
+      "ts": 1787994050056,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bk-sGZ-4xgNfaaM9g": {
+      "ts": 1787994050072,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bk0s2XU_EDsdHjR-x": {
+      "pausedAt": 1787994054153,
+      "teamIds": [
+        "t9"
+      ],
+      "teamNames": "Vincan",
+      "ts": 1787994054153,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0Bk38SDYQPMoWph8D6": {
+      "ts": 1787994063460,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bk39phB1LhLr9Lb71": {
+      "ts": 1787994063548,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bk49gXGfQ8KEkMxdS": {
+      "pausedAt": 1787994067635,
+      "teamIds": [
+        "t4",
+        "t8"
+      ],
+      "teamNames": "Morpheus, SoxTeam",
+      "ts": 1787994067635,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0Bk4Ti5MLFFGL2uat8": {
+      "ts": 1787994068917,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bk4U-qMUeMGEfiTph": {
+      "ts": 1787994068935,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bk5D8lGzuR37KM2J-": {
+      "pausedAt": 1787994071952,
+      "teamIds": [
+        "t4"
+      ],
+      "teamNames": "Morpheus",
+      "ts": 1787994071952,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0Bk5Efz-TgNHHZBfyW": {
+      "ts": 1787994072050,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bk5FBMvc9-db87sew": {
+      "ts": 1787994072082,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bk6D2_Xp0U__ixvO_": {
+      "pausedAt": 1787994076042,
+      "teamIds": [
+        "t3"
+      ],
+      "teamNames": "Frattese1985",
+      "ts": 1787994076042,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkBN9lz9PLKuWlhj9": {
+      "ts": 1787994097169,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkBO8LZXXF3m3hikJ": {
+      "ts": 1787994097232,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkD86jQ5GlR0sWPoU": {
+      "pausedAt": 1787994104398,
+      "teamIds": [
+        "t3",
+        "t4",
+        "t5",
+        "t6",
+        "t7"
+      ],
+      "teamNames": "Frattese1985, Morpheus, Paris San Giuann, REAL, Sharktar",
+      "ts": 1787994104398,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkDYbBY_AqEagmTH5": {
+      "ts": 1787994106094,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkDZblnd6FZHUw8sd": {
+      "ts": 1787994106158,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkEYK5T83Kz9VmduT": {
+      "pausedAt": 1787994110172,
+      "teamIds": [
+        "t3",
+        "t4",
+        "t5",
+        "t6",
+        "t7",
+        "t8"
+      ],
+      "teamNames": "Frattese1985, Morpheus, Paris San Giuann, REAL, Sharktar, SoxTeam",
+      "ts": 1787994110172,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkEyGfj7h8FW7crUy": {
+      "ts": 1787994111896,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkEyf5QwKAk744iVQ": {
+      "ts": 1787994111922,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkFyikaK2yl-BJCS9": {
+      "pausedAt": 1787994116021,
+      "teamIds": [
+        "t3",
+        "t4",
+        "t5",
+        "t6",
+        "t7",
+        "t8",
+        "t9"
+      ],
+      "teamNames": "Frattese1985, Morpheus, Paris San Giuann, REAL, Sharktar, SoxTeam, Vincan",
+      "ts": 1787994116021,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkGPGdot-6mLGOMBH": {
+      "ts": 1787994117784,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkGPc5a3R9NwG-mNT": {
+      "ts": 1787994117805,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkHObeSkiY8fEfxWG": {
+      "pausedAt": 1787994121838,
+      "teamIds": [
+        "t3",
+        "t4",
+        "t5",
+        "t6",
+        "t7",
+        "t8",
+        "t9",
+        "t10"
+      ],
+      "teamNames": "Frattese1985, Morpheus, Paris San Giuann, REAL, Sharktar, SoxTeam, Vincan, giomammo",
+      "ts": 1787994121838,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkHuKAN_8smuruEb8": {
+      "ts": 1787994123932,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkHxms5AwzvhMmCU4": {
+      "ts": 1787994124144,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkIz2XL-nH6wTfjEc": {
+      "pausedAt": 1787994128330,
+      "teamIds": [
+        "t1",
+        "t3",
+        "t4",
+        "t5",
+        "t6",
+        "t7",
+        "t8",
+        "t9",
+        "t10"
+      ],
+      "teamNames": "Barça, Frattese1985, Morpheus, Paris San Giuann, REAL, Sharktar, SoxTeam, Vincan, giomammo",
+      "ts": 1787994128330,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkJs5YNiKokON1UTp": {
+      "ts": 1787994131981,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkJtmGnVOuvpj7fc0": {
+      "ts": 1787994132088,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkKsajNusi-X8taRI": {
+      "pausedAt": 1787994136109,
+      "teamIds": [
+        "t1",
+        "t3",
+        "t4",
+        "t5",
+        "t6",
+        "t7",
+        "t8",
+        "t9",
+        "t10"
+      ],
+      "teamNames": "Barça, Frattese1985, Morpheus, Paris San Giuann, REAL, Sharktar, SoxTeam, Vincan, giomammo",
+      "ts": 1787994136109,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkM3PfGb1GJL_3wQz": {
+      "ts": 1787994140962,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkM4jjtiZnsf3pGNZ": {
+      "ts": 1787994141051,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkO0j3qRam2qAHG18": {
+      "pausedAt": 1787994148982,
+      "teamIds": [
+        "t1"
+      ],
+      "teamNames": "Barça",
+      "ts": 1787994148982,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkO1TOEmK11yCRYfU": {
+      "ts": 1787994149029,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkPNm3I5SsZXzyOh4": {
+      "pausedAt": 1787994154553,
+      "teamIds": [
+        "t4"
+      ],
+      "teamNames": "Morpheus",
+      "ts": 1787994154553,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkPOhaB9t5PO3BrGc": {
+      "ts": 1787994154612,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkQlV12VGwLHCRexW": {
+      "pausedAt": 1787994160231,
+      "teamIds": [
+        "t5"
+      ],
+      "teamNames": "Paris San Giuann",
+      "ts": 1787994160231,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkQmN7vpMtSG5Dmzg": {
+      "ts": 1787994160287,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkSAW6V9yQSw3DKru": {
+      "pausedAt": 1787994165992,
+      "teamIds": [
+        "t6"
+      ],
+      "teamNames": "REAL",
+      "ts": 1787994165992,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkSBNfqCS3iYC2xGt": {
+      "ts": 1787994166047,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkTmSLXhd45MrpmuW": {
+      "pausedAt": 1787994172580,
+      "teamIds": [
+        "t7"
+      ],
+      "teamNames": "Sharktar",
+      "ts": 1787994172580,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkTnRo9JYqe7fhtox": {
+      "ts": 1787994172643,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkUmB8owhXZW6Lv08": {
+      "pausedAt": 1787994176659,
+      "teamIds": [
+        "t8"
+      ],
+      "teamNames": "SoxTeam",
+      "ts": 1787994176659,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkUmi0Bi0oXwwq8gx": {
+      "ts": 1787994176693,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkVtwogj_ZMB8j59V": {
+      "pausedAt": 1787994181251,
+      "teamIds": [
+        "t4",
+        "t7"
+      ],
+      "teamNames": "Morpheus, Sharktar",
+      "ts": 1787994181251,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkWHr-p74LNta1Z-9": {
+      "ts": 1787994182846,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkXWQZ6lDakx-FvrO": {
+      "pausedAt": 1787994187874,
+      "teamIds": [
+        "t5"
+      ],
+      "teamNames": "Paris San Giuann",
+      "ts": 1787994187874,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkXXFJfyH_XHEEAmK": {
+      "ts": 1787994187927,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkccBMD7MaVZHNDxD": {
+      "pausedAt": 1787994212883,
+      "teamIds": [
+        "t6"
+      ],
+      "teamNames": "REAL",
+      "ts": 1787994212883,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0Bkccv36kovup4xTfU": {
+      "ts": 1787994212930,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkdzFCgDxPDwGQMRn": {
+      "pausedAt": 1787994218455,
+      "teamIds": [
+        "t4"
+      ],
+      "teamNames": "Morpheus",
+      "ts": 1787994218455,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0Bke-3xhJg9XyT6iIM": {
+      "ts": 1787994218507,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bkfmt4lQCm6-jbt5y": {
+      "pausedAt": 1787994225856,
+      "teamIds": [
+        "t5"
+      ],
+      "teamNames": "Paris San Giuann",
+      "ts": 1787994225856,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0Bkfn_ilclIvkBS43g": {
+      "ts": 1787994225900,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkgtL-XcN4JiR7HvL": {
+      "pausedAt": 1787994230365,
+      "teamIds": [
+        "t7"
+      ],
+      "teamNames": "Sharktar",
+      "ts": 1787994230365,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0Bkgu3qTVT3rkGdNBT": {
+      "ts": 1787994230411,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkhuhHh9XCJI4957s": {
+      "pausedAt": 1787994234548,
+      "teamIds": [
+        "t7"
+      ],
+      "teamNames": "Sharktar",
+      "ts": 1787994234548,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkhvMBcdliDO4nLcu": {
+      "ts": 1787994234590,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkmbKmfToKi_0tZAE": {
+      "pausedAt": 1787994253788,
+      "teamIds": [
+        "t8"
+      ],
+      "teamNames": "SoxTeam",
+      "ts": 1787994253788,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkmhOtaec847uv61G": {
+      "ts": 1787994254176,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0Bkoi0ukOpyaRN_SaQ": {
+      "pausedAt": 1787994262408,
+      "teamIds": [
+        "t9"
+      ],
+      "teamNames": "Vincan",
+      "ts": 1787994262408,
+      "type": "auction_paused_disconnect"
+    },
+    "-P0BkpBmqAni1GNOORJk": {
+      "ts": 1787994264377,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0BkpCzd2B4neb9ci9G": {
+      "ts": 1787994264455,
+      "type": "auction_resumed_reconnect"
+    },
+    "-P0IlGpDxFOfyOeqQO8y": {
+      "pausedAt": 1788111822236,
+      "teamIds": [
+        "t5",
+        "t6",
+        "t7",
+        "t8",
+        "t9",
+        "t10"
+      ],
+      "teamNames": "Paris San Giuann, REAL, Sharktar, SoxTeam, Vincan, giomammo",
+      "ts": 1788111822236,
+      "type": "auction_paused_disconnect"
+    }
+  },
+  "game": {
+    "phase": "waiting"
+  }
+}
