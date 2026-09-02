@@ -512,6 +512,14 @@
     "FVM": "1"
   },
   {
+    "Nome": "Pompei",
+    "Squadra": "ATA",
+    "Ruolo_Classic": "P",
+    "QI": "1",
+    "QA": "1",
+    "FVM": "1"
+  },
+  {
     "Nome": "Dimarco",
     "Squadra": "INT",
     "Ruolo_Classic": "D",
@@ -734,14 +742,6 @@
     "QI": "8",
     "QA": "8",
     "FVM": "23"
-  },
-  {
-    "Nome": "Norton-Cuffy",
-    "Squadra": "GEN",
-    "Ruolo_Classic": "D",
-    "QI": "8",
-    "QA": "8",
-    "FVM": "15"
   },
   {
     "Nome": "Celik",
@@ -3120,14 +3120,6 @@
     "FVM": "10"
   },
   {
-    "Nome": "Fofana Y.",
-    "Squadra": "MIL",
-    "Ruolo_Classic": "C",
-    "QI": "5",
-    "QA": "4",
-    "FVM": "10"
-  },
-  {
     "Nome": "Ricci S.",
     "Squadra": "COM",
     "Ruolo_Classic": "C",
@@ -3856,14 +3848,6 @@
     "FVM": "27"
   },
   {
-    "Nome": "Ratkov",
-    "Squadra": "LAZ",
-    "Ruolo_Classic": "A",
-    "QI": "10",
-    "QA": "9",
-    "FVM": "22"
-  },
-  {
     "Nome": "Cutrone",
     "Squadra": "MON",
     "Ruolo_Classic": "A",
@@ -3982,14 +3966,6 @@
     "QI": "6",
     "QA": "6",
     "FVM": "8"
-  },
-  {
-    "Nome": "Mutandwa",
-    "Squadra": "CAG",
-    "Ruolo_Classic": "A",
-    "QI": "6",
-    "QA": "6",
-    "FVM": "7"
   },
   {
     "Nome": "Kvernadze",
@@ -4230,14 +4206,6 @@
     "QI": "1",
     "QA": "1",
     "FVM": "2"
-  },
-  {
-    "Nome": "Vaz",
-    "Squadra": "ROM",
-    "Ruolo_Classic": "A",
-    "QI": "1",
-    "QA": "1",
-    "FVM": "4"
   },
   {
     "Nome": "Bayo V.",
