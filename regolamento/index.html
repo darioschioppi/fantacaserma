@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FantaCaserma 2025/26 — Regolamento Ufficiale</title>
+<style>
+  :root{
+    --green:#0b6e2e;
+    --green-dark:#063f1b;
+    --gold:#f0b90b;
+    --red:#c0392b;
+    --dark:#111418;
+    --light:#f6f7f4;
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background:var(--light);
+    color:var(--dark);
+    line-height:1.6;
+  }
+  header{
+    background:linear-gradient(135deg, var(--green-dark), var(--green) 60%, #0e8a3c);
+    color:#fff;
+    padding:60px 20px 80px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  header::before{
+    content:"⚽";
+    position:absolute;
+    font-size:220px;
+    opacity:0.07;
+    top:-40px;
+    left:-30px;
+    transform:rotate(-15deg);
+  }
+  header::after{
+    content:"⚽";
+    position:absolute;
+    font-size:180px;
+    opacity:0.07;
+    bottom:-60px;
+    right:-20px;
+    transform:rotate(20deg);
+  }
+  header h1{
+    font-size:2.8rem;
+    margin:0 0 10px;
+    letter-spacing:1px;
+    text-shadow:0 3px 10px rgba(0,0,0,0.25);
+  }
+  header .badge{
+    display:inline-block;
+    background:var(--gold);
+    color:var(--dark);
+    font-weight:700;
+    padding:6px 18px;
+    border-radius:30px;
+    font-size:0.95rem;
+    margin-bottom:16px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
+  }
+  header p.subtitle{
+    font-size:1.15rem;
+    opacity:0.95;
+    max-width:640px;
+    margin:0 auto;
+  }
+  .cta-row{
+    margin-top:28px;
+    display:flex;
+    justify-content:center;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:14px 26px;
+    border-radius:10px;
+    font-weight:700;
+    text-decoration:none;
+    font-size:1rem;
+    transition:transform .15s ease, box-shadow .15s ease;
+    box-shadow:0 6px 16px rgba(0,0,0,0.2);
+  }
+  .btn:hover{ transform:translateY(-3px); box-shadow:0 10px 22px rgba(0,0,0,0.28); }
+  .btn-primary{ background:var(--gold); color:var(--dark); }
+  .btn-secondary{ background:rgba(255,255,255,0.15); color:#fff; border:2px solid rgba(255,255,255,0.5); }
+
+  nav{
+    background:var(--dark);
+    position:sticky;
+    top:0;
+    z-index:50;
+    box-shadow:0 3px 10px rgba(0,0,0,0.25);
+  }
+  nav .nav-inner{
+    max-width:1100px;
+    margin:0 auto;
+    display:flex;
+    gap:2px;
+    overflow-x:auto;
+    padding:0 10px;
+  }
+  .nav-group{
+    position:relative;
+  }
+  .nav-group > .nav-label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    color:#cfd8dc;
+    text-decoration:none;
+    padding:14px 16px;
+    font-size:0.9rem;
+    font-weight:700;
+    white-space:nowrap;
+    border-bottom:3px solid transparent;
+    transition:.2s;
+    cursor:pointer;
+    user-select:none;
+  }
+  .nav-group > .nav-label .chevron{
+    font-size:0.65rem;
+    opacity:0.7;
+    transition:transform .2s;
+  }
+  .nav-group:hover > .nav-label,
+  .nav-group.open > .nav-label{
+    color:#fff;
+    border-bottom-color:var(--gold);
+    background:rgba(255,255,255,0.06);
+  }
+  .nav-group:hover > .nav-label .chevron,
+  .nav-group.open > .nav-label .chevron{
+    transform:rotate(180deg);
+  }
+  .dropdown{
+    position:absolute;
+    top:100%;
+    left:0;
+    background:#1b2027;
+    min-width:230px;
+    border-radius:0 0 10px 10px;
+    box-shadow:0 12px 24px rgba(0,0,0,0.35);
+    padding:8px;
+    display:none;
+    z-index:60;
+    border-top:2px solid var(--gold);
+  }
+  .nav-group:hover .dropdown,
+  .nav-group.open .dropdown{
+    display:block;
+  }
+  .dropdown a{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:#cfd8dc;
+    text-decoration:none;
+    padding:10px 14px;
+    font-size:0.88rem;
+    font-weight:600;
+    border-radius:8px;
+    white-space:nowrap;
+  }
+  .dropdown a:hover{
+    background:var(--green);
+    color:#fff;
+  }
+  .dropdown a .emoji{ font-size:1rem; }
+
+  main{
+    max-width:1100px;
+    margin:0 auto;
+    padding:50px 20px 90px;
+  }
+  section{
+    margin-bottom:56px;
+    scroll-margin-top:70px;
+  }
+  h4[id]{ scroll-margin-top:70px; }
+  .section-head{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    margin-bottom:22px;
+  }
+  .section-head .icon{
+    font-size:1.8rem;
+    background:var(--green);
+    color:#fff;
+    width:52px;
+    height:52px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(11,110,46,0.35);
+    flex-shrink:0;
+  }
+  .section-head h2{
+    margin:0;
+    font-size:1.6rem;
+    color:var(--green-dark);
+  }
+  .card{
+    background:var(--card);
+    border-radius:16px;
+    padding:26px 28px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.06);
+    border:1px solid #e8ebe6;
+  }
+  .grid{
+    display:grid;
+    gap:20px;
+    grid-template-columns:repeat(auto-fit, minmax(240px,1fr));
+  }
+  ul{ padding-left:22px; margin:8px 0; }
+  li{ margin-bottom:6px; }
+  .highlight{
+    background:#eefaf0;
+    border-left:4px solid var(--green);
+    padding:14px 18px;
+    border-radius:8px;
+    margin:14px 0;
+    font-weight:600;
+    color:var(--green-dark);
+  }
+  .stat-pill{
+    display:inline-block;
+    background:var(--green);
+    color:#fff;
+    padding:4px 12px;
+    border-radius:20px;
+    font-size:0.85rem;
+    font-weight:700;
+    margin:2px 4px 2px 0;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+    font-size:0.95rem;
+  }
+  th,td{
+    padding:10px 12px;
+    text-align:left;
+    border-bottom:1px solid #e2e5df;
+  }
+  th{
+    background:var(--green-dark);
+    color:#fff;
+    font-weight:600;
+  }
+  tr:hover td{ background:#f4faf5; }
+
+  .bonus-malus{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+  }
+  @media (max-width:640px){ .bonus-malus{ grid-template-columns:1fr; } }
+  .bm-card{
+    border-radius:14px;
+    padding:22px;
+    color:#fff;
+  }
+  .bm-card.bonus{ background:linear-gradient(145deg,#0b6e2e,#0e8a3c); }
+  .bm-card.malus{ background:linear-gradient(145deg,#8e1f14,#c0392b); }
+  .bm-card h3{ margin-top:0; display:flex; align-items:center; gap:8px; }
+  .bm-card ul{ list-style:none; padding:0; }
+  .bm-card li{
+    display:flex;
+    justify-content:space-between;
+    background:rgba(255,255,255,0.12);
+    padding:10px 14px;
+    border-radius:8px;
+    margin-bottom:8px;
+    font-size:0.95rem;
+  }
+  .bm-card li b{ font-size:1.05rem; }
+
+  .prizes{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+    gap:18px;
+  }
+  .prize-card{
+    background:var(--card);
+    border-radius:16px;
+    padding:20px;
+    text-align:center;
+    border:1px solid #e8ebe6;
+    box-shadow:0 4px 14px rgba(0,0,0,0.05);
+    position:relative;
+  }
+  .prize-card .medal{ font-size:2.4rem; }
+  .prize-card h4{ margin:8px 0 4px; color:var(--green-dark); }
+  .prize-card .amount{
+    font-size:1.8rem;
+    font-weight:800;
+    color:var(--red);
+  }
+  .prize-card small{ color:#666; }
+
+  footer{
+    background:var(--dark);
+    color:#aab0b6;
+    text-align:center;
+    padding:36px 20px;
+    font-size:0.9rem;
+  }
+  footer a{ color:var(--gold); text-decoration:none; font-weight:600; }
+
+  .toc-chip{
+    display:inline-block;
+    background:#fff;
+    border:1px solid #dfe4dc;
+    border-radius:10px;
+    padding:10px 14px;
+    margin:4px;
+    font-weight:600;
+    color:var(--green-dark);
+    text-decoration:none;
+    font-size:0.9rem;
+  }
+  .toc-chip:hover{ background:var(--green); color:#fff; }
+
+  code.formula{
+    background:#eef2ee;
+    padding:2px 6px;
+    border-radius:6px;
+    font-family:Consolas, monospace;
+    color:var(--green-dark);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">STAGIONE 2025/26</div>
+  <h1>⚽ FANTACASERMA</h1>
+  <p class="subtitle">Il regolamento ufficiale del fantasy game più temuto della caserma. Asta, formazioni, bonus, malus e premi finali: tutto quello che devi sapere per vincere.</p>
+  <div class="cta-row">
+    <a class="btn btn-primary" href="regolamento.pdf" target="_blank">📄 Scarica il PDF ufficiale</a>
+    <a class="btn btn-secondary" href="#punti">🏆 Vai ai punti e bonus</a>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-inner">
+
+    <div class="nav-group">
+      <span class="nav-label">📖 Regolamento <span class="chevron">▾</span></span>
+      <div class="dropdown">
+        <a href="#intro"><span class="emoji">🎮</span> Cos'è il FantaCaserma</a>
+        <a href="#iscrizione"><span class="emoji">💶</span> Quota iscrizione</a>
+        <a href="#gestione"><span class="emoji">📋</span> Gestione squadra</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <span class="nav-label">🔨 Mercato <span class="chevron">▾</span></span>
+      <div class="dropdown">
+        <a href="#asta"><span class="emoji">🔨</span> Asta iniziale</a>
+        <a href="#mercato"><span class="emoji">🔄</span> Finestre di mercato</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <span class="nav-label">🏆 Punteggi <span class="chevron">▾</span></span>
+      <div class="dropdown">
+        <a href="#punti"><span class="emoji">🏆</span> Bonus e malus</a>
+        <a href="#modificatore"><span class="emoji">🛡️</span> Modificatore difesa</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <span class="nav-label">📊 Competizioni <span class="chevron">▾</span></span>
+      <div class="dropdown">
+        <a href="#campionato"><span class="emoji">📊</span> Campionato</a>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <span class="nav-label">🥇 Premi <span class="chevron">▾</span></span>
+      <div class="dropdown">
+        <a href="#premi-campionato"><span class="emoji">🥇</span> Premi Campionato</a>
+        <a href="#premi-punti"><span class="emoji">🥈</span> Premi Punti totale</a>
+        <a href="#premi-mini"><span class="emoji">⭐</span> Minicampionato &amp; Top Score</a>
+      </div>
+    </div>
+
+    <a class="nav-group" href="regolamento.pdf" target="_blank" style="text-decoration:none;">
+      <span class="nav-label" style="border-bottom:none;">📄 PDF ufficiale</span>
+    </a>
+
+  </div>
+</nav>
+
+<script>
+  // Supporto tap su mobile/touch per apertura dropdown (oltre a hover su desktop)
+  document.querySelectorAll('.nav-group').forEach(function(group){
+    var label = group.querySelector('.nav-label');
+    if(!label) return;
+    label.addEventListener('click', function(e){
+      if(group.tagName === 'A') return; // link diretto (PDF)
+      var isOpen = group.classList.contains('open');
+      document.querySelectorAll('.nav-group.open').forEach(function(g){ g.classList.remove('open'); });
+      if(!isOpen){ group.classList.add('open'); }
+    });
+  });
+  document.addEventListener('click', function(e){
+    if(!e.target.closest('.nav-group')){
+      document.querySelectorAll('.nav-group.open').forEach(function(g){ g.classList.remove('open'); });
+    }
+  });
+</script>
+
+<main>
+
+  <section id="intro">
+    <div class="section-head"><div class="icon">🎮</div><h2>Che cos'è il FantaCaserma?</h2></div>
+    <div class="card">
+      <p>Il FantaCaserma è un <b>fantasy game</b>: una simulazione che permette a ogni Allenatore di costruire, gestire e schierare una squadra di calcio virtuale in occasione delle giornate del Campionato di Serie A.</p>
+      <div class="highlight">Uno scherzo? No. Una guerra a colpi di formazioni, aste e sostituzioni last minute. 😤</div>
+    </div>
+  </section>
+
+  <section id="iscrizione">
+    <div class="section-head"><div class="icon">💶</div><h2>Quota di iscrizione</h2></div>
+    <div class="card">
+      <p>La quota di iscrizione per il FantaCaserma 2025/26 è di:</p>
+      <span class="stat-pill" style="font-size:1.3rem;padding:10px 22px;">€ 250,00</span>
+    </div>
+  </section>
+
+  <section id="asta">
+    <div class="section-head"><div class="icon">🔨</div><h2>Asta</h2></div>
+    <div class="card">
+      <div class="grid">
+        <div><span class="stat-pill">500 Mln virtuali</span> budget totale a disposizione</div>
+        <div><span class="stat-pill">25 calciatori</span> da acquistare in totale</div>
+        <div><span class="stat-pill">3 Portieri</span></div>
+        <div><span class="stat-pill">8 Difensori</span></div>
+        <div><span class="stat-pill">8 Centrocampisti</span></div>
+        <div><span class="stat-pill">6 Attaccanti</span></div>
+      </div>
+      <ul style="margin-top:18px;">
+        <li>Non si può spendere più di 500 Mln (meno sì), ma vanno acquistati tutti e 25 i calciatori richiesti.</li>
+        <li>Asta in modalità <b>busta chiusa "poker"</b> tramite l'app Fantapazz.</li>
+        <li>Prezzo minimo di acquisto: <b>1</b>. Base d'asta minima: <b>2</b> (in caso di parità, si rilancia).</li>
+        <li>Quando una squadra esaurisce gli slot di un reparto, deve attendere che tutte le altre completino lo stesso reparto prima di proseguire.</li>
+        <li>Se una squadra supera i 500 Mln, il calciatore che ha fatto sforare il tetto torna sul mercato libero e va sostituito con un calciatore preso a 1, senza più crediti disponibili.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="gestione">
+    <div class="section-head"><div class="icon">📋</div><h2>Gestione squadra settimanale</h2></div>
+    <div class="card">
+      <p>Se non viene comunicata la formazione settimanale, viene schierata automaticamente la formazione della giornata precedente, oppure un punteggio d'ufficio di <b>60</b> se non è mai stata impostata una rosa titolare.</p>
+      <p>Gestione tramite l'app Fantacalcio: <a href="https://leghe.fantacalcio.it/fantacaserma-22/" target="_blank">leghe.fantacalcio.it/fantacaserma-22</a></p>
+      <h4>Schieramento formazione</h4>
+      <ul>
+        <li>La formazione va inserita su Fantacalcio entro l'orario stabilito.</li>
+        <li>Moduli validi: <code class="formula">4-3-3, 4-4-2, 3-5-2, 4-5-1, 3-4-3, 5-3-2, 5-4-1</code></li>
+        <li>Panchina libera da <b>14 giocatori</b>.</li>
+        <li>Massimo <b>5 sostituzioni</b> a partita.</li>
+        <li>Il "senza voto" vale <b>0</b>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="punti">
+    <div class="section-head"><div class="icon">🏆</div><h2>Punti: bonus e malus</h2></div>
+    <div class="card">
+      <p>I calciatori che portano punti sono i titolari con voto in pagella e le eventuali sostituzioni dalla panchina (massimo <b>3</b> per i titolari senza voto). Dopo la terza sostituzione, l'ultimo calciatore senza voto prende 0 d'ufficio.</p>
+    </div>
+    <div class="bonus-malus" style="margin-top:20px;">
+      <div class="bm-card bonus">
+        <h3>✅ Bonus</h3>
+        <ul>
+          <li>Gol segnato <b>+3</b></li>
+          <li>Assist servito <b>+1</b></li>
+          <li>Rigore parato <b>+3</b></li>
+          <li>Imbattibilità portiere <b>+1</b></li>
+        </ul>
+      </div>
+      <div class="bm-card malus">
+        <h3>❌ Malus</h3>
+        <ul>
+          <li>Ammonizione <b>-0,5</b></li>
+          <li>Espulsione <b>-1</b></li>
+          <li>Gol subito (portiere) <b>-1</b></li>
+          <li>Autogol <b>-2</b></li>
+          <li>Rigore sbagliato <b>-3</b></li>
+        </ul>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px;">
+      <h4>Voto d'ufficio per il "senza voto" (s.v.)</h4>
+      <ul>
+        <li>Bonus (gol/assist) o malus da rigore/autorete → <b>6 punti</b> d'ufficio + relativo bonus/malus.</li>
+        <li>Solo ammonizione → nessun punto d'ufficio.</li>
+        <li>Espulsione → <b>4 punti</b> d'ufficio (malus incluso).</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="modificatore">
+    <div class="section-head"><div class="icon">🛡️</div><h2>Modificatore di difesa</h2></div>
+    <div class="card">
+      <p>Si calcola solo se portiere e almeno <b>4 difensori</b> prendono voto. Si fa la media tra il voto del portiere e i <b>3 migliori voti</b> dei difensori (senza bonus/malus).</p>
+      <table>
+        <tr><th>Media voti</th><th>Bonus difesa</th></tr>
+        <tr><td>≥ 6</td><td><b>+1</b></td></tr>
+        <tr><td>≥ 6,5</td><td><b>+3</b></td></tr>
+        <tr><td>≥ 7</td><td><b>+6</b></td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section id="mercato">
+    <div class="section-head"><div class="icon">🔄</div><h2>Mercato</h2></div>
+    <div class="card">
+      <h4>Finestre di mercato</h4>
+      <table>
+        <tr><th>Finestra</th><th>Periodo</th></tr>
+        <tr><td>1ª Asta di riparazione</td><td>dopo la 12ª di Serie A (10/11 – 24/11)</td></tr>
+        <tr><td>2ª Asta di riparazione</td><td>dopo la 22ª di Serie A (01/02)</td></tr>
+        <tr><td>3ª Asta di riparazione</td><td>dopo la 29ª di Serie A (20/03)</td></tr>
+        <tr><td>Scambi interni</td><td>ogni pausa nazionale</td></tr>
+        <tr><td>Scambi interni</td><td>01/01 – 01/02</td></tr>
+      </table>
+      <ul style="margin-top:14px;">
+        <li>I crediti dei calciatori ceduti all'estero/altri campionati vengono recuperati dal rispettivo allenatore.</li>
+        <li>Per la 1ª e 3ª finestra i crediti recuperati sono pari al doppio della quotazione Fantacalcio.</li>
+        <li>Scambi consentiti solo tra calciatori dello stesso ruolo e cardinalità.</li>
+        <li>Non si possono scambiare crediti residui tra squadre.</li>
+        <li>I giocatori tagliati non possono essere ricomprati.</li>
+        <li>Asta di riparazione: rilancio a voce, base d'asta <b>1 Mln</b>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="campionato">
+    <div class="section-head"><div class="icon">📊</div><h2>Campionato</h2></div>
+    <div class="card">
+      <p>La classifica generale parte dalla <b>3ª giornata</b> e arriva alla <b>38ª</b>. I punti totali si convertono in gol secondo questa tabella:</p>
+      <table>
+        <tr><th>Punti squadra</th><th>Gol</th></tr>
+        <tr><td>fino a 65,5</td><td>0</td></tr>
+        <tr><td>66 – 71,5</td><td>1</td></tr>
+        <tr><td>72 – 77,5</td><td>2</td></tr>
+        <tr><td>78 – 83,5</td><td>3</td></tr>
+        <tr><td>84 – 89,5</td><td>4</td></tr>
+        <tr><td>90 – 95,5</td><td>5</td></tr>
+        <tr><td>96 – 101,5</td><td>6</td></tr>
+        <tr><td>...e così via</td><td>...</td></tr>
+      </table>
+      <ul style="margin-top:14px;">
+        <li>Stessa fascia, ma differenza ≥ 4 punti → gol extra per chi ha più punti.</li>
+        <li>Fascia 0 gol, ma differenza ≥ 10 punti → gol extra per chi ha più punti.</li>
+        <li>Vittoria = 3 punti · Pareggio = 1 punto · Sconfitta = 0 punti.</li>
+      </ul>
+      <p>Classifica di girone secondo: <b>1)</b> Punti · <b>2)</b> Punteggio totale · <b>3)</b> Scontri diretti.</p>
+    </div>
+  </section>
+
+  <section id="premi">
+    <div class="section-head"><div class="icon">🥇</div><h2>Premi 2025/26</h2></div>
+
+    <h4 id="premi-campionato">Campionato</h4>
+    <div class="prizes">
+      <div class="prize-card"><div class="medal">🥇</div><h4>1° Posto</h4><div class="amount">€ 700</div></div>
+      <div class="prize-card"><div class="medal">🥈</div><h4>2° Posto</h4><div class="amount">€ 500</div></div>
+      <div class="prize-card"><div class="medal">🥉</div><h4>3° Posto</h4><div class="amount">€ 250</div></div>
+      <div class="prize-card"><div class="medal">🏅</div><h4>4° Posto</h4><div class="amount">€ 100</div></div>
+    </div>
+
+    <h4 id="premi-punti" style="margin-top:30px;">Punti totale</h4>
+    <div class="prizes">
+      <div class="prize-card"><div class="medal">🥇</div><h4>1° Posto</h4><div class="amount">€ 350</div></div>
+      <div class="prize-card"><div class="medal">🥈</div><h4>2° Posto</h4><div class="amount">€ 200</div></div>
+      <div class="prize-card"><div class="medal">🥉</div><h4>3° Posto</h4><div class="amount">€ 100</div></div>
+    </div>
+
+    <h4 id="premi-mini" style="margin-top:30px;">Minicampionato & Top Score</h4>
+    <div class="prizes">
+      <div class="prize-card"><div class="medal">🏆</div><h4>Clausura Serie A</h4><div class="amount">€ 150</div></div>
+      <div class="prize-card"><div class="medal">🎖️</div><h4>Clausura Serie B</h4><div class="amount">€ 100</div></div>
+      <div class="prize-card"><div class="medal">⭐</div><h4>Top Score</h4><div class="amount">€ 50</div></div>
+    </div>
+    <p style="margin-top:16px;color:#555;">Le squadre di Serie A e Serie B del minicampionato vengono scelte in base alla posizione alla 28ª giornata (-10 giornate).</p>
+  </section>
+
+</main>
+
+<footer>
+  <p>📄 Documento ufficiale completo: <a href="regolamento.pdf" target="_blank">scarica il PDF del regolamento</a></p>
+  <p>⚽ FantaCaserma 2025/26 — Che vinca il migliore Allenatore.</p>
+</footer>
+
+</body>
+</html>
