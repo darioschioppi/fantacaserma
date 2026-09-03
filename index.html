@@ -2202,12 +2202,17 @@ function checkDisconnectionPause() {
   }
   if (disconnectDebounceTimer) return; // debounce già in corso per questa disconnessione
 
-  // Debounce ~3s: evita di metter in pausa per un blip di rete cortissimo.
+  // Debounce ~1s: evita di metter in pausa per un blip di rete cortissimo, ma
+  // resta breve perché il rilevamento "offline" lato Firebase (onDisconnect
+  // server-side) ha già di per sé una latenza propria — ridotto da 3s a 1s
+  // (Dario, 03/09/2026) per minimizzare l'ulteriore ritardo lato client e
+  // proteggere prima il tempo residuo di chi ha una connessione instabile.
   disconnectDebounceTimer = setTimeout(() => {
     disconnectDebounceTimer = null;
-    // Doppio controllo: ricalcola l'elenco (potrebbero essersi già riconnesse nei
-    // 3s, oppure — se il giocatore in asta è cambiato nel frattempo — una squadra
-    // prima esclusa potrebbe ora essere di nuovo rilevante, o viceversa).
+    // Doppio controllo: ricalcola l'elenco (potrebbero essersi già riconnesse nel
+    // secondo di debounce, oppure — se il giocatore in asta è cambiato nel
+    // frattempo — una squadra prima esclusa potrebbe ora essere di nuovo
+    // rilevante, o viceversa).
     const stillDisconnected = TEAMS.filter(t => !isTeamOnline(t.id) && canTeamBidForCurrentPlayer(t.id));
     if (!stillDisconnected.length) return;
     const curPhase = gameState.phase || 'waiting';
@@ -2226,7 +2231,7 @@ function checkDisconnectionPause() {
       if (committed) writeLog('auction_paused_disconnect', { teamIds: disconnectedIds, teamNames: names, pausedAt: Date.now() });
     });
     toast('⚠️ Asta in pausa: ' + names + ' disconnessa' + (stillDisconnected.length > 1 ? 'e' : ''), 'error');
-  }, 3000);
+  }, 1000);
 }
 
 function stopLocalTimer() {
