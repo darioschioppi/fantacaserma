@@ -31,8 +31,13 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 .panel-header{padding:10px 14px;border-bottom:1px solid var(--border);font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-s);display:flex;align-items:center;gap:8px;flex-shrink:0}
 .ph-count{margin-left:auto;background:var(--bg3);border-radius:10px;padding:2px 8px;color:var(--text-m);font-size:.68rem}
 .panel-body{flex:1;overflow-y:auto;padding:8px}
-.team-card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:5px;display:flex;align-items:center;gap:8px;transition:border-color .3s}
+.team-card{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-bottom:5px;display:flex;flex-direction:column;gap:6px;transition:border-color .3s}
 .team-card.online{border-color:rgba(34,197,94,.35)}
+.tc-toprow{display:flex;align-items:center;gap:8px}
+.tc-roles{display:flex;gap:4px;flex-wrap:wrap;padding-left:2px}
+.tc-role-badge{font-size:.64rem;font-weight:700;padding:1px 6px;border-radius:4px;background:rgba(255,255,255,.06);color:var(--text-m);white-space:nowrap}
+.tc-role-badge.full{background:rgba(34,197,94,.15);color:var(--green)}
+.tc-role-badge.missing{background:rgba(245,158,11,.15);color:#f59e0b}
 .tc-dot{width:9px;height:9px;border-radius:50%;background:var(--text-s);flex-shrink:0;transition:background .4s,box-shadow .4s}
 .tc-dot.online{background:var(--green);box-shadow:0 0 6px var(--green)}
 .tc-info{flex:1;min-width:0}
@@ -206,6 +211,19 @@ body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSy
 const firebaseConfig={apiKey:"AIzaSyCOTpDSNMVvK8kYNw11OfBIQm3JaAx9kIM",authDomain:"fantacaserma-f2fe2.firebaseapp.com",databaseURL:"https://fantacaserma-f2fe2-default-rtdb.europe-west1.firebasedatabase.app",projectId:"fantacaserma-f2fe2",storageBucket:"fantacaserma-f2fe2.appspot.com",messagingSenderId:"691084462499",appId:"1:691084462499:web:2b69cac83d04a8f0f30989"};
 const TEAMS=[{id:'t1',name:'Barca',emoji:'⚓'},{id:'t2',name:'Benfiga',emoji:'🦅'},{id:'t3',name:'Frattese1985',emoji:'🔴'},{id:'t4',name:'Morpheus',emoji:'💊'},{id:'t5',name:'Paris San Giuann',emoji:'🗼'},{id:'t6',name:'REAL',emoji:'👑'},{id:'t7',name:'Sharktar',emoji:'🦈'},{id:'t8',name:'SoxTeam',emoji:'🧦'},{id:'t9',name:'Vincan',emoji:'🍷'},{id:'t10',name:'giomammo',emoji:'🎮'}];
 const BUDGET_START=500;
+// Composizione rosa per reparto (allineata a ROSTER_MAX in index.html): 3 portieri,
+// 8 difensori, 8 centrocampisti, 6 attaccanti — usata per mostrare quanti giocatori
+// mancano ancora per reparto ad ogni squadra, non solo il totale.
+const ROSTER_MAX={P:3,D:8,C:8,A:6};
+function getRosterCounts(teamId){
+  var counts={P:0,D:0,C:0,A:0};
+  assignmentsState.forEach(function(a){
+    if(a.teamId!==teamId||!a.ruolo)return;
+    var r=a.ruolo.charAt(0);
+    if(counts[r]!==undefined)counts[r]++;
+  });
+  return counts;
+}
 const AUCTION_DURATION=30;
 const CIRC=276.46;
 let db=null,gameState={},teamsState={},bidsState={},bidSubmittedState={},assignmentsState=[],avatarsState={};
@@ -249,7 +267,12 @@ function attachListeners(){
   db.ref('/bidSubmitted').on('value',function(s){bidSubmittedState=s.val()||{};renderBidsLive();});
   db.ref('/assignments').on('value',function(s){
     var raw=s.val();assignmentsState=raw?Object.values(raw):[];
-    renderRecent();updateStats();
+    // renderTeams() dipende da assignmentsState per i badge dei conteggi per
+    // reparto (P/D/C/A) di ogni squadra: va ri-eseguito anche qui, non solo
+    // sul listener /teams, altrimenti quelle badge restano stantie tra
+    // un'assegnazione e il successivo cambio di /teams (che avviene comunque
+    // nello stesso momento, ma affidarsi solo a quello sarebbe fragile).
+    renderTeams();renderRecent();updateStats();
   });
   db.ref('/avatars').on('value',function(s){avatarsState=s.val()||{};renderTeams();});
   db.ref('/log').orderByChild('ts').limitToLast(100).on('child_added',function(s){
@@ -350,19 +373,34 @@ function renderTeams(){
     if(online)connCount++;
     var card=document.createElement('div');
     card.className='team-card'+(online?' online':'');
+    var topRow=document.createElement('div');topRow.className='tc-toprow';
     var av=avatarsState[t.id];
-    if(av){var img=document.createElement('img');img.src=av;img.alt=t.name;img.style.cssText='width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border);flex-shrink:0;';card.appendChild(img);}
-    else{var em=document.createElement('span');em.style.fontSize='1.1rem';em.textContent=t.emoji;card.appendChild(em);}
-    var dot=document.createElement('span');dot.className='tc-dot'+(online?' online':'');card.appendChild(dot);
+    if(av){var img=document.createElement('img');img.src=av;img.alt=t.name;img.style.cssText='width:26px;height:26px;border-radius:50%;object-fit:cover;border:1.5px solid var(--border);flex-shrink:0;';topRow.appendChild(img);}
+    else{var em=document.createElement('span');em.style.fontSize='1.1rem';em.textContent=t.emoji;topRow.appendChild(em);}
+    var dot=document.createElement('span');dot.className='tc-dot'+(online?' online':'');topRow.appendChild(dot);
     var info=document.createElement('div');info.className='tc-info';
     var nm=document.createElement('div');nm.className='tc-name';nm.textContent=t.name;info.appendChild(nm);
     var sub=document.createElement('div');sub.className='tc-sub';sub.textContent=roster+' giocatori';info.appendChild(sub);
-    card.appendChild(info);
+    topRow.appendChild(info);
     var bDiv=document.createElement('div');bDiv.style.textAlign='right';
     var bNum=document.createElement('div');bNum.className='tc-budget-num';bNum.textContent=budget;bDiv.appendChild(bNum);
     var bBar=document.createElement('div');bBar.className='tc-budget-bar';
     var bFill=document.createElement('div');bFill.className='tc-budget-fill'+(pct<20?' low':pct<50?' mid':'');
-    bFill.style.width=pct+'%';bBar.appendChild(bFill);bDiv.appendChild(bBar);card.appendChild(bDiv);
+    bFill.style.width=pct+'%';bBar.appendChild(bFill);bDiv.appendChild(bBar);topRow.appendChild(bDiv);
+    card.appendChild(topRow);
+    // Riga badge per reparto: quanti giocatori mancano ancora per ruolo (P/D/C/A)
+    // rispetto alla composizione completa 3-8-8-6, non solo il totale rosa.
+    var rolesRow=document.createElement('div');rolesRow.className='tc-roles';
+    var counts=getRosterCounts(t.id);
+    ['P','D','C','A'].forEach(function(r){
+      var used=counts[r]||0,max=ROSTER_MAX[r];
+      var missing=max-used;
+      var b=document.createElement('span');
+      b.className='tc-role-badge'+(missing===0?' full':(missing<max?' missing':''));
+      b.textContent=r+' '+used+'/'+max;
+      rolesRow.appendChild(b);
+    });
+    card.appendChild(rolesRow);
     body.appendChild(card);
   });
   setText('teamsConnCount',connCount+'/'+TEAMS.length);
