@@ -9,7 +9,7 @@ Web app per gestire l'asta live a busta chiusa del fantacalcio della Caserma.
 | 🤖 **Android** | [⬇️ Scarica APK](https://github.com/darioschioppi/fantacaserma/releases/latest/download/FantaCaserma.apk) |
 | 🍎 **iPhone / iPad** | [Guida installazione PWA](https://darioschioppi.github.io/fantacaserma/install-ios.html) |
 | 🌐 **Web** | [darioschioppi.github.io/fantacaserma](https://darioschioppi.github.io/fantacaserma/) |
-| 📖 **Regolamento 2025/26** | [darioschioppi.github.io/fantacaserma/regolamento](https://darioschioppi.github.io/fantacaserma/regolamento/) |
+| 📖 **Regolamento 2026/27** | [darioschioppi.github.io/fantacaserma/regolamento](https://darioschioppi.github.io/fantacaserma/regolamento/) |
 
 ### Android
 1. Apri il link APK **in Chrome** (non nel browser di Telegram)
