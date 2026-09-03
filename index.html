@@ -791,6 +791,7 @@ function initFirebase() {
         loadPlayers(); // fallback: carica comunque, le regole Firebase potrebbero bloccare i listener
       });
     setupConnectionWatchdog();
+    setupForegroundTracking();
   } catch(e) {
     console.warn('Firebase init error:', e);
     db = null;
@@ -825,6 +826,13 @@ function setupConnectionWatchdog() {
     const hiddenForMs = lastHiddenAt ? Date.now() - lastHiddenAt : 0;
     lastHiddenAt = null;
     if (!db || hiddenForMs < 8000) return;
+    // Re-render immediato dello stato locale già noto: elimina il "buco" visivo
+    // (es. pulsante offerta che sembra in ritardo) mentre il reconnect socket è
+    // in corso — gameState non è diventato stantio solo perché la socket era
+    // sospesa, quindi possiamo mostrare subito l'ultimo valore noto.
+    if (currentUser && typeof handleGameStateChange === 'function') {
+      handleGameStateChange();
+    }
     console.log('FC: ripristino connessione Firebase dopo background di', Math.round(hiddenForMs / 1000), 's');
     try {
       firebase.database().goOffline();
@@ -835,6 +843,21 @@ function setupConnectionWatchdog() {
     if (currentUser && currentUser.teamId) {
       registerPresenceSession(currentUser.teamId);
     }
+  });
+}
+
+// ─── TRACKING FOREGROUND/BACKGROUND (locale, non sincronizzato su Firebase) ───
+// Distingue, solo lato client, se l'app è attualmente in primo piano o in
+// background. Volutamente NON viene scritto su Firebase e NON viene letto da
+// checkAutoReveal()/checkDisconnectionPause(): la logica server-authoritative
+// dell'asta deve continuare a basarsi solo su isTeamOnline()/canTeamBidForCurrentPlayer(),
+// altrimenti un utente con schermo spento per pochi secondi durante il proprio
+// turno di decisione rischierebbe di essere trattato come "ha rinunciato".
+// Serve solo come stato diagnostico locale (es. debug, eventuale UI futura).
+let isForegroundActive = (document.visibilityState === 'visible');
+function setupForegroundTracking() {
+  document.addEventListener('visibilitychange', () => {
+    isForegroundActive = (document.visibilityState === 'visible');
   });
 }
 
@@ -2078,9 +2101,16 @@ function checkAutoReveal() {
   // continuano a essere "eligible" (devono ancora offrire) finché non scade il tempo o
   // non offrono davvero — la gestione delle disconnessioni reali durante l'asta è
   // separata (vedi checkDisconnectionPause), qui contiamo sempre tutte le squadre.
-  const eligible = tiebreakers ? TEAMS.filter(t => tiebreakers.includes(t.id)) : TEAMS.slice();
-  if (!eligible.length) return;
-  const allSubmitted = eligible.every(t => bidSubmittedState[t.id]);
+  const pool = tiebreakers ? TEAMS.filter(t => tiebreakers.includes(t.id)) : TEAMS.slice();
+  if (!pool.length) return;
+  // Chiusura anticipata (Feature: "Timing dinamico dell'asta"): escludiamo
+  // dall'insieme "eligible" solo le squadre che non possono FISICAMENTE più
+  // rilanciare per il giocatore corrente (rosa già piena per quel ruolo) —
+  // stessa funzione (canTeamBidForCurrentPlayer) usata da checkDisconnectionPause,
+  // per restare consistenti tra i due meccanismi. NON filtriamo per isTeamOnline:
+  // questo evita di reintrodurre il bug storico descritto sopra.
+  const eligible = pool.filter(t => canTeamBidForCurrentPlayer(t.id));
+  const allSubmitted = eligible.length === 0 || eligible.every(t => bidSubmittedState[t.id]);
   if (allSubmitted) {
     autoRevealFired = true;
     setTimeout(() => {
