@@ -1100,11 +1100,16 @@ function presidentSubmitBid() {
     if (current === null || amount > existingAmt) return { amount: amount, ts: Date.now() };
     return; // abort: mantieni offerta più alta già presente
   }, (err, committed) => {
-    if (!err) {
-      db.ref('/bidSubmitted/' + tid).set(true);
-      if (committed) toast('💰 Offerta Benfiga: ' + amount + ' cr', 'success');
-      else toast('ℹ️ Offerta non aggiornata: altro client ha già offerto di più', 'info');
+    if (err) {
+      // Stesso fix di submitBid(): senza questo controllo un errore di transaction
+      // (connessione instabile) passava silenzioso e Benfiga non si accorgeva che
+      // la propria offerta non era mai arrivata a Firebase.
+      toast('⚠️ Offerta non inviata (connessione instabile) — riprova!', 'error');
+      return;
     }
+    db.ref('/bidSubmitted/' + tid).set(true);
+    if (committed) toast('💰 Offerta Benfiga: ' + amount + ' cr', 'success');
+    else toast('ℹ️ Offerta non aggiornata: altro client ha già offerto di più', 'info');
   });
 }
 
@@ -2004,11 +2009,18 @@ function submitBid() {
     if (current === null || amount > existingAmt) return { amount: amount, ts: Date.now() };
     return; // abort: mantieni offerta più alta già presente
   }, (err, committed) => {
-    if (!err) {
-      db.ref('/bidSubmitted/' + tid).set(true);
-      if (committed) toast('💰 Offerta inviata!', 'success');
-      else toast('ℹ️ Offerta non aggiornata: altro client ha già offerto di più', 'info');
+    if (err) {
+      // BUG segnalato (03/09/2026): con connessione instabile la transaction può
+      // fallire (timeout/disconnessione), ma prima non veniva mostrato alcun
+      // errore — il pulsante restava "OFFERTA" come se nulla fosse successo, e
+      // l'utente non si accorgeva che l'offerta non era mai arrivata a Firebase.
+      // Ora avvisiamo esplicitamente e lasciamo il pulsante attivo per un retry.
+      toast('⚠️ Offerta non inviata (connessione instabile) — riprova!', 'error');
+      return;
     }
+    db.ref('/bidSubmitted/' + tid).set(true);
+    if (committed) toast('💰 Offerta inviata!', 'success');
+    else toast('ℹ️ Offerta non aggiornata: altro client ha già offerto di più', 'info');
   });
 }
 
