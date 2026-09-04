@@ -2523,7 +2523,21 @@ function renderPresidentBids() {
     const am = document.createElement('span'); am.className = 'aap-bid-amount';
     const showAmt = (phase === 'reveal' || phase === 'assigned');
     if (showAmt) { am.textContent = r.amount != null ? (r.amount === 0 ? '🤚 PASSA' : r.amount + ' cr') : '—'; }
-    else { am.textContent = r.submitted ? '🔒 Inviata' : '⏳'; am.style.color = r.submitted ? 'var(--green)' : 'var(--text-s)'; }
+    else {
+      // Durante bidding/tiebreaker l'importo resta nascosto (per non influenzare
+      // gli altri prima della reveal), ma Benfiga deve poter distinguere chi ha
+      // già passato da chi ha offerto e da chi non ha ancora risposto (richiesta:
+      // "sapere chi ha passato e chi invece non ha ancora offerto") — senza
+      // svelare la cifra, solo lo stato.
+      if (r.submitted) {
+        const hasPassed = r.amount === 0;
+        am.textContent = hasPassed ? '🤚 Passato' : '🔒 Inviata';
+        am.style.color = hasPassed ? 'var(--text-s)' : 'var(--green)';
+      } else {
+        am.textContent = '⏳ In attesa';
+        am.style.color = 'var(--text-s)';
+      }
+    }
     chip.appendChild(em); chip.appendChild(nm); chip.appendChild(am);
     if (r.submitted && showAmt) { const tick = document.createElement('span'); tick.style.cssText = 'color:var(--green);font-size:.7rem'; tick.textContent = '✓'; chip.appendChild(tick); }
     container.appendChild(chip);
