@@ -1,0 +1,74 @@
+{
+  "exportedAt": "20261016T011706Z",
+  "assignments": null,
+  "teams": {
+    "t1": {
+      "budget": 500,
+      "emoji": "⚓",
+      "name": "Barça",
+      "rosterCount": 0
+    },
+    "t10": {
+      "budget": 500,
+      "emoji": "🎮",
+      "name": "giomammo",
+      "rosterCount": 0
+    },
+    "t2": {
+      "budget": 500,
+      "emoji": "🦅",
+      "name": "Benfiga",
+      "rosterCount": 0
+    },
+    "t3": {
+      "budget": 500,
+      "emoji": "🔴",
+      "name": "Frattese1985",
+      "rosterCount": 0
+    },
+    "t4": {
+      "budget": 500,
+      "emoji": "💊",
+      "name": "Morpheus",
+      "rosterCount": 0
+    },
+    "t5": {
+      "budget": 500,
+      "emoji": "🗼",
+      "name": "Paris San Giuann",
+      "rosterCount": 0
+    },
+    "t6": {
+      "budget": 500,
+      "emoji": "👑",
+      "name": "REAL",
+      "rosterCount": 0
+    },
+    "t7": {
+      "budget": 500,
+      "emoji": "🦈",
+      "name": "Sharktar",
+      "rosterCount": 0
+    },
+    "t8": {
+      "budget": 500,
+      "emoji": "🧦",
+      "name": "SoxTeam",
+      "rosterCount": 0
+    },
+    "t9": {
+      "budget": 500,
+      "emoji": "🍷",
+      "name": "Vincan",
+      "rosterCount": 0
+    }
+  },
+  "log": null,
+  "game": {
+    "auctionDuration": 30,
+    "minBid": 1,
+    "phase": "waiting",
+    "revealDuration": 10,
+    "round": 1
+  }
+}
