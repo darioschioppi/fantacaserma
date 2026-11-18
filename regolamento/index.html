@@ -399,6 +399,42 @@
     font-family:Consolas, monospace;
     color:var(--green-dark);
   }
+
+  /* ── Leggibilità smartphone (verticale e orizzontale) ── */
+  html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+  table{ overflow-wrap:anywhere; }
+  .riep th, .riep td{ vertical-align:top; }
+  .sq td:nth-child(4), .sq td:nth-child(5), .sq th:nth-child(4), .sq th:nth-child(5){ text-align:right; white-space:nowrap; }
+  .sq td:first-child, .sq th:first-child{ text-align:center; width:40px; }
+  .sq tr.tt td{ background:#f4f7f4; }
+  .sq tr.tt td:nth-child(3), .sq tr.tt td:nth-child(4){ text-align:right; white-space:nowrap; }
+  .sq tr.tt td:nth-child(2){ text-align:left; }
+  @media (max-width:760px){
+    main{ padding:30px 12px 70px; }
+    .card{ padding:18px 14px; border-radius:14px; }
+    header{ padding:44px 16px 60px; }
+    header h1{ font-size:2.1rem; }
+    table{ font-size:0.88rem; }
+    th,td{ padding:8px 6px; }
+    .sq th, .sq td{ padding:8px 5px; }
+    .sq td:first-child, .sq th:first-child{ width:34px; }
+  }
+  @media (max-width:640px){
+    /* riepilogo: ogni squadra diventa una scheda, nessuno scorrimento laterale */
+    .riep, .riep tbody{ display:block; width:100%; }
+    .riep tr.hd{ display:none; }
+    .riep tr{ display:block; background:#fff; border:1px solid #dfe4dc; border-radius:12px; padding:6px 12px 8px; margin:0 0 12px; }
+    .riep tr:hover td{ background:transparent; }
+    .riep td{ display:flex; justify-content:space-between; align-items:baseline; gap:14px; border:none; padding:5px 0; text-align:right; }
+    .riep td::before{ content:attr(data-label); font-weight:600; color:var(--green-dark); text-align:left; flex-shrink:0; }
+    .riep td:first-child{ display:block; font-weight:800; font-size:1.05rem; text-align:left; border-bottom:1px solid #e2e5df; padding:6px 0 8px; margin-bottom:4px; }
+    .riep td:first-child::before{ content:none; }
+    .riep td.gt{ display:block; text-align:left; }
+    .riep td.gt::before{ display:block; margin-bottom:4px; }
+    .riep td.gt b{ display:inline-block; min-width:1.3em; }
+    .riep tr.tot{ background:#e6f6fd; border-color:var(--green); }
+    .riep tr.tot td:nth-child(2)::before{ content:none; }
+  }
 </style>
 </head>
 <body>
@@ -676,26 +712,24 @@
       <p><b>L'asta si svolge oggi, mercoledì 18 novembre 2026, alle ore 21:30.</b> Giocatori tagliati dalle squadre per la <b>1ª asta di riparazione</b> (9 – 21 novembre 2026). I crediti recuperati sono pari al <b>doppio della quotazione attuale Classic</b> di Fantacalcio.it. Ogni squadra ha inoltre <b>50 crediti</b> aggiuntivi per l'asta. I giocatori tagliati non possono essere ricomprati.</p>
 
       <h4>Crediti disponibili per l'asta</h4>
-      <div style="overflow-x:auto;">
-      <table>
-        <tr><th>Squadra</th><th>Giocatori tagliati</th><th>Residui</th><th>Recuperati</th><th>Bonus asta</th><th>Totale disponibile</th></tr>
-        <tr><td>💊 Morpheus</td><td><b>P</b> Tornqvist<br><b>D</b> Diego Carlos, Marcandalli<br><b>C</b> Cancellieri, Colpani, Thuram K.<br><b>A</b> Woltemade</td><td>53</td><td>118</td><td>50</td><td><b>221</b></td></tr>
-        <tr><td>⚓ Barça</td><td><b>P</b> Corvi<br><b>D</b> Obert, Cambiaso, Vojvoda, Badiashile, Bernasconi<br><b>C</b> Diouf, Jones C., Casadei<br><b>A</b> Romero D., Ngonge</td><td>0</td><td>150</td><td>50</td><td><b>200</b></td></tr>
-        <tr><td>🍷 Vincan</td><td><b>D</b> Heggem, Kossounou<br><b>C</b> Locatelli, Bernabè<br><b>A</b> Tourè E., Lucca</td><td>0</td><td>54</td><td>50</td><td><b>104</b></td></tr>
-        <tr><td>🎮 giomammo</td><td><b>P</b> Grabara<br><b>D</b> Kolasinac, Dodò<br><b>C</b> Atta<br><b>A</b> Zapata D., Neres</td><td>0</td><td>54</td><td>50</td><td><b>104</b></td></tr>
-        <tr><td>🔴 Frattese1985</td><td><b>P</b> Muric<br><b>C</b> Samardzic<br><b>A</b> Kevin Carlos, Cutrone</td><td>0</td><td>50</td><td>50</td><td><b>100</b></td></tr>
-        <tr><td>🦅 Benfiga</td><td><b>P</b> Sanchez Ro.<br><b>D</b> Doekhi<br><b>A</b> Zeballos</td><td>2</td><td>44</td><td>50</td><td><b>96</b></td></tr>
-        <tr><td>🗼 Paris San Giuann</td><td><b>D</b> Bartesaghi, Estupinan<br><b>C</b> Saelemaekers, Loftus-Cheek</td><td>0</td><td>42</td><td>50</td><td><b>92</b></td></tr>
-        <tr><td>🧦 SoxTeam</td><td><b>D</b> Kelly L., Gabbia<br><b>C</b> Rodriguez Je.<br><b>A</b> Gnonto</td><td>0</td><td>36</td><td>50</td><td><b>86</b></td></tr>
-        <tr><td>🦈 Sharktar</td><td><b>D</b> Marusic<br><b>A</b> Dovbyk</td><td>9</td><td>26</td><td>50</td><td><b>85</b></td></tr>
-        <tr><td>👑 REAL</td><td><b>D</b> Kabasele<br><b>C</b> Chukwueze, Pierotti</td><td>0</td><td>34</td><td>50</td><td><b>84</b></td></tr>
-        <tr><td><b>Totale</b></td><td><b>50 tagli</b></td><td><b>64</b></td><td><b>608</b></td><td><b>500</b></td><td><b>1172</b></td></tr>
+            <table class="riep">
+        <tr class="hd"><th>Squadra</th><th>Giocatori tagliati</th><th>Residui</th><th>Recuperati</th><th>Bonus asta</th><th>Totale disponibile</th></tr>
+        <tr><td data-label="Squadra">💊 Morpheus</td><td class="gt" data-label="Giocatori tagliati"><b>P</b> Tornqvist<br><b>D</b> Diego Carlos, Marcandalli<br><b>C</b> Cancellieri, Colpani, Thuram K.<br><b>A</b> Woltemade</td><td data-label="Residui">53</td><td data-label="Recuperati">118</td><td data-label="Bonus asta">50</td><td data-label="Totale disponibile"><b>221</b></td></tr>
+        <tr><td data-label="Squadra">⚓ Barça</td><td class="gt" data-label="Giocatori tagliati"><b>P</b> Corvi<br><b>D</b> Obert, Cambiaso, Vojvoda, Badiashile, Bernasconi<br><b>C</b> Diouf, Jones C., Casadei<br><b>A</b> Romero D., Ngonge</td><td data-label="Residui">0</td><td data-label="Recuperati">150</td><td data-label="Bonus asta">50</td><td data-label="Totale disponibile"><b>200</b></td></tr>
+        <tr><td data-label="Squadra">🍷 Vincan</td><td class="gt" data-label="Giocatori tagliati"><b>D</b> Heggem, Kossounou<br><b>C</b> Locatelli, Bernabè<br><b>A</b> Tourè E., Lucca</td><td data-label="Residui">0</td><td data-label="Recuperati">54</td><td data-label="Bonus asta">50</td><td data-label="Totale disponibile"><b>104</b></td></tr>
+        <tr><td data-label="Squadra">🎮 giomammo</td><td class="gt" data-label="Giocatori tagliati"><b>P</b> Grabara<br><b>D</b> Kolasinac, Dodò<br><b>C</b> Atta<br><b>A</b> Zapata D., Neres</td><td data-label="Residui">0</td><td data-label="Recuperati">54</td><td data-label="Bonus asta">50</td><td data-label="Totale disponibile"><b>104</b></td></tr>
+        <tr><td data-label="Squadra">🔴 Frattese1985</td><td class="gt" data-label="Giocatori tagliati"><b>P</b> Muric<br><b>C</b> Samardzic<br><b>A</b> Kevin Carlos, Cutrone</td><td data-label="Residui">0</td><td data-label="Recuperati">50</td><td data-label="Bonus asta">50</td><td data-label="Totale disponibile"><b>100</b></td></tr>
+        <tr><td data-label="Squadra">🦅 Benfiga</td><td class="gt" data-label="Giocatori tagliati"><b>P</b> Sanchez Ro.<br><b>D</b> Doekhi<br><b>A</b> Zeballos</td><td data-label="Residui">2</td><td data-label="Recuperati">44</td><td data-label="Bonus asta">50</td><td data-label="Totale disponibile"><b>96</b></td></tr>
+        <tr><td data-label="Squadra">🗼 Paris San Giuann</td><td class="gt" data-label="Giocatori tagliati"><b>D</b> Bartesaghi, Estupinan<br><b>C</b> Saelemaekers, Loftus-Cheek</td><td data-label="Residui">0</td><td data-label="Recuperati">42</td><td data-label="Bonus asta">50</td><td data-label="Totale disponibile"><b>92</b></td></tr>
+        <tr><td data-label="Squadra">🧦 SoxTeam</td><td class="gt" data-label="Giocatori tagliati"><b>D</b> Kelly L., Gabbia<br><b>C</b> Rodriguez Je.<br><b>A</b> Gnonto</td><td data-label="Residui">0</td><td data-label="Recuperati">36</td><td data-label="Bonus asta">50</td><td data-label="Totale disponibile"><b>86</b></td></tr>
+        <tr><td data-label="Squadra">🦈 Sharktar</td><td class="gt" data-label="Giocatori tagliati"><b>D</b> Marusic<br><b>A</b> Dovbyk</td><td data-label="Residui">9</td><td data-label="Recuperati">26</td><td data-label="Bonus asta">50</td><td data-label="Totale disponibile"><b>85</b></td></tr>
+        <tr><td data-label="Squadra">👑 REAL</td><td class="gt" data-label="Giocatori tagliati"><b>D</b> Kabasele<br><b>C</b> Chukwueze, Pierotti</td><td data-label="Residui">0</td><td data-label="Recuperati">34</td><td data-label="Bonus asta">50</td><td data-label="Totale disponibile"><b>84</b></td></tr>
+        <tr class="tot"><td data-label="Squadra"><b>Totale</b></td><td class="gt" data-label="Giocatori tagliati"><b>50 tagli</b></td><td data-label="Residui"><b>64</b></td><td data-label="Recuperati"><b>608</b></td><td data-label="Bonus asta"><b>500</b></td><td data-label="Totale disponibile"><b>1172</b></td></tr>
       </table>
-      </div>
 
       <h4 style="margin-top:22px;">💊 Morpheus</h4>
-      <table>
-        <tr><th>Ruolo</th><th>Giocatore</th><th>Squadra</th><th>Quotazione</th><th>Crediti</th></tr>
+      <table class="sq">
+        <tr><th>R</th><th>Giocatore</th><th>Squadra</th><th>Quot.</th><th>Crediti</th></tr>
         <tr><td><b>P</b></td><td>Tornqvist</td><td>Monza</td><td>6</td><td>12</td></tr>
         <tr><td><b>D</b></td><td>Diego Carlos</td><td>Parma</td><td>5</td><td>10</td></tr>
         <tr><td><b>D</b></td><td>Marcandalli</td><td>Genoa</td><td>5</td><td>10</td></tr>
@@ -703,12 +737,12 @@
         <tr><td><b>C</b></td><td>Colpani</td><td>Monza</td><td>9</td><td>18</td></tr>
         <tr><td><b>C</b></td><td>Thuram K.</td><td>Juventus</td><td>4</td><td>8</td></tr>
         <tr><td><b>A</b></td><td>Woltemade</td><td>Juventus</td><td>19</td><td>38</td></tr>
-        <tr><td colspan="3"><b>Totale</b></td><td><b>59</b></td><td><b>118</b></td></tr>
+        <tr class="tt"><td></td><td colspan="2"><b>Totale</b></td><td><b>59</b></td><td><b>118</b></td></tr>
       </table>
 
       <h4 style="margin-top:22px;">⚓ Barça</h4>
-      <table>
-        <tr><th>Ruolo</th><th>Giocatore</th><th>Squadra</th><th>Quotazione</th><th>Crediti</th></tr>
+      <table class="sq">
+        <tr><th>R</th><th>Giocatore</th><th>Squadra</th><th>Quot.</th><th>Crediti</th></tr>
         <tr><td><b>P</b></td><td>Corvi</td><td>Parma</td><td>5</td><td>10</td></tr>
         <tr><td><b>D</b></td><td>Obert</td><td>Cagliari</td><td>5</td><td>10</td></tr>
         <tr><td><b>D</b></td><td>Cambiaso</td><td>Juventus</td><td>5</td><td>10</td></tr>
@@ -720,90 +754,90 @@
         <tr><td><b>C</b></td><td>Casadei</td><td>Torino</td><td>5</td><td>10</td></tr>
         <tr><td><b>A</b></td><td>Romero D.</td><td>Parma</td><td>16</td><td>32</td></tr>
         <tr><td><b>A</b></td><td>Ngonge</td><td>Monza</td><td>3</td><td>6</td></tr>
-        <tr><td colspan="3"><b>Totale</b></td><td><b>75</b></td><td><b>150</b></td></tr>
+        <tr class="tt"><td></td><td colspan="2"><b>Totale</b></td><td><b>75</b></td><td><b>150</b></td></tr>
       </table>
 
       <h4 style="margin-top:22px;">🍷 Vincan</h4>
-      <table>
-        <tr><th>Ruolo</th><th>Giocatore</th><th>Squadra</th><th>Quotazione</th><th>Crediti</th></tr>
+      <table class="sq">
+        <tr><th>R</th><th>Giocatore</th><th>Squadra</th><th>Quot.</th><th>Crediti</th></tr>
         <tr><td><b>D</b></td><td>Heggem</td><td>Bologna</td><td>4</td><td>8</td></tr>
         <tr><td><b>D</b></td><td>Kossounou</td><td>Atalanta</td><td>2</td><td>4</td></tr>
         <tr><td><b>C</b></td><td>Locatelli</td><td>Juventus</td><td>6</td><td>12</td></tr>
         <tr><td><b>C</b></td><td>Bernabè</td><td>Parma</td><td>4</td><td>8</td></tr>
         <tr><td><b>A</b></td><td>Tourè E.</td><td>Parma</td><td>7</td><td>14</td></tr>
         <tr><td><b>A</b></td><td>Lucca</td><td>Napoli</td><td>4</td><td>8</td></tr>
-        <tr><td colspan="3"><b>Totale</b></td><td><b>27</b></td><td><b>54</b></td></tr>
+        <tr class="tt"><td></td><td colspan="2"><b>Totale</b></td><td><b>27</b></td><td><b>54</b></td></tr>
       </table>
 
       <h4 style="margin-top:22px;">🎮 giomammo</h4>
-      <table>
-        <tr><th>Ruolo</th><th>Giocatore</th><th>Squadra</th><th>Quotazione</th><th>Crediti</th></tr>
+      <table class="sq">
+        <tr><th>R</th><th>Giocatore</th><th>Squadra</th><th>Quot.</th><th>Crediti</th></tr>
         <tr><td><b>P</b></td><td>Grabara</td><td>Juventus</td><td>1</td><td>2</td></tr>
         <tr><td><b>D</b></td><td>Kolasinac</td><td>Atalanta</td><td>6</td><td>12</td></tr>
         <tr><td><b>D</b></td><td>Dodò</td><td>Fiorentina</td><td>5</td><td>10</td></tr>
         <tr><td><b>C</b></td><td>Atta</td><td>Fiorentina</td><td>9</td><td>18</td></tr>
         <tr><td><b>A</b></td><td>Zapata D.</td><td>Torino</td><td>3</td><td>6</td></tr>
         <tr><td><b>A</b></td><td>Neres</td><td>Napoli</td><td>3</td><td>6</td></tr>
-        <tr><td colspan="3"><b>Totale</b></td><td><b>27</b></td><td><b>54</b></td></tr>
+        <tr class="tt"><td></td><td colspan="2"><b>Totale</b></td><td><b>27</b></td><td><b>54</b></td></tr>
       </table>
 
       <h4 style="margin-top:22px;">🔴 Frattese1985</h4>
-      <table>
-        <tr><th>Ruolo</th><th>Giocatore</th><th>Squadra</th><th>Quotazione</th><th>Crediti</th></tr>
+      <table class="sq">
+        <tr><th>R</th><th>Giocatore</th><th>Squadra</th><th>Quot.</th><th>Crediti</th></tr>
         <tr><td><b>P</b></td><td>Muric</td><td>Sassuolo</td><td>3</td><td>6</td></tr>
         <tr><td><b>C</b></td><td>Samardzic</td><td>Atalanta</td><td>12</td><td>24</td></tr>
         <tr><td><b>A</b></td><td>Kevin Carlos</td><td>Cagliari</td><td>6</td><td>12</td></tr>
         <tr><td><b>A</b></td><td>Cutrone</td><td>Monza</td><td>4</td><td>8</td></tr>
-        <tr><td colspan="3"><b>Totale</b></td><td><b>25</b></td><td><b>50</b></td></tr>
+        <tr class="tt"><td></td><td colspan="2"><b>Totale</b></td><td><b>25</b></td><td><b>50</b></td></tr>
       </table>
 
       <h4 style="margin-top:22px;">🦅 Benfiga</h4>
-      <table>
-        <tr><th>Ruolo</th><th>Giocatore</th><th>Squadra</th><th>Quotazione</th><th>Crediti</th></tr>
+      <table class="sq">
+        <tr><th>R</th><th>Giocatore</th><th>Squadra</th><th>Quot.</th><th>Crediti</th></tr>
         <tr><td><b>P</b></td><td>Sanchez Ro.</td><td>Como</td><td>7</td><td>14</td></tr>
         <tr><td><b>D</b></td><td>Doekhi</td><td>Lazio</td><td>7</td><td>14</td></tr>
         <tr><td><b>A</b></td><td>Zeballos</td><td>Monza</td><td>8</td><td>16</td></tr>
-        <tr><td colspan="3"><b>Totale</b></td><td><b>22</b></td><td><b>44</b></td></tr>
+        <tr class="tt"><td></td><td colspan="2"><b>Totale</b></td><td><b>22</b></td><td><b>44</b></td></tr>
       </table>
 
       <h4 style="margin-top:22px;">🗼 Paris San Giuann</h4>
-      <table>
-        <tr><th>Ruolo</th><th>Giocatore</th><th>Squadra</th><th>Quotazione</th><th>Crediti</th></tr>
+      <table class="sq">
+        <tr><th>R</th><th>Giocatore</th><th>Squadra</th><th>Quot.</th><th>Crediti</th></tr>
         <tr><td><b>D</b></td><td>Bartesaghi</td><td>Milan</td><td>4</td><td>8</td></tr>
         <tr><td><b>D</b></td><td>Estupinan</td><td>Milan</td><td>3</td><td>6</td></tr>
         <tr><td><b>C</b></td><td>Saelemaekers</td><td>Milan</td><td>10</td><td>20</td></tr>
         <tr><td><b>C</b></td><td>Loftus-Cheek</td><td>Milan</td><td>4</td><td>8</td></tr>
-        <tr><td colspan="3"><b>Totale</b></td><td><b>21</b></td><td><b>42</b></td></tr>
+        <tr class="tt"><td></td><td colspan="2"><b>Totale</b></td><td><b>21</b></td><td><b>42</b></td></tr>
       </table>
 
       <h4 style="margin-top:22px;">🧦 SoxTeam</h4>
-      <table>
-        <tr><th>Ruolo</th><th>Giocatore</th><th>Squadra</th><th>Quotazione</th><th>Crediti</th></tr>
+      <table class="sq">
+        <tr><th>R</th><th>Giocatore</th><th>Squadra</th><th>Quot.</th><th>Crediti</th></tr>
         <tr><td><b>D</b></td><td>Kelly L.</td><td>Juventus</td><td>3</td><td>6</td></tr>
         <tr><td><b>D</b></td><td>Gabbia</td><td>Milan</td><td>3</td><td>6</td></tr>
         <tr><td><b>C</b></td><td>Rodriguez Je.</td><td>Como</td><td>7</td><td>14</td></tr>
         <tr><td><b>A</b></td><td>Gnonto</td><td>Fiorentina</td><td>5</td><td>10</td></tr>
-        <tr><td colspan="3"><b>Totale</b></td><td><b>18</b></td><td><b>36</b></td></tr>
+        <tr class="tt"><td></td><td colspan="2"><b>Totale</b></td><td><b>18</b></td><td><b>36</b></td></tr>
       </table>
 
       <h4 style="margin-top:22px;">🦈 Sharktar</h4>
-      <table>
-        <tr><th>Ruolo</th><th>Giocatore</th><th>Squadra</th><th>Quotazione</th><th>Crediti</th></tr>
+      <table class="sq">
+        <tr><th>R</th><th>Giocatore</th><th>Squadra</th><th>Quot.</th><th>Crediti</th></tr>
         <tr><td><b>D</b></td><td>Marusic</td><td>Lazio</td><td>3</td><td>6</td></tr>
         <tr><td><b>A</b></td><td>Dovbyk</td><td>Bologna</td><td>10</td><td>20</td></tr>
-        <tr><td colspan="3"><b>Totale</b></td><td><b>13</b></td><td><b>26</b></td></tr>
+        <tr class="tt"><td></td><td colspan="2"><b>Totale</b></td><td><b>13</b></td><td><b>26</b></td></tr>
       </table>
 
       <h4 style="margin-top:22px;">👑 REAL</h4>
-      <table>
-        <tr><th>Ruolo</th><th>Giocatore</th><th>Squadra</th><th>Quotazione</th><th>Crediti</th></tr>
+      <table class="sq">
+        <tr><th>R</th><th>Giocatore</th><th>Squadra</th><th>Quot.</th><th>Crediti</th></tr>
         <tr><td><b>D</b></td><td>Kabasele</td><td>Udinese</td><td>3</td><td>6</td></tr>
         <tr><td><b>C</b></td><td>Chukwueze</td><td>Milan</td><td>10</td><td>20</td></tr>
         <tr><td><b>C</b></td><td>Pierotti</td><td>Lecce</td><td>4</td><td>8</td></tr>
-        <tr><td colspan="3"><b>Totale</b></td><td><b>17</b></td><td><b>34</b></td></tr>
+        <tr class="tt"><td></td><td colspan="2"><b>Totale</b></td><td><b>17</b></td><td><b>34</b></td></tr>
       </table>
 
-      <p style="margin-top:18px;"><small>Quotazioni attuali Classic da Fantacalcio.it, stagione 2026/27. Ruoli Classic ufficiali (da Fantacalcio.it): P portiere, D difensore, C centrocampista, A attaccante. Elenco aggiornato al 18/11/2026.</small></p>
+      <p style="margin-top:18px;"><small>Quotazioni attuali Classic da Fantacalcio.it, stagione 2026/27. R = ruolo Classic ufficiale (da Fantacalcio.it): P portiere, D difensore, C centrocampista, A attaccante. Elenco aggiornato al 18/11/2026.</small></p>
     </div>
   </section>
 
